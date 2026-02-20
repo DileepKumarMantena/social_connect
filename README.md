@@ -1,70 +1,147 @@
-# Getting Started with Create React App
+# Social Connect API Documentation
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Base URL
+```
+http://localhost:8000
+```
 
-## Available Scripts
+## Endpoints
 
-In the project directory, you can run:
+### 1. Login
+**URL:** `POST /api/v1/login`
 
-### `npm start`
+**Request:**
+```json
+{
+  "username": "testuser",
+  "password": "password123"
+}
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+**Response:**
+```json
+{
+  "message": "Login successful",
+  "success": true,
+  "user": {
+    "username": "testuser",
+    "email": "test@example.com"
+  }
+}
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 2. Forgot Password
+**URL:** `POST /api/v1/forgot-password`
 
-### `npm test`
+**Request:**
+```json
+{
+  "email": "test@example.com"
+}
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+**Response:**
+```json
+{
+  "message": "OTP sent to your email",
+  "success": true
+}
+```
 
-### `npm run build`
+### 3. Verify OTP
+**URL:** `POST /api/v1/verify-otp`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+**Request:**
+```json
+{
+  "email": "test@example.com",
+  "otp": "1234"
+}
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+**Response:**
+```json
+{
+  "message": "OTP verified successfully",
+  "success": true
+}
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 4. Reset Password
+**URL:** `POST /api/v1/reset-password`
 
-### `npm run eject`
+**Request:**
+```json
+{
+  "email": "test@example.com",
+  "password": "newpassword123"
+}
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+**Response:**
+```json
+{
+  "message": "Password reset successfully",
+  "success": true
+}
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Health Check
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 5. Health Check
+**URL:** `GET /`
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+**Response:**
+```json
+{
+  "message": "Social Connect API is running"
+}
+```
 
-## Learn More
+## Test Credentials
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+**Username:** `testuser`
+**Email:** `test@example.com`
+**Password:** `password123`
 
-To learn React, check out the [React documentation](https://reactjs.org/).
 
-### Code Splitting
+## Setup Instructions
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### Backend Setup
+1. **Install dependencies:**
+   ```bash
+   cd backend
+   pip install -r requirements.txt
+   ```
 
-### Analyzing the Bundle Size
+2. **Run backend server:**
+   ```bash
+   python extension.py
+   ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### Frontend Setup
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-### Making a Progressive Web App
+2. **Run frontend:**
+   ```bash
+   npm start
+   ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+3. **Access frontend:**
+   - Frontend URL: http://localhost:3000
 
-### Advanced Configuration
+### Access API
+- **Base URL:** http://localhost:8000
+- **Swagger UI:** http://localhost:8000/docs
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## OTP Flow
 
-### Deployment
+1. **Request OTP** → Forgot Password API
+2. **Check terminal** → OTP printed to console
+3. **Verify OTP** → Verify OTP API
+4. **Reset Password** → Reset Password API
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
 
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
