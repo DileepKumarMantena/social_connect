@@ -11,6 +11,8 @@ class LoginResponse(BaseModel):
     """Response for login endpoint"""
     message: str
     success: bool = True
+    access_token: Optional[str] = None
+    token_type: Optional[str] = None
     user: Optional[Dict[str, str]] = None
 
 class OTPResponse(BaseModel):
@@ -28,3 +30,9 @@ class HealthResponse(BaseModel):
     message: str
     success: bool = True
     status: str = "running"
+
+class UserProfileResponse(BaseModel):
+    """Response for user profile endpoint"""
+    message: str
+    success: bool = True
+    user: Optional[Dict[str, str]] = None

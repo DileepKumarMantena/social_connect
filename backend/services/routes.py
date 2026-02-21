@@ -4,9 +4,10 @@ from typing import Optional
 from constants import users_db, otp_storage
 from services.util import (
     verify_password, hash_password, generate_otp, store_otp, 
-    verify_stored_otp, find_user_by_email, cleanup_otp, send_otp_email
+    verify_stored_otp, find_user_by_email, cleanup_otp, send_otp_email,
+    create_access_token, get_current_user, validate_password_strength
 )
-from services.response import LoginResponse, OTPResponse, PasswordResetResponse
+from services.response import LoginResponse, OTPResponse, PasswordResetResponse, UserProfileResponse
 from services.error import APIError
 
 class APIRequest(BaseModel):
@@ -16,7 +17,7 @@ class APIRequest(BaseModel):
     otp: Optional[str] = None
 
 def login_user(request: APIRequest) -> LoginResponse:
-    """Authenticate user and return login response"""
+    """Authenticate user and return login response with JWT token"""
     username = request.username
     password = request.password
     
@@ -33,8 +34,13 @@ def login_user(request: APIRequest) -> LoginResponse:
     if not verify_password(password, user["password_hash"]):
         raise APIError.unauthorized("Invalid credentials")
     
+    # Create JWT token
+    access_token = create_access_token(data={"sub": username})
+    
     return LoginResponse(
         message="Login successful",
+        access_token=access_token,
+        token_type="bearer",
         user={
             "username": user["username"],
             "email": user["email"]
@@ -93,6 +99,11 @@ def reset_password(request: APIRequest) -> PasswordResetResponse:
     if not email or not new_password:
         raise APIError.bad_request("Email and password are required")
     
+    # Validate password strength
+    is_valid, error_message = validate_password_strength(new_password)
+    if not is_valid:
+        raise APIError.bad_request(error_message)
+    
     # Find user by email
     username_to_update, user_to_update = find_user_by_email(users_db, email)
     
@@ -106,3 +117,17 @@ def reset_password(request: APIRequest) -> PasswordResetResponse:
     cleanup_otp(otp_storage, email)
     
     return PasswordResetResponse(message="Password reset successfully")
+
+def get_user_profile(token: str) -> UserProfileResponse:
+    """Get current user profile (protected endpoint)"""
+    user = get_current_user(token)
+    if not user:
+        raise APIError.unauthorized("Invalid or expired token")
+    
+    return UserProfileResponse(
+        message="Profile retrieved successfully",
+        user={
+            "username": user["username"],
+            "email": user["email"]
+        }
+    )

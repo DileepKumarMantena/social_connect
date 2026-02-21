@@ -5,7 +5,7 @@ users_db = {
     "testuser": {
         "username": "testuser",
         "email": "test@example.com",
-        "password_hash": hashlib.sha256("password123".encode()).hexdigest()
+        "password_hash": hashlib.sha256("Password123!".encode()).hexdigest()
     }
 }
 
@@ -34,4 +34,9 @@ SMTP_PORT = 587
 # User Configuration
 DEFAULT_USERNAME = "testuser"
 DEFAULT_EMAIL = "test@example.com"
-DEFAULT_PASSWORD = "password123"
+DEFAULT_PASSWORD = "Password123!"
+
+# JWT Configuration
+SECRET_KEY = "your-secret-key-change-this-in-production"  # Change this in production!
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30

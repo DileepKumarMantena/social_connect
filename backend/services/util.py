@@ -4,8 +4,11 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
-from constants import OTP_EXPIRY_MINUTES, OTP_LENGTH
+from constants import OTP_EXPIRY_MINUTES, OTP_LENGTH, users_db
 import os
+from jose import JWTError, jwt
+from constants import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES,SMTP_EMAIL, SMTP_PASSWORD, SMTP_SERVER, SMTP_PORT
+
 
 def generate_otp():
     """Generate a random OTP of specified length"""
@@ -45,6 +48,30 @@ def find_user_by_email(users_db: dict, email: str):
             return username, user
     return None, None
 
+def validate_password_strength(password: str) -> tuple[bool, str]:
+    """Validate password strength and return (is_valid, error_message)"""
+    if len(password) < 8:
+        return False, "Password must be at least 8 characters long"
+    
+    has_upper = any(c.isupper() for c in password)
+    has_lower = any(c.islower() for c in password)
+    has_digit = any(c.isdigit() for c in password)
+    has_special = any(c in "@$!%*?&#" for c in password)
+    
+    if not has_upper:
+        return False, "Password must contain at least 1 uppercase letter (A-Z)"
+    
+    if not has_lower:
+        return False, "Password must contain at least 1 lowercase letter (a-z)"
+    
+    if not has_digit:
+        return False, "Password must contain at least 1 number (0-9)"
+    
+    if not has_special:
+        return False, "Password must contain at least 1 special character (@ $ ! % * ? & # _)"
+    
+    return True, "Password meets all requirements"
+
 def cleanup_otp(otp_storage: dict, email: str):
     """Remove OTP after successful verification"""
     if email in otp_storage:
@@ -54,6 +81,7 @@ def send_otp_email(recipient_email: str, otp: str) -> bool:
     """Send OTP email to recipient"""
     try:
         # Get email configuration from constants
+        
         sender_email = SMTP_EMAIL
         sender_password = SMTP_PASSWORD
         smtp_server = SMTP_SERVER
@@ -99,3 +127,39 @@ def send_otp_email(recipient_email: str, otp: str) -> bool:
     except Exception as e:
         print(f"Failed to send email: {e}")
         return False
+
+def create_access_token(data: dict, expires_delta: timedelta = None):
+    """Create JWT access token"""
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+def verify_token(token: str) -> dict:
+    """Verify JWT token and return payload"""
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except JWTError:
+        return None
+
+def get_current_user(token: str) -> dict:
+    """Get current user from JWT token"""
+    payload = verify_token(token)
+    if payload is None:
+        return None
+    
+    username = payload.get("sub")
+    if username is None:
+        return None
+    
+    user = users_db.get(username)
+    if user is None:
+        return None
+    
+    return user
