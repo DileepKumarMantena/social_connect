@@ -57,7 +57,6 @@ const ForgotPasswordPage = () => {
     };
 
     const handleSendEmail = () => {
-        setStep(2);
         axios.post(`${process.env.REACT_APP_API_LINKS}/api/v1/forgot-password`, { email: payload.email })
             .then(res => {
                 Swal.fire({
@@ -97,8 +96,9 @@ const ForgotPasswordPage = () => {
     };
 
     const handleVerifyOTP = () => {
-        setStep(3);
-        axios.post(`${process.env.REACT_APP_API_LINKS}/api/v1/verify-otp`, { email: payload.email, otp: payload.otp.join('') })
+        const otpvalue = payload?.otp?.join('')
+
+        axios.post(`${process.env.REACT_APP_API_LINKS}/api/v1/verify-otp`, { email: payload.email, otp: otpvalue })
             .then(res => {
                 Swal.fire({
                     title: 'OTP Verified',

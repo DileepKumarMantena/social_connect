@@ -20,6 +20,7 @@ const LoginPage = () => {
         axios.post(`${process.env.REACT_APP_API_LINKS}/api/v1/login`, payload, { withCredentials: true })
             .then((res) => {
                 if (res.status === 200) {
+                    document.cookie = `token=${res.data.access_token}; path=/; max-age=${60 * 60 * 24}; secure; samesite=strict`;
                     Swal.fire({
                         title: 'Login Success',
                         text: 'User logged in',
@@ -30,11 +31,12 @@ const LoginPage = () => {
                         timer: 1000,
                         timerProgressBar: true,
                         customClass: {
-                            popup: 'swal-popup', 
-                            title: 'swal-title',   
-                            content: 'swal-text',    
+                            popup: 'swal-popup',
+                            title: 'swal-title',
+                            content: 'swal-text',
                         }
                     });
+                    window.location.reload()
                 }
             })
             .catch(err => {
