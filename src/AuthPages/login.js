@@ -16,9 +16,14 @@ const LoginPage = () => {
         const { name, value } = e.target;
         setPayload({ ...payload, [name]: value })
     }
-    const handleLogin = () => {
+    const handleLogin = (e) => {
+        e.preventDefault(); // Prevent form from refreshing page
+        console.log('Login payload:', payload);
+        console.log('API URL:', process.env.REACT_APP_API_LINKS);
+        
         axios.post(`${process.env.REACT_APP_API_LINKS}/api/v1/login`, payload, { withCredentials: true })
             .then((res) => {
+                console.log('Login response:', res);
                 if (res.status === 200) {
                     document.cookie = `token=${res.data.access_token}; path=/; max-age=${60 * 60 * 24}; secure; samesite=strict`;
                     Swal.fire({
@@ -36,10 +41,14 @@ const LoginPage = () => {
                             content: 'swal-text',
                         }
                     });
-                    window.location.reload()
+                    // Redirect to dashboard instead of reload
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 1000);
                 }
             })
             .catch(err => {
+                console.error('Login error:', err);
                 const status = err.response?.status || 500;
                 if (status === 500) {
                     Swal.fire({
@@ -151,7 +160,8 @@ const LoginPage = () => {
 
 
                     <Box sx={{ width: '100%', maxWidth: '500px', mt: 2 }}>
-                        <FormControl fullWidth variant="outlined" sx={{ mb: 3 }}>
+                        <form onSubmit={handleLogin}>
+                            <FormControl fullWidth variant="outlined" sx={{ mb: 3 }}>
                             <Typography
                                 sx={{
                                     mb: 1,
@@ -229,6 +239,7 @@ const LoginPage = () => {
                         </FormControl>
 
                         <Button
+                            type="submit"
                             variant="contained"
                             size="medium"
                             sx={{
@@ -241,10 +252,10 @@ const LoginPage = () => {
                                 cursor: 'pointer',
                                 fontFamily: 'poppins',
                             }}
-                            onClick={handleLogin}
                         >
                             LOGIN
                         </Button>
+                        </form>
                         <Link sx={{
                             textDecoration: 'none',
                             opacity: 0.7,

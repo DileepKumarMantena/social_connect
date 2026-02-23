@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from 'axios';
 import {
     Toolbar,
     Typography,
@@ -164,11 +165,38 @@ const SECTIONS = [
 export default function Dashboard({ token, user, onNavigate }) {
     const [stats, setStats] = useState({ channels: 0, campaigns: 0, leads: 0 });
     const [loading, setLoading] = useState(true);
+    const [hasFetched, setHasFetched] = useState(false);
 
     useEffect(() => {
+        if (hasFetched) return; // Prevent multiple calls
+        
         const fetchStats = async () => {
             try {
-                // Simulate API call
+                // Fetch real data from APIs
+                const [statsResponse, channelsResponse, campaignsResponse, leadsResponse] = await Promise.all([
+                    axios.get(`${process.env.REACT_APP_API_LINKS}/api/v1/dashboard/stats`, { withCredentials: true }),
+                    axios.get(`${process.env.REACT_APP_API_LINKS}/api/v1/channels`, { withCredentials: true }),
+                    axios.get(`${process.env.REACT_APP_API_LINKS}/api/v1/campaigns`, { withCredentials: true }),
+                    axios.get(`${process.env.REACT_APP_API_LINKS}/api/v1/leads`, { withCredentials: true })
+                ]);
+
+                const stats = statsResponse.data.stats || {};
+                // eslint-disable-next-line no-unused-vars
+                const channels = channelsResponse.data.channels || [];
+                // eslint-disable-next-line no-unused-vars
+                const campaigns = campaignsResponse.data.campaigns || [];
+                // eslint-disable-next-line no-unused-vars
+                const leads = leadsResponse.data.leads || [];
+
+                setStats({
+                    channels: stats.channels || 0,
+                    campaigns: stats.campaigns || 0,
+                    leads: stats.leads || 0,
+                });
+                setHasFetched(true); // Mark as fetched
+            } catch (error) {
+                console.error('Error fetching dashboard data:', error);
+                // Fallback to mock data if API fails
                 const [channels, campaigns, leads] = await Promise.all([
                     Promise.resolve(getChannels),
                     Promise.resolve(getCampaigns),
@@ -184,15 +212,14 @@ export default function Dashboard({ token, user, onNavigate }) {
                     campaigns: (campaigns || []).length,
                     leads: (leads || []).length,
                 });
-            } catch {
-                setStats({ channels: 0, campaigns: 0, leads: 0 });
+                setHasFetched(true); // Mark as fetched
             } finally {
                 setLoading(false);
             }
         };
 
         fetchStats();
-    }, [token]);
+    }, [hasFetched]); // Only depend on hasFetched, not token
 
     // Check if data is empty
     const hasData = stats.channels > 0 || stats.campaigns > 0 || stats.leads > 0;

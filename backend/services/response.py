@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 
 class BaseResponse(BaseModel):
     """Base response class for all API responses"""
@@ -36,3 +36,27 @@ class UserProfileResponse(BaseModel):
     message: str
     success: bool = True
     user: Optional[Dict[str, str]] = None
+
+class ChannelResponse(BaseModel):
+    """Response for channel endpoint"""
+    message: str
+    success: bool = True
+    channels: List[Dict[str, Any]] = []
+
+class CampaignResponse(BaseModel):
+    """Response for campaign endpoint"""
+    message: str
+    success: bool = True
+    campaigns: List[Dict[str, Any]] = []
+
+class LeadResponse(BaseModel):
+    """Response for lead endpoint"""
+    message: str
+    success: bool = True
+    leads: List[Dict[str, Any]] = []
+
+class DashboardStatsResponse(BaseModel):
+    """Response for dashboard stats endpoint"""
+    message: str
+    success: bool = True
+    stats: Dict[str, int] = {}

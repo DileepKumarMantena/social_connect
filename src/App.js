@@ -18,6 +18,15 @@ function getCookie(name) {
 function App() {
   const [loggedin, setLoggedin] = useState(false);
   const cookie = getCookie('token');
+  
+  const handleLogout = () => {
+    // Clear the token cookie
+    document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    setLoggedin(false);
+    // Redirect to login page
+    window.location.hash = '/';
+  };
+  
   useEffect(() => {
     if (!cookie) {
       setLoggedin(false)
@@ -34,10 +43,14 @@ function App() {
         {!loggedin ?
           <Route path='/' element={<Login />} /> :
           <Route path='/' element={
-            <AppLayout> <Dashboard /></AppLayout>
+            <AppLayout onLogout={handleLogout}> <Dashboard /></AppLayout>
           } />
         }
-        <Route path='/' element={<Login />} />
+        <Route path='/dashboard' element={
+          loggedin ? 
+          <AppLayout onLogout={handleLogout}> <Dashboard /></AppLayout> : 
+          <Login />
+        } />
         <Route path='/forgot' element={<ForgotPasswordPage />} />
 
       </Routes>

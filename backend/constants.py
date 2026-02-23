@@ -12,6 +12,19 @@ users_db = {
 # OTP storage (in production, use Redis or database)
 otp_storage = {}
 
+# Development Mode Configuration
+DEV_MODE = True  # Set to False to use database instead of mock data
+
+# Database Configuration
+DB_CONFIG = {
+    'host': '127.0.0.1',
+    'port': 3306,
+    'user': 'root',
+    'password': 'Dileep@1234',
+    'database': 'social_connect',
+    'autocommit': True
+}
+
 # API Configuration
 API_TITLE = "Social Connect API"
 API_VERSION = "1.0.0"
@@ -19,7 +32,7 @@ API_HOST = "0.0.0.0"
 API_PORT = 8000
 
 # CORS Configuration
-ALLOWED_ORIGINS = ["http://localhost:3000"]
+ALLOWED_ORIGINS = ["http://localhost:3000", "http://192.168.1.6:3000"]
 
 # OTP Configuration
 OTP_EXPIRY_MINUTES = 10
@@ -40,3 +53,24 @@ DEFAULT_PASSWORD = "Password123!"
 SECRET_KEY = "your-secret-key-change-this-in-production"  # Change this in production!
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+# Mock dashboard data
+channels_db = [
+    {"id": 1, "name": "facebook", "connected": True, "active": True, "followers": 1500},
+    {"id": 2, "name": "instagram", "connected": True, "active": False, "followers": 800},
+    {"id": 3, "name": "linkedin", "connected": False, "active": False, "followers": 0},
+    {"id": 4, "name": "twitter", "connected": False, "active": False, "followers": 0}
+]
+
+campaigns_db = [
+    {"id": 1, "name": "Summer Sale", "status": "active", "leads": 45, "conversion_rate": 12.5},
+    {"id": 2, "name": "Product Launch", "status": "completed", "leads": 120, "conversion_rate": 8.3},
+    {"id": 3, "name": "Holiday Special", "status": "draft", "leads": 0, "conversion_rate": 0}
+]
+
+leads_db = [
+    {"id": 1, "name": "John Doe", "email": "john@example.com", "status": "new", "campaign_id": 1},
+    {"id": 2, "name": "Jane Smith", "email": "jane@example.com", "status": "contacted", "campaign_id": 1},
+    {"id": 3, "name": "Bob Johnson", "email": "bob@example.com", "status": "converted", "campaign_id": 2},
+    {"id": 4, "name": "Alice Brown", "email": "alice@example.com", "status": "new", "campaign_id": 1}
+]
