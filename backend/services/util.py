@@ -128,9 +128,14 @@ def send_otp_email(recipient_email: str, otp: str) -> bool:
         print(f"Failed to send email: {e}")
         return False
 
-def create_access_token(data: dict, expires_delta: timedelta = None):
+def create_access_token(data, expires_delta: timedelta = None):
     """Create JWT access token"""
-    to_encode = data.copy()
+    # Handle both string and dict inputs
+    if isinstance(data, str):
+        to_encode = {"sub": data}
+    else:
+        to_encode = data.copy()
+    
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
