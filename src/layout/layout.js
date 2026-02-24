@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useAuth } from '../contexts/AuthContext';
 import {
     AppBar,
     Toolbar,
@@ -26,7 +27,6 @@ import {
 
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import CampaignIcon from "@mui/icons-material/Campaign";
 import InsightsIcon from "@mui/icons-material/Insights";
@@ -39,7 +39,6 @@ import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import WavesIcon from "@mui/icons-material/Waves";
 import '@fontsource/nunito'
 
 const drawerWidth = 280;
@@ -141,19 +140,16 @@ const theme = createTheme({
 });
 
 export default function AppLayout({
-    user,
-    currentPath,
-    onNavigate,
     onLogout,
     children,
 }) {
+    const { user, hasRole } = useAuth();
     const [open, setOpen] = useState(true);
     const [hoverOpen, setHoverOpen] = useState(false);
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
 
     const effectiveOpen = isMobile ? false : isTablet ? false : open;
-    const drawerVariant = isMobile ? "temporary" : "permanent";
 
     const handleDrawerToggle = () => {
         setOpen(!open);
@@ -173,7 +169,18 @@ export default function AppLayout({
             tooltip: "Overview & Metrics"
         },
 
-        ...(user?.role === "super_admin"
+        ...(hasRole('admin')
+            ? [
+                {
+                    label: "Admin Panel",
+                    icon: <AdminPanelSettingsIcon />,
+                    path: "/admin",
+                    tooltip: "User Management"
+                },
+            ]
+            : []),
+
+        ...(hasRole('super_admin')
             ? [
                 {
                     label: "Super Admin",
@@ -209,7 +216,7 @@ export default function AppLayout({
                 },
             ]),
 
-        ...(user?.role === "user"
+        ...(hasRole('user')
             ? [{
                 label: "Scheduler",
                 icon: <ScheduleIcon />,
@@ -327,7 +334,7 @@ export default function AppLayout({
                                 </Avatar>
                                 <Box sx={{ display: { xs: "none", sm: "block" } }}>
                                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                        {user?.tenant_name}
+                                        {user?.name}
                                     </Typography>
                                     <Typography variant="caption" sx={{ opacity: 0.8 }}>
                                         {user?.role}
@@ -358,9 +365,9 @@ export default function AppLayout({
                             {navItems.map((item) => (
                                 <ListItemButton
                                     key={item.path}
-                                    selected={currentPath === item.path}
+                                    selected={window.location.hash === `#${item.path}`}
                                     onClick={() => {
-                                        onNavigate?.(item.path);
+                                        window.location.hash = item.path;
                                         handleDrawerToggle();
                                     }}
                                     sx={{
@@ -378,7 +385,7 @@ export default function AppLayout({
                                             width: 4,
                                             background: "linear-gradient(180deg, #00b4d8 0%, #0077b6 100%)",
                                             borderRadius: "0 4px 4px 0",
-                                            opacity: currentPath === item.path ? 1 : 0,
+                                            opacity: window.location.hash === `#${item.path}` ? 1 : 0,
                                             transition: "opacity 0.3s ease",
                                             margin: 'auto'
                                         },
@@ -388,7 +395,7 @@ export default function AppLayout({
                                     }}
                                 >
                                     <ListItemIcon sx={{
-                                        color: currentPath === item.path ? "#0077b6" : "#2b5f8a",
+                                        color: window.location.hash === `#${item.path}` ? "#0077b6" : "#2b5f8a",
                                         minWidth: 40,
                                         justifyContent: 'center',
                                     }}>
@@ -405,7 +412,7 @@ export default function AppLayout({
                                         }}
                                         sx={{
                                             '& .MuiTypography-root': {
-                                                fontWeight: currentPath === item.path ? 600 : 400,
+                                                fontWeight: window.location.hash === `#${item.path}` ? 600 : 400,
                                             },
                                         }}
                                     />
@@ -489,8 +496,8 @@ export default function AppLayout({
                                     TransitionComponent={Zoom}
                                 >
                                     <ListItemButton
-                                        selected={currentPath === item.path}
-                                        onClick={() => onNavigate?.(item.path)}
+                                        selected={window.location.hash === `#${item.path}`}
+                                        onClick={() => window.location.hash = item.path}
                                         sx={{
                                             mx: 1,
                                             py: 0.5,
@@ -506,7 +513,7 @@ export default function AppLayout({
                                                 width: 4,
                                                 background: "linear-gradient(180deg, #00b4d8 0%, #0077b6 100%)",
                                                 borderRadius: "0 4px 4px 0",
-                                                opacity: currentPath === item.path ? 1 : 0,
+                                                opacity: window.location.hash === `#${item.path}` ? 1 : 0,
                                                 transition: "opacity 0.3s ease",
                                                 margin: 'auto'
                                             },
@@ -516,7 +523,7 @@ export default function AppLayout({
                                         }}
                                     >
                                         <ListItemIcon sx={{
-                                            color: currentPath === item.path ? "#0077b6" : "#2b5f8a",
+                                            color: window.location.hash === `#${item.path}` ? "#0077b6" : "#2b5f8a",
                                             minWidth: (effectiveOpen || hoverOpen) ? 40 : 'auto',
                                             margin: (effectiveOpen || hoverOpen) && 'auto',
                                             justifyContent: 'center',
@@ -537,7 +544,7 @@ export default function AppLayout({
                                                 opacity: (effectiveOpen || hoverOpen) ? 1 : 0,
                                                 transition: 'opacity 0.2s',
                                                 '& .MuiTypography-root': {
-                                                    fontWeight: currentPath === item.path ? 600 : 400,
+                                                    fontWeight: window.location.hash === `#${item.path}` ? 600 : 400,
                                                 },
                                             }}
                                         />

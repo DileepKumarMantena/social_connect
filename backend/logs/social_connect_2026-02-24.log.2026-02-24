@@ -1,0 +1,155 @@
+2026-02-24 00:42:56,767 - social_connect - INFO - Skipping database initialization (DEV_MODE=True)
+2026-02-24 00:42:56,767 - social_connect - INFO - Starting Social Connect API server
+2026-02-24 00:43:31,616 - social_connect - INFO - Login attempt for user: testuser
+2026-02-24 00:43:31,617 - social_connect - INFO - Using mock data for login (DEV_MODE=True)
+2026-02-24 00:44:09,362 - social_connect - INFO - Skipping database initialization (DEV_MODE=True)
+2026-02-24 00:44:09,362 - social_connect - INFO - Starting Social Connect API server
+2026-02-24 00:44:11,784 - social_connect - INFO - Login attempt for user: testuser
+2026-02-24 00:44:11,784 - social_connect - INFO - Using mock data for login (DEV_MODE=True)
+2026-02-24 00:44:11,796 - social_connect - INFO - Login result: Login successful
+2026-02-24 00:44:13,298 - social_connect - INFO - Dashboard stats requested
+2026-02-24 00:44:13,298 - social_connect - INFO - Using mock data for dashboard stats (DEV_MODE=True)
+2026-02-24 00:44:13,298 - social_connect - INFO - Dashboard stats: {'channels': 2, 'campaigns': 1, 'leads': 4}
+2026-02-24 00:44:13,301 - social_connect - INFO - Channels data requested
+2026-02-24 00:44:13,302 - social_connect - INFO - Using mock data for channels (DEV_MODE=True)
+2026-02-24 00:44:13,302 - social_connect - INFO - Returned 4 channels
+2026-02-24 00:44:13,304 - social_connect - INFO - Campaigns data requested
+2026-02-24 00:44:13,304 - social_connect - INFO - Using mock data for campaigns (DEV_MODE=True)
+2026-02-24 00:44:13,304 - social_connect - INFO - Returned 3 campaigns
+2026-02-24 00:44:13,306 - social_connect - INFO - Leads data requested
+2026-02-24 00:44:13,306 - social_connect - INFO - Using mock data for leads (DEV_MODE=True)
+2026-02-24 00:44:13,306 - social_connect - INFO - Returned 4 leads
+2026-02-24 00:44:13,307 - social_connect - INFO - Dashboard stats requested
+2026-02-24 00:44:13,309 - social_connect - INFO - Using mock data for dashboard stats (DEV_MODE=True)
+2026-02-24 00:44:13,309 - social_connect - INFO - Dashboard stats: {'channels': 2, 'campaigns': 1, 'leads': 4}
+2026-02-24 00:44:13,312 - social_connect - INFO - Channels data requested
+2026-02-24 00:44:13,312 - social_connect - INFO - Using mock data for channels (DEV_MODE=True)
+2026-02-24 00:44:13,312 - social_connect - INFO - Returned 4 channels
+2026-02-24 00:44:13,313 - social_connect - INFO - Campaigns data requested
+2026-02-24 00:44:13,313 - social_connect - INFO - Using mock data for campaigns (DEV_MODE=True)
+2026-02-24 00:44:13,313 - social_connect - INFO - Returned 3 campaigns
+2026-02-24 00:44:13,314 - social_connect - INFO - Leads data requested
+2026-02-24 00:44:13,314 - social_connect - INFO - Using mock data for leads (DEV_MODE=True)
+2026-02-24 00:44:13,314 - social_connect - INFO - Returned 4 leads
+2026-02-24 22:07:48,479 - social_connect - INFO - Skipping database initialization (DEV_MODE=True)
+2026-02-24 22:07:48,479 - social_connect - INFO - Starting Social Connect API server
+2026-02-24 22:08:19,009 - social_connect - INFO - Skipping database initialization (DEV_MODE=True)
+2026-02-24 22:08:19,010 - social_connect - INFO - Starting Social Connect API server
+2026-02-24 22:11:02,630 - social_connect - INFO - Skipping database initialization (DEV_MODE=True)
+2026-02-24 22:11:02,631 - social_connect - INFO - Starting Social Connect API server
+2026-02-24 22:11:29,299 - social_connect - INFO - Login attempt for user: testuser
+2026-02-24 22:11:29,300 - social_connect - INFO - Using mock data for login (DEV_MODE=True)
+2026-02-24 22:11:29,313 - social_connect - INFO - Login result: Login successful
+2026-02-24 22:11:30,671 - social_connect - INFO - Dashboard stats requested
+2026-02-24 22:11:30,671 - social_connect - INFO - Using mock data for dashboard stats (DEV_MODE=True)
+2026-02-24 22:11:30,672 - social_connect - INFO - Dashboard stats: {'channels': 2, 'campaigns': 1, 'leads': 4}
+2026-02-24 22:11:30,673 - social_connect - INFO - Channels data requested
+2026-02-24 22:11:30,673 - social_connect - INFO - Using mock data for channels (DEV_MODE=True)
+2026-02-24 22:11:30,673 - social_connect - INFO - Returned 4 channels
+2026-02-24 22:11:30,674 - social_connect - INFO - Campaigns data requested
+2026-02-24 22:11:30,674 - social_connect - INFO - Using mock data for campaigns (DEV_MODE=True)
+2026-02-24 22:11:30,675 - social_connect - INFO - Returned 3 campaigns
+2026-02-24 22:11:30,676 - social_connect - INFO - Dashboard stats requested
+2026-02-24 22:11:30,676 - social_connect - INFO - Using mock data for dashboard stats (DEV_MODE=True)
+2026-02-24 22:11:30,676 - social_connect - INFO - Dashboard stats: {'channels': 2, 'campaigns': 1, 'leads': 4}
+2026-02-24 22:11:30,677 - social_connect - INFO - Leads data requested
+2026-02-24 22:11:30,677 - social_connect - INFO - Using mock data for leads (DEV_MODE=True)
+2026-02-24 22:11:30,677 - social_connect - INFO - Returned 4 leads
+2026-02-24 22:11:30,678 - social_connect - INFO - Channels data requested
+2026-02-24 22:11:30,678 - social_connect - INFO - Using mock data for channels (DEV_MODE=True)
+2026-02-24 22:11:30,678 - social_connect - INFO - Returned 4 channels
+2026-02-24 22:11:30,679 - social_connect - INFO - Campaigns data requested
+2026-02-24 22:11:30,679 - social_connect - INFO - Using mock data for campaigns (DEV_MODE=True)
+2026-02-24 22:11:30,679 - social_connect - INFO - Returned 3 campaigns
+2026-02-24 22:11:30,680 - social_connect - INFO - Leads data requested
+2026-02-24 22:11:30,680 - social_connect - INFO - Using mock data for leads (DEV_MODE=True)
+2026-02-24 22:11:30,680 - social_connect - INFO - Returned 4 leads
+2026-02-24 23:47:51,418 - social_connect - INFO - Skipping database initialization (DEV_MODE=True)
+2026-02-24 23:47:51,419 - social_connect - INFO - Starting Social Connect API server
+2026-02-24 23:49:54,713 - social_connect - INFO - Login attempt for user: superadmin
+2026-02-24 23:49:54,715 - social_connect - INFO - Using mock data for login (DEV_MODE=True)
+2026-02-24 23:51:09,273 - social_connect - INFO - Login attempt for user: superadmin
+2026-02-24 23:51:09,274 - social_connect - INFO - Using mock data for login (DEV_MODE=True)
+2026-02-24 23:51:19,100 - social_connect - INFO - Skipping database initialization (DEV_MODE=True)
+2026-02-24 23:51:19,100 - social_connect - INFO - Starting Social Connect API server
+2026-02-24 23:51:21,185 - social_connect - INFO - Login attempt for user: superadmin
+2026-02-24 23:51:21,186 - social_connect - INFO - Using mock data for login (DEV_MODE=True)
+2026-02-24 23:51:21,192 - social_connect - INFO - Login result: Login successful
+2026-02-24 23:51:22,506 - social_connect - INFO - Dashboard stats requested
+2026-02-24 23:51:22,506 - social_connect - INFO - Using mock data for dashboard stats (DEV_MODE=True)
+2026-02-24 23:51:22,506 - social_connect - INFO - Dashboard stats: {'channels': 2, 'campaigns': 1, 'leads': 4}
+2026-02-24 23:51:22,508 - social_connect - INFO - Channels data requested
+2026-02-24 23:51:22,508 - social_connect - INFO - Using mock data for channels (DEV_MODE=True)
+2026-02-24 23:51:22,508 - social_connect - INFO - Returned 4 channels
+2026-02-24 23:51:22,509 - social_connect - INFO - Campaigns data requested
+2026-02-24 23:51:22,509 - social_connect - INFO - Using mock data for campaigns (DEV_MODE=True)
+2026-02-24 23:51:22,509 - social_connect - INFO - Returned 3 campaigns
+2026-02-24 23:51:22,509 - social_connect - INFO - Leads data requested
+2026-02-24 23:51:22,509 - social_connect - INFO - Using mock data for leads (DEV_MODE=True)
+2026-02-24 23:51:22,509 - social_connect - INFO - Returned 4 leads
+2026-02-24 23:51:22,510 - social_connect - INFO - Dashboard stats requested
+2026-02-24 23:51:22,510 - social_connect - INFO - Using mock data for dashboard stats (DEV_MODE=True)
+2026-02-24 23:51:22,510 - social_connect - INFO - Dashboard stats: {'channels': 2, 'campaigns': 1, 'leads': 4}
+2026-02-24 23:51:22,510 - social_connect - INFO - Channels data requested
+2026-02-24 23:51:22,510 - social_connect - INFO - Using mock data for channels (DEV_MODE=True)
+2026-02-24 23:51:22,510 - social_connect - INFO - Returned 4 channels
+2026-02-24 23:51:22,511 - social_connect - INFO - Campaigns data requested
+2026-02-24 23:51:22,511 - social_connect - INFO - Using mock data for campaigns (DEV_MODE=True)
+2026-02-24 23:51:22,511 - social_connect - INFO - Returned 3 campaigns
+2026-02-24 23:51:22,511 - social_connect - INFO - Leads data requested
+2026-02-24 23:51:22,512 - social_connect - INFO - Using mock data for leads (DEV_MODE=True)
+2026-02-24 23:51:22,512 - social_connect - INFO - Returned 4 leads
+2026-02-24 23:52:04,752 - social_connect - INFO - Login attempt for user: admin1
+2026-02-24 23:52:04,753 - social_connect - INFO - Using mock data for login (DEV_MODE=True)
+2026-02-24 23:52:04,754 - social_connect - INFO - Login result: Login successful
+2026-02-24 23:52:05,999 - social_connect - INFO - Dashboard stats requested
+2026-02-24 23:52:05,999 - social_connect - INFO - Using mock data for dashboard stats (DEV_MODE=True)
+2026-02-24 23:52:05,999 - social_connect - INFO - Dashboard stats: {'channels': 2, 'campaigns': 1, 'leads': 4}
+2026-02-24 23:52:06,001 - social_connect - INFO - Channels data requested
+2026-02-24 23:52:06,001 - social_connect - INFO - Using mock data for channels (DEV_MODE=True)
+2026-02-24 23:52:06,001 - social_connect - INFO - Returned 4 channels
+2026-02-24 23:52:06,002 - social_connect - INFO - Campaigns data requested
+2026-02-24 23:52:06,002 - social_connect - INFO - Using mock data for campaigns (DEV_MODE=True)
+2026-02-24 23:52:06,002 - social_connect - INFO - Returned 3 campaigns
+2026-02-24 23:52:06,003 - social_connect - INFO - Leads data requested
+2026-02-24 23:52:06,003 - social_connect - INFO - Using mock data for leads (DEV_MODE=True)
+2026-02-24 23:52:06,003 - social_connect - INFO - Returned 4 leads
+2026-02-24 23:52:06,004 - social_connect - INFO - Dashboard stats requested
+2026-02-24 23:52:06,004 - social_connect - INFO - Using mock data for dashboard stats (DEV_MODE=True)
+2026-02-24 23:52:06,004 - social_connect - INFO - Dashboard stats: {'channels': 2, 'campaigns': 1, 'leads': 4}
+2026-02-24 23:52:06,005 - social_connect - INFO - Channels data requested
+2026-02-24 23:52:06,005 - social_connect - INFO - Using mock data for channels (DEV_MODE=True)
+2026-02-24 23:52:06,005 - social_connect - INFO - Returned 4 channels
+2026-02-24 23:52:06,005 - social_connect - INFO - Campaigns data requested
+2026-02-24 23:52:06,005 - social_connect - INFO - Using mock data for campaigns (DEV_MODE=True)
+2026-02-24 23:52:06,005 - social_connect - INFO - Returned 3 campaigns
+2026-02-24 23:52:06,006 - social_connect - INFO - Leads data requested
+2026-02-24 23:52:06,006 - social_connect - INFO - Using mock data for leads (DEV_MODE=True)
+2026-02-24 23:52:06,006 - social_connect - INFO - Returned 4 leads
+2026-02-24 23:52:43,549 - social_connect - INFO - Login attempt for user: user1
+2026-02-24 23:52:43,551 - social_connect - INFO - Using mock data for login (DEV_MODE=True)
+2026-02-24 23:52:43,552 - social_connect - INFO - Login result: Login successful
+2026-02-24 23:52:44,843 - social_connect - INFO - Dashboard stats requested
+2026-02-24 23:52:44,843 - social_connect - INFO - Using mock data for dashboard stats (DEV_MODE=True)
+2026-02-24 23:52:44,843 - social_connect - INFO - Dashboard stats: {'channels': 2, 'campaigns': 1, 'leads': 4}
+2026-02-24 23:52:44,845 - social_connect - INFO - Channels data requested
+2026-02-24 23:52:44,845 - social_connect - INFO - Using mock data for channels (DEV_MODE=True)
+2026-02-24 23:52:44,845 - social_connect - INFO - Returned 4 channels
+2026-02-24 23:52:44,845 - social_connect - INFO - Campaigns data requested
+2026-02-24 23:52:44,846 - social_connect - INFO - Using mock data for campaigns (DEV_MODE=True)
+2026-02-24 23:52:44,846 - social_connect - INFO - Returned 3 campaigns
+2026-02-24 23:52:44,847 - social_connect - INFO - Leads data requested
+2026-02-24 23:52:44,847 - social_connect - INFO - Using mock data for leads (DEV_MODE=True)
+2026-02-24 23:52:44,847 - social_connect - INFO - Returned 4 leads
+2026-02-24 23:52:44,847 - social_connect - INFO - Dashboard stats requested
+2026-02-24 23:52:44,847 - social_connect - INFO - Using mock data for dashboard stats (DEV_MODE=True)
+2026-02-24 23:52:44,847 - social_connect - INFO - Dashboard stats: {'channels': 2, 'campaigns': 1, 'leads': 4}
+2026-02-24 23:52:44,848 - social_connect - INFO - Channels data requested
+2026-02-24 23:52:44,848 - social_connect - INFO - Using mock data for channels (DEV_MODE=True)
+2026-02-24 23:52:44,848 - social_connect - INFO - Returned 4 channels
+2026-02-24 23:52:44,849 - social_connect - INFO - Campaigns data requested
+2026-02-24 23:52:44,849 - social_connect - INFO - Using mock data for campaigns (DEV_MODE=True)
+2026-02-24 23:52:44,849 - social_connect - INFO - Returned 3 campaigns
+2026-02-24 23:52:44,849 - social_connect - INFO - Leads data requested
+2026-02-24 23:52:44,849 - social_connect - INFO - Using mock data for leads (DEV_MODE=True)
+2026-02-24 23:52:44,849 - social_connect - INFO - Returned 4 leads

@@ -128,6 +128,111 @@ def send_otp_email(recipient_email: str, otp: str) -> bool:
         print(f"Failed to send email: {e}")
         return False
 
+from fastapi import HTTPException, status
+from services.logger import app_logger
+
+# Role-based authentication middleware
+class RoleMiddleware:
+    """Middleware for role-based access control"""
+    
+    @staticmethod
+    def get_current_user(token: str) -> dict:
+        """Get current user from token"""
+        try:
+            payload = verify_token(token)
+            return payload
+        except Exception as e:
+            app_logger.error(f"Token verification failed: {e}")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid authentication credentials",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+    
+    @staticmethod
+    def require_role(required_role: str):
+        """Decorator to require specific role"""
+        def role_checker(current_user: dict):
+            user_role = current_user.get("role", "user")
+            
+            if user_role != required_role:
+                app_logger.warning(f"Access denied: {user_role} attempted to access {required_role} endpoint")
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail=f"Access denied. {required_role} role required."
+                )
+            
+            return current_user
+        
+        return role_checker
+    
+    @staticmethod
+    def require_minimum_role(minimum_role: str):
+        """Decorator to require minimum role level"""
+        role_hierarchy = {
+            "user": 1,
+            "admin": 2, 
+            "super_admin": 3
+        }
+        
+        def role_checker(current_user: dict):
+            user_role = current_user.get("role", "user")
+            user_level = role_hierarchy.get(user_role, 0)
+            required_level = role_hierarchy.get(minimum_role, 0)
+            
+            if user_level < required_level:
+                app_logger.warning(f"Access denied: {user_role} (level {user_level}) attempted to access {minimum_role} (level {required_level}) endpoint")
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail=f"Access denied. {minimum_role} or higher role required."
+                )
+            
+            return current_user
+        
+        return role_checker
+    
+    @staticmethod
+    def check_access_expiration(current_user: dict):
+        """Check if user access has expired"""
+        access_expires_at = current_user.get("access_expires_at")
+        
+        if access_expires_at:
+            from datetime import datetime
+            if datetime.utcnow() > datetime.fromisoformat(access_expires_at.replace('Z', '+00:00')):
+                app_logger.warning(f"Access expired for user: {current_user.get('username')}")
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Access expired. Please contact administrator."
+                )
+        
+        return current_user
+    
+    @staticmethod
+    def check_company_access(current_user: dict, company_id: int):
+        """Check if user can access company data"""
+        user_role = current_user.get("role", "user")
+        user_company = current_user.get("companyid", 0)
+        
+        # Super admins can access all companies
+        if user_role == "super_admin":
+            return current_user
+        
+        # Admins and users can only access their own company
+        if user_company != company_id:
+            app_logger.warning(f"Company access denied: user {current_user.get('username')} (company {user_company}) attempted to access company {company_id}")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied. You can only access your own company data."
+            )
+        
+        return current_user
+
+# Role check decorators
+require_super_admin = RoleMiddleware.require_role("super_admin")
+require_admin = RoleMiddleware.require_role("admin") 
+require_minimum_admin = RoleMiddleware.require_minimum_role("admin")
+require_user = RoleMiddleware.require_role("user")
+
 def create_access_token(data, expires_delta: timedelta = None):
     """Create JWT access token"""
     # Handle both string and dict inputs

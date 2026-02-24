@@ -1,8 +1,14 @@
 from pydantic import BaseModel
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Union
 
 class BaseResponse(BaseModel):
     """Base response class for all API responses"""
+    message: str
+    success: bool = True
+    data: Optional[Dict[str, Any]] = None
+
+class StandardResponse(BaseModel):
+    """Standard response class for general API responses"""
     message: str
     success: bool = True
     data: Optional[Dict[str, Any]] = None
@@ -13,7 +19,7 @@ class LoginResponse(BaseModel):
     success: bool = True
     access_token: Optional[str] = None
     token_type: Optional[str] = None
-    user: Optional[Dict[str, str]] = None
+    user: Optional[Dict[str, Union[str, int, bool]]] = None
 
 class OTPResponse(BaseModel):
     """Response for OTP related endpoints"""

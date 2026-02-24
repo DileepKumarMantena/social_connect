@@ -1,45 +1,38 @@
-import logo from './logo.svg';
 import './App.css';
 import Login from './AuthPages/login';
 import ForgotPasswordPage from './AuthPages/forgotpassword';
-import { Routes, useNavigate } from 'react-router-dom';
+import { Routes } from 'react-router-dom';
 import { HashRouter, Route } from 'react-router-dom';
 import AppLayout from './layout/layout';
 import Dashboard from './pages/dashboard';
+import AdminPanel from './pages/AdminPanel';
 import { useEffect, useState } from 'react';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 
-function getCookie(name) {
-  const value = `; ${document.cookie}`;  
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-  return null;
-}
-
-function App() {
+function AppContent() {
+  const { user, loading, logout } = useAuth();
   const [loggedin, setLoggedin] = useState(false);
-  const cookie = getCookie('token');
-  
-  const handleLogout = () => {
-    // Clear the token cookie
-    document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    setLoggedin(false);
-    // Redirect to login page
-    window.location.hash = '/';
-  };
   
   useEffect(() => {
-    if (!cookie) {
-      setLoggedin(false)
-    }
-    else {
-      setLoggedin(true)
-    }
-  }, [loggedin])
+    setLoggedin(!!user);
+  }, [user]);
+
+  const handleLogout = () => {
+    logout();
+    window.location.hash = '/';
+  };
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <div>Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <HashRouter>
       <Routes>
-
         {!loggedin ?
           <Route path='/' element={<Login />} /> :
           <Route path='/' element={
@@ -51,10 +44,27 @@ function App() {
           <AppLayout onLogout={handleLogout}> <Dashboard /></AppLayout> : 
           <Login />
         } />
+        <Route path='/admin' element={
+          loggedin ? 
+          <AppLayout onLogout={handleLogout}> <AdminPanel /></AppLayout> : 
+          <Login />
+        } />
         <Route path='/forgot' element={<ForgotPasswordPage />} />
-
+        <Route path='*' element={
+          loggedin ? 
+          <AppLayout onLogout={handleLogout}> <Dashboard /></AppLayout> : 
+          <Login />
+        } />
       </Routes>
     </HashRouter>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 

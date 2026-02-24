@@ -1,11 +1,16 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.middleware.cors import CORSMiddleware
+from typing import Optional
 from services.routes import (
     login_user, send_forgot_password_otp, 
     verify_otp, reset_password, get_user_profile, APIRequest,
-    get_channels, get_campaigns, get_leads, get_dashboard_stats
+    get_channels, get_campaigns, get_leads, get_dashboard_stats,
+    create_user, get_users, extend_user_access, deactivate_user,
+    clear_all_data, get_user_profile_service, health_check,
+    CreateUserRequest, ExtendAccessRequest
 )
+from services.response import StandardResponse
 from services.logger import app_logger
 from stored_procedures.database import init_database, seed_initial_data
 from constants import API_TITLE, API_VERSION, API_HOST, API_PORT, ALLOWED_ORIGINS, DEV_MODE
@@ -123,6 +128,55 @@ async def get_dashboard_stats_endpoint():
     app_logger.info(f"Dashboard stats: {result.stats}")
     return result
 
+# Role-based management endpoints
+@app.post("/api/v1/admin/users")
+async def create_user_endpoint(request: CreateUserRequest, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Create a new user (super_admin only)"""
+    app_logger.info(f"User creation request by super_admin: {request.username}")
+    result = create_user(request, credentials.credentials)
+    app_logger.info(f"User creation result: {result['message']}")
+    return result
+
+@app.get("/api/v1/admin/users")
+async def get_users_endpoint(role_filter: Optional[str] = None, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get users created by current user (super_admin and admin only)"""
+    app_logger.info(f"Users list requested with filter: {role_filter}")
+    result = get_users(credentials.credentials, role_filter)
+    app_logger.info(f"Returned {len(result['users'])} users")
+    return result
+
+@app.post("/api/v1/admin/users/extend-access")
+async def extend_user_access_endpoint(request: ExtendAccessRequest, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Extend user access (super_admin only)"""
+    app_logger.info(f"Access extension request for user ID: {request.user_id}")
+    result = extend_user_access(request, credentials.credentials)
+    app_logger.info(f"Access extension result: {result['message']}")
+    return result
+
+@app.delete("/api/v1/admin/users/{user_id}")
+async def deactivate_user_endpoint(user_id: int, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Deactivate a user (super_admin only)"""
+    app_logger.info(f"User deactivation request for ID: {user_id}")
+    result = deactivate_user(user_id, credentials.credentials)
+    app_logger.info(f"User deactivation result: {result['message']}")
+    return result
+
+@app.get("/api/v1/user/profile", response_model=StandardResponse)
+async def get_user_profile_endpoint(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get current user profile"""
+    app_logger.info("User profile requested")
+    result = get_user_profile_service(credentials.credentials)
+    app_logger.info(f"User profile result: {result['message']}")
+    return result
+
+@app.get("/api/v1/health", response_model=StandardResponse)
+async def health_check_endpoint():
+    """System health check"""
+    app_logger.info("Health check requested")
+    result = health_check()
+    app_logger.info(f"Health check result: {result['status']}")
+    return result
+
 if __name__ == "__main__":
     import uvicorn
     
@@ -135,11 +189,13 @@ if __name__ == "__main__":
             app_logger.info("Database initialization completed successfully")
         except Exception as e:
             app_logger.error(f"Database initialization failed: {e}")
-            raise e
-    else:
-        app_logger.info("Skipping database initialization (DEV_MODE=True)")
     
-    # Initialize logger and cleanup old logs
-    app_logger.cleanup_old_logs()
-    app_logger.info("Starting Social Connect API server")
-    uvicorn.run(app, host=API_HOST, port=API_PORT)
+    # Start server on port 8001 to avoid conflicts
+    app_logger.info(f"Starting Social Connect API server on port 8001")
+    uvicorn.run(
+        "extension:app",
+        host=API_HOST,
+        port=8001,  # Changed from API_PORT to avoid conflicts
+        reload=True,
+        log_level="info"
+    )

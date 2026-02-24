@@ -2,10 +2,38 @@ import hashlib
 
 # Mock user database
 users_db = {
-    "testuser": {
-        "username": "testuser",
-        "email": "test@example.com",
-        "password_hash": hashlib.sha256("Password123!".encode()).hexdigest()
+    "superadmin": {
+        "username": "superadmin",
+        "email": "superadmin@company.com",
+        "password_hash": hashlib.sha256("SuperAdmin123!".encode()).hexdigest(),
+        "name": "Super Admin",
+        "role": "super_admin",
+        "companyid": 0,
+        "activitystatus": True,
+        "access_expires_at": None,
+        "created_by": None
+    },
+    "admin1": {
+        "username": "admin1",
+        "email": "admin1@company.com",
+        "password_hash": hashlib.sha256("Admin123!".encode()).hexdigest(),
+        "name": "Admin One",
+        "role": "admin",
+        "companyid": 1,
+        "activitystatus": True,
+        "access_expires_at": None,
+        "created_by": 1
+    },
+    "user1": {
+        "username": "user1",
+        "email": "user1@company.com",
+        "password_hash": hashlib.sha256("User123!".encode()).hexdigest(),
+        "name": "User One",
+        "role": "user",
+        "companyid": 1,
+        "activitystatus": True,
+        "access_expires_at": None,
+        "created_by": 2
     }
 }
 

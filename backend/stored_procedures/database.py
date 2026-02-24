@@ -120,8 +120,15 @@ def init_database():
             username VARCHAR(50) UNIQUE NOT NULL,
             email VARCHAR(100) UNIQUE NOT NULL,
             password_hash VARCHAR(255) NOT NULL,
+            name VARCHAR(100),
+            role ENUM('super_admin', 'admin', 'user') DEFAULT 'user',
+            companyid INT DEFAULT 0,
+            activitystatus BOOLEAN DEFAULT TRUE,
+            access_expires_at TIMESTAMP NULL,  -- For time-based access
+            created_by INT NULL,  -- Who created this user
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            FOREIGN KEY (created_by) REFERENCES users(id)
         )
         """
         
@@ -179,10 +186,15 @@ def seed_initial_data():
     try:
         # Seed users
         users_data = [
-            ('testuser', 'test@example.com', hashlib.sha256("Password123!".encode()).hexdigest())
+            ('superadmin', 'superadmin@company.com', hashlib.sha256("SuperAdmin123!".encode()).hexdigest(), 
+             'Super Admin', 'super_admin', 0, True, None, None),  # Super admin
+            ('admin1', 'admin1@company.com', hashlib.sha256("Admin123!".encode()).hexdigest(), 
+             'Admin One', 'admin', 1, True, None, 1),  # Admin created by super admin
+            ('user1', 'user1@company.com', hashlib.sha256("User123!".encode()).hexdigest(), 
+             'User One', 'user', 1, True, None, 2),  # User created by admin
         ]
         db_manager.execute_many(
-            "INSERT IGNORE INTO users (username, email, password_hash) VALUES (%s, %s, %s)",
+            "INSERT IGNORE INTO users (username, email, password_hash, name, role, companyid, activitystatus, access_expires_at, created_by) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
             users_data
         )
         

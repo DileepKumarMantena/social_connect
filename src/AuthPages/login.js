@@ -1,89 +1,63 @@
 import React, { useState } from "react";
-import { Box, Button, Container, TextField, Typography, FormControlLabel } from "@mui/material";
+import { Box, Button, Typography, FormControl, OutlinedInput } from "@mui/material";
 import '@fontsource/poppins';
 import '@fontsource/nunito';
 import '@fontsource/cookie';
-import FormControl, { useFormControl } from '@mui/material/FormControl';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import axios from 'axios'
+import { useAuth } from '../contexts/AuthContext';
 import Swal from 'sweetalert2'
 import { Link } from "react-router-dom";
 
 const LoginPage = () => {
     const [payload, setPayload] = useState({ username: '', password: '' })
+    const { login } = useAuth();
 
     const handler = (e) => {
         const { name, value } = e.target;
         setPayload({ ...payload, [name]: value })
     }
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault(); // Prevent form from refreshing page
         console.log('Login payload:', payload);
-        console.log('API URL:', process.env.REACT_APP_API_LINKS);
         
-        axios.post(`${process.env.REACT_APP_API_LINKS}/api/v1/login`, payload, { withCredentials: true })
-            .then((res) => {
-                console.log('Login response:', res);
-                if (res.status === 200) {
-                    document.cookie = `token=${res.data.access_token}; path=/; max-age=${60 * 60 * 24}; secure; samesite=strict`;
-                    Swal.fire({
-                        title: 'Login Success',
-                        text: 'User logged in',
-                        icon: 'success',
-                        width: 300,
-                        heightAuto: false,
-                        showConfirmButton: false,
-                        timer: 1000,
-                        timerProgressBar: true,
-                        customClass: {
-                            popup: 'swal-popup',
-                            title: 'swal-title',
-                            content: 'swal-text',
-                        }
-                    });
-                    // Redirect to dashboard instead of reload
-                    setTimeout(() => {
-                        window.location.href = '/dashboard';
-                    }, 1000);
-                }
-            })
-            .catch(err => {
-                console.error('Login error:', err);
-                const status = err.response?.status || 500;
-                if (status === 500) {
-                    Swal.fire({
-                        title: 'The Internet?',
-                        text: 'That thing is still around?',
-                        icon: 'question',
-                        width: 300,
-                        heightAuto: false,
-                        showConfirmButton: false,
-                        timer: 1000,
-                        timerProgressBar: true,
-                        customClass: {
-                            popup: 'swal-popup',
-                            title: 'swal-title',
-                            content: 'swal-text',
-                        }
-                    });
-                } else {
-                    Swal.fire({
-                        title: 'Wrong Credentials Entered',
-                        text: 'Password wrong',
-                        icon: 'error',
-                        width: 300,
-                        heightAuto: false,
-                        showConfirmButton: false,
-                        timer: 1000,
-                        timerProgressBar: true,
-                        customClass: {
-                            popup: 'swal-popup',
-                            title: 'swal-title',
-                            content: 'swal-text',
-                        }
-                    });
+        const result = await login(payload);
+        
+        if (result.success) {
+            Swal.fire({
+                title: 'Login Success',
+                text: `Welcome ${result.user.name}!`,
+                icon: 'success',
+                width: 300,
+                heightAuto: false,
+                showConfirmButton: false,
+                timer: 1000,
+                timerProgressBar: true,
+                customClass: {
+                    popup: 'swal-popup',
+                    title: 'swal-title',
+                    content: 'swal-text',
                 }
             });
+            // Redirect to dashboard instead of reload
+            setTimeout(() => {
+                window.location.href = '/dashboard';
+            }, 1000);
+        } else {
+            Swal.fire({
+                title: 'Login Failed',
+                text: result.error || 'Invalid credentials',
+                icon: 'error',
+                width: 300,
+                heightAuto: false,
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+                customClass: {
+                    popup: 'swal-popup',
+                    title: 'swal-title',
+                    content: 'swal-text',
+                }
+            });
+        }
     };
     return (
         <Box sx={{ display: "flex", minHeight: "100vh", fontFamily: "Nunito, sans-serif", background: ' #f5f5f5' }}>
