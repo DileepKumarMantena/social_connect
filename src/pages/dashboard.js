@@ -173,11 +173,26 @@ export default function Dashboard({ token, user, onNavigate }) {
         const fetchStats = async () => {
             try {
                 // Fetch real data from APIs
+                const token = localStorage.getItem('token');
+                const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
+                
                 const [statsResponse, channelsResponse, campaignsResponse, leadsResponse] = await Promise.all([
-                    axios.get(`${process.env.REACT_APP_API_LINKS}/api/v1/dashboard/stats`, { withCredentials: true }),
-                    axios.get(`${process.env.REACT_APP_API_LINKS}/api/v1/channels`, { withCredentials: true }),
-                    axios.get(`${process.env.REACT_APP_API_LINKS}/api/v1/campaigns`, { withCredentials: true }),
-                    axios.get(`${process.env.REACT_APP_API_LINKS}/api/v1/leads`, { withCredentials: true })
+                    axios.get(`${process.env.REACT_APP_API_LINKS}/api/v1/dashboard/stats`, { 
+                        withCredentials: true,
+                        headers: authHeaders
+                    }),
+                    axios.get(`${process.env.REACT_APP_API_LINKS}/api/v1/channels`, { 
+                        withCredentials: true,
+                        headers: authHeaders
+                    }),
+                    axios.get(`${process.env.REACT_APP_API_LINKS}/api/v1/campaigns`, { 
+                        withCredentials: true,
+                        headers: authHeaders
+                    }),
+                    axios.get(`${process.env.REACT_APP_API_LINKS}/api/v1/leads`, { 
+                        withCredentials: true,
+                        headers: authHeaders
+                    })
                 ]);
 
                 const stats = statsResponse.data.stats || {};

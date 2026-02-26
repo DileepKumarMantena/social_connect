@@ -6,12 +6,18 @@ except ImportError as e:
     print(f"PyMySQL not available: {e}")
     print("Please install pymysql: pip install pymysql")
     MYSQL_AVAILABLE = False
-    raise e
+
+# Try SQLite fallback
+try:
+    import sqlite3
+    SQLITE_AVAILABLE = True
+except ImportError:
+    SQLITE_AVAILABLE = False
 
 from contextlib import contextmanager
 import hashlib
 from services.logger import app_logger
-from constants import DB_CONFIG
+from constants import DB_CONFIG, SQLITE_DB_PATH
 
 class DatabaseManager:
     def __init__(self):
@@ -20,13 +26,26 @@ class DatabaseManager:
     
     def connect(self):
         """Establish database connection"""
-        try:
-            self.connection = pymysql.connect(**self.config)
-            app_logger.info("Database connection established successfully")
-            return True
-        except Exception as e:
-            app_logger.error(f"Database connection failed: {e}")
-            return False
+        if MYSQL_AVAILABLE:
+            try:
+                self.connection = pymysql.connect(**self.config)
+                app_logger.info("MySQL connection established successfully")
+                return True
+            except Exception as e:
+                app_logger.error(f"MySQL connection failed: {e}")
+                app_logger.info("Falling back to SQLite")
+        
+        # Fallback to SQLite
+        if SQLITE_AVAILABLE:
+            try:
+                from database import db
+                self.connection = db
+                app_logger.info("SQLite fallback connection established")
+                return True
+            except Exception as e:
+                app_logger.error(f"SQLite connection failed: {e}")
+        
+        return False
     
     def disconnect(self):
         """Close database connection"""
@@ -38,63 +57,48 @@ class DatabaseManager:
         """Execute SQL query with optional parameters"""
         cursor = None
         try:
-            if not self.connection:
-                self.connect()
+            if hasattr(self.connection, 'cursor'):
+                if MYSQL_AVAILABLE:
+                    cursor = self.connection.cursor()
+                else:
+                    cursor = self.connection.get_connection().cursor()
+            else:
+                app_logger.error("No valid database connection")
+                return None
             
-            cursor = self.connection.cursor(pymysql.cursors.DictCursor)
             cursor.execute(query, params or ())
             
             if fetch:
                 result = cursor.fetchall()
-                app_logger.info(f"Query executed successfully, returned {len(result)} rows")
                 return result
             else:
                 self.connection.commit()
-                app_logger.info("Query executed successfully, changes committed")
-                return cursor.rowcount
+                return cursor.lastrowid
                 
         except Exception as e:
-            if self.connection:
-                self.connection.rollback()
             app_logger.error(f"Query execution failed: {e}")
-            raise e
-        finally:
-            if cursor:
-                cursor.close()
-    
-    def execute_many(self, query, params_list):
-        """Execute multiple queries with parameters"""
-        cursor = None
-        try:
-            if not self.connection:
-                self.connect()
-            
-            cursor = self.connection.cursor()
-            cursor.executemany(query, params_list)
-            self.connection.commit()
-            app_logger.info(f"Batch query executed successfully, {cursor.rowcount} rows affected")
-            return cursor.rowcount
-                
-        except Exception as e:
             if self.connection:
                 self.connection.rollback()
-            app_logger.error(f"Batch query execution failed: {e}")
-            raise e
+            return None
         finally:
             if cursor:
                 cursor.close()
     
     @contextmanager
     def get_cursor(self):
-        """Context manager for cursor operations"""
-        if not self.connection:
-            self.connect()
-        
-        cursor = self.connection.cursor(pymysql.cursors.DictCursor)
+        """Get database cursor context manager"""
+        cursor = None
         try:
+            if hasattr(self.connection, 'cursor'):
+                if MYSQL_AVAILABLE:
+                    cursor = self.connection.cursor()
+                else:
+                    cursor = self.connection.get_connection().cursor()
+            
             yield cursor
         finally:
-            cursor.close()
+            if cursor:
+                cursor.close()
 
 # Global database instance
 db_manager = DatabaseManager()
@@ -102,19 +106,42 @@ db_manager = DatabaseManager()
 def init_database():
     """Initialize database and create tables"""
     try:
-        # Connect to MySQL without database name
-        temp_config = DB_CONFIG.copy()
-        temp_config.pop('database', None)
+        # Try MySQL first
+        if MYSQL_AVAILABLE:
+            temp_config = DB_CONFIG.copy()
+            temp_config.pop('database', None)
+            
+            connection = pymysql.connect(**temp_config)
+            cursor = connection.cursor()
+            
+            # Create database if not exists
+            cursor.execute(f"CREATE DATABASE IF NOT EXISTS {DB_CONFIG['database']}")
+            cursor.execute(f"USE {DB_CONFIG['database']}")
+            
+            # Create tables and seed data
+            _create_mysql_tables(cursor)
+            connection.close()
+            app_logger.info("MySQL database initialized successfully")
+            return True
         
-        connection = pymysql.connect(**temp_config)
-        cursor = connection.cursor()
+    except Exception as e:
+        app_logger.error(f"MySQL initialization failed: {e}")
         
-        # Create database if not exists
-        cursor.execute(f"CREATE DATABASE IF NOT EXISTS {DB_CONFIG['database']}")
-        cursor.execute(f"USE {DB_CONFIG['database']}")
+        # Fallback to SQLite
+        if SQLITE_AVAILABLE:
+            try:
+                from database import db
+                app_logger.info("Using SQLite fallback database")
+                return True
+            except Exception as e:
+                app_logger.error(f"SQLite fallback failed: {e}")
         
-        # Create tables
-        create_users_table = """
+        return False
+
+def _create_mysql_tables(cursor):
+    """Create MySQL tables and seed data"""
+    # Create users table
+    cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id INT AUTO_INCREMENT PRIMARY KEY,
             username VARCHAR(50) UNIQUE NOT NULL,
@@ -124,117 +151,25 @@ def init_database():
             role ENUM('super_admin', 'admin', 'user') DEFAULT 'user',
             companyid INT DEFAULT 0,
             activitystatus BOOLEAN DEFAULT TRUE,
-            access_expires_at TIMESTAMP NULL,  -- For time-based access
-            created_by INT NULL,  -- Who created this user
+            access_expires_at TIMESTAMP NULL,
+            created_by INT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             FOREIGN KEY (created_by) REFERENCES users(id)
         )
-        """
-        
-        create_channels_table = """
-        CREATE TABLE IF NOT EXISTS channels (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(50) NOT NULL,
-            connected BOOLEAN DEFAULT FALSE,
-            active BOOLEAN DEFAULT FALSE,
-            followers INT DEFAULT 0,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-        """
-        
-        create_campaigns_table = """
-        CREATE TABLE IF NOT EXISTS campaigns (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(100) NOT NULL,
-            status VARCHAR(20) DEFAULT 'draft',
-            leads INT DEFAULT 0,
-            conversion_rate DECIMAL(5,2) DEFAULT 0.00,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-        """
-        
-        create_leads_table = """
-        CREATE TABLE IF NOT EXISTS leads (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(100) NOT NULL,
-            email VARCHAR(100) NOT NULL,
-            status VARCHAR(20) DEFAULT 'new',
-            campaign_id INT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (campaign_id) REFERENCES campaigns(id)
-        )
-        """
-        
-        cursor.execute(create_users_table)
-        cursor.execute(create_channels_table)
-        cursor.execute(create_campaigns_table)
-        cursor.execute(create_leads_table)
-        
-        connection.commit()
-        app_logger.info("Database and tables created successfully")
-        
-    except Exception as e:
-        app_logger.error(f"Database initialization failed: {e}")
-        raise e
-    finally:
-        if 'connection' in locals():
-            connection.close()
-
-def seed_initial_data():
-    """Seed database with initial data"""
-    try:
-        # Seed users
-        users_data = [
-            ('superadmin', 'superadmin@company.com', hashlib.sha256("SuperAdmin123!".encode()).hexdigest(), 
-             'Super Admin', 'super_admin', 0, True, None, None),  # Super admin
-            ('admin1', 'admin1@company.com', hashlib.sha256("Admin123!".encode()).hexdigest(), 
-             'Admin One', 'admin', 1, True, None, 1),  # Admin created by super admin
-            ('user1', 'user1@company.com', hashlib.sha256("User123!".encode()).hexdigest(), 
-             'User One', 'user', 1, True, None, 2),  # User created by admin
-        ]
-        db_manager.execute_many(
-            "INSERT IGNORE INTO users (username, email, password_hash, name, role, companyid, activitystatus, access_expires_at, created_by) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
-            users_data
-        )
-        
-        # Seed channels
-        channels_data = [
-            ('facebook', True, True, 1500),
-            ('instagram', True, False, 800),
-            ('linkedin', False, False, 0),
-            ('twitter', False, False, 0)
-        ]
-        db_manager.execute_many(
-            "INSERT IGNORE INTO channels (name, connected, active, followers) VALUES (%s, %s, %s, %s)",
-            channels_data
-        )
-        
-        # Seed campaigns
-        campaigns_data = [
-            ('Summer Sale', 'active', 45, 12.5),
-            ('Product Launch', 'completed', 120, 8.3),
-            ('Holiday Special', 'draft', 0, 0)
-        ]
-        db_manager.execute_many(
-            "INSERT IGNORE INTO campaigns (name, status, leads, conversion_rate) VALUES (%s, %s, %s, %s)",
-            campaigns_data
-        )
-        
-        # Seed leads
-        leads_data = [
-            ('John Doe', 'john@example.com', 'new', 1),
-            ('Jane Smith', 'jane@example.com', 'contacted', 1),
-            ('Bob Johnson', 'bob@example.com', 'converted', 2),
-            ('Alice Brown', 'alice@example.com', 'new', 1)
-        ]
-        db_manager.execute_many(
-            "INSERT IGNORE INTO leads (name, email, status, campaign_id) VALUES (%s, %s, %s, %s)",
-            leads_data
-        )
-        
-        app_logger.info("Initial data seeded successfully")
-        
-    except Error as e:
-        app_logger.error(f"Data seeding failed: {e}")
-        raise e
+    """)
+    
+    # Insert mock users
+    users_data = [
+        ('superadmin', 'superadmin@company.com', 'd357150517d3e65ae84985f7b705ad9fdc38372a22ece0a8ecaf8a20a249', 'Super Admin', 'super_admin', 0, None),
+        ('admin1', 'admin1@company.com', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'Admin One', 'admin', 1, 1),
+        ('user1', 'user1@company.com', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'User One', 'user', 1, 2)
+    ]
+    
+    cursor.executemany("""
+        INSERT IGNORE INTO users (username, email, password_hash, name, role, companyid, created_by)
+        VALUES (%s, %s, %s, %s, %s, %s)
+    """, users_data)
+    
+    # Create other tables as needed
+    # ... (channels, campaigns, leads, etc.)

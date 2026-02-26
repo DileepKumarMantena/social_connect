@@ -32,7 +32,8 @@ import {
   Add as AddIcon,
   Delete as DeleteIcon,
   AccessTime as AccessTimeIcon,
-  Business as BusinessIcon
+  Business as BusinessIcon,
+  Refresh as RefreshIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
@@ -44,6 +45,8 @@ const AdminPanel = () => {
   const [loading, setLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
+  const [availableRoles, setAvailableRoles] = useState([]);
+  const [rolesLoading, setRolesLoading] = useState(true);
   const [companies, setCompanies] = useState([
     { id: 1, name: 'Company 1' },
     { id: 2, name: 'Company 2' }
@@ -54,11 +57,42 @@ const AdminPanel = () => {
     email: '',
     password: '',
     name: '',
-    role: 'user',
+    role: '', // Will be set when roles are loaded
     companyid: 1,
     access_hours: 24
   });
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+
+  // Fetch available roles from role management
+  const fetchRoles = useCallback(async () => {
+    try {
+      setRolesLoading(true);
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_LINKS}/api/v1/admin/roles`,
+        { headers: getAuthHeaders() }
+      );
+      const roles = response.data.roles || [];
+      
+      // Always include basic roles for compatibility
+      const allRoles = [...new Set([...roles, 'user', 'admin'])];
+      setAvailableRoles(allRoles);
+      
+      // Set default role to first available role if none selected
+      if (allRoles.length > 0 && !formData.role) {
+        setFormData(prev => ({ ...prev, role: allRoles[0] }));
+      }
+    } catch (error) {
+      console.error('Error fetching roles:', error);
+      // Fallback to basic roles if role management fails
+      const fallbackRoles = ['user', 'admin'];
+      setAvailableRoles(fallbackRoles);
+      if (!formData.role) {
+        setFormData(prev => ({ ...prev, role: 'user' }));
+      }
+    } finally {
+      setRolesLoading(false);
+    }
+  }, [getAuthHeaders, formData.role]);
 
   // Fetch users
   const fetchUsers = useCallback(async () => {
@@ -77,10 +111,11 @@ const AdminPanel = () => {
   }, [getAuthHeaders]);
 
   useEffect(() => {
-    if (hasRole('admin')) {
+    if (hasRole('admin') || hasRole('super_admin')) {
       fetchUsers();
+      fetchRoles();
     }
-  }, [hasRole, fetchUsers]);
+  }, [hasRole, fetchUsers, fetchRoles]);
 
   // Handle form submission
   const handleSubmit = async (e) => {
@@ -324,7 +359,7 @@ const AdminPanel = () => {
     return status ? 'success' : 'error';
   };
 
-  if (!hasRole('admin')) {
+  if (!hasRole('admin') && !hasRole('super_admin')) {
     return (
       <Box sx={{ p: 3 }}>
         <Alert severity="error">Access Denied: Admin privileges required</Alert>
@@ -574,16 +609,40 @@ const AdminPanel = () => {
               margin="normal"
               required
             />
-            <FormControl fullWidth margin="normal" required>
-              <InputLabel>Role</InputLabel>
-              <Select
-                value={formData.role}
-                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <FormControl fullWidth margin="normal" required>
+                <InputLabel>Role</InputLabel>
+                <Select
+                  value={formData.role}
+                  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                  disabled={rolesLoading}
+                >
+                  {rolesLoading ? (
+                    <MenuItem value="" disabled>
+                      Loading roles...
+                    </MenuItem>
+                  ) : availableRoles.length === 0 ? (
+                    <MenuItem value="" disabled>
+                      No roles available
+                    </MenuItem>
+                  ) : (
+                    availableRoles.map((role) => (
+                      <MenuItem key={role} value={role}>
+                        {role.charAt(0).toUpperCase() + role.slice(1).replace(/_/g, ' ')}
+                      </MenuItem>
+                    ))
+                  )}
+                </Select>
+              </FormControl>
+              <IconButton 
+                onClick={fetchRoles} 
+                disabled={rolesLoading}
+                title="Refresh roles"
+                sx={{ mt: 2 }}
               >
-                <MenuItem value="user">User</MenuItem>
-                <MenuItem value="admin">Admin</MenuItem>
-              </Select>
-            </FormControl>
+                <RefreshIcon />
+              </IconButton>
+            </Box>
             <FormControl fullWidth margin="normal" required>
               <InputLabel>Company</InputLabel>
               <Select

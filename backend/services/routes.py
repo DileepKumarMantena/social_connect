@@ -1,15 +1,16 @@
 from fastapi import status
 from pydantic import BaseModel
 from typing import Optional, Union
+from datetime import datetime
 import hashlib
-from constants import users_db, otp_storage, channels_db, campaigns_db, leads_db, DEV_MODE
+from constants import users_db, otp_storage, channels_db, campaigns_db, leads_db, analytics_db, scheduler_db, user_settings_db, DEV_MODE
 from services.util import (
     verify_password, hash_password, generate_otp, store_otp, 
     verify_stored_otp, find_user_by_email, cleanup_otp, send_otp_email,
     create_access_token, get_current_user, validate_password_strength,
     RoleMiddleware, require_super_admin, require_admin, require_minimum_admin
 )
-from services.response import LoginResponse, OTPResponse, PasswordResetResponse, UserProfileResponse, ChannelResponse, CampaignResponse, LeadResponse, DashboardStatsResponse
+from services.response import LoginResponse, OTPResponse, PasswordResetResponse, UserProfileResponse, ChannelResponse, CampaignResponse, LeadResponse, DashboardStatsResponse, AnalyticsResponse, SchedulerResponse, SettingsResponse
 from services.error import APIError
 from services.logger import app_logger
 from stored_procedures.dashboard_service import dashboard_service
@@ -122,7 +123,8 @@ def health_check() -> dict:
             # Mock implementation
             status = {
                 "status": "healthy",
-                "timestamp": datetime.datetime.now().isoformat(),
+                "message": "Service operational",
+                "timestamp": datetime.now().isoformat(),
                 "version": "1.0.0",
                 "environment": "development",
                 "database": "mock",
@@ -141,7 +143,8 @@ def health_check() -> dict:
             db_status = user_service.check_database_health()
             status = {
                 "status": "healthy" if db_status else "degraded",
-                "timestamp": datetime.datetime.now().isoformat(),
+                "message": "Service operational" if db_status else "Service degraded",
+                "timestamp": datetime.now().isoformat(),
                 "version": "1.0.0",
                 "environment": "production",
                 "database": "mysql" if db_status else "error",
@@ -159,7 +162,8 @@ def health_check() -> dict:
         app_logger.error(f"Health check failed: {e}")
         return {
             "status": "unhealthy",
-            "timestamp": datetime.datetime.now().isoformat(),
+            "message": "Service unavailable",
+            "timestamp": datetime.now().isoformat(),
             "version": "1.0.0",
             "environment": "development" if DEV_MODE else "production",
             "error": str(e)
@@ -222,10 +226,13 @@ def login_user(request: APIRequest) -> LoginResponse:
     
     # Generate JWT token with complete user data
     if DEV_MODE:
-        user_data = user
+        # Add 'sub' field for JWT standard compliance
+        user_data = user.copy()
+        user_data["sub"] = user["username"]
     else:
         # Get user data from database service
         user_data = {
+            "sub": user["username"],  # Use 'sub' as per JWT standard
             "username": user["username"],
             "email": user["email"],
             "name": user.get("name", ""),
@@ -263,7 +270,7 @@ def send_forgot_password_otp(request: APIRequest) -> OTPResponse:
     if DEV_MODE:
         app_logger.info("Using mock data for OTP generation (DEV_MODE=True)")
         # Mock user check
-        user = find_user_by_email(users_db, email)
+        username, user = find_user_by_email(users_db, email)
         if not user:
             raise APIError.not_found("Email not found")
     else:
@@ -325,7 +332,7 @@ def reset_password(request: APIRequest) -> PasswordResetResponse:
     if DEV_MODE:
         app_logger.info("Using mock data for password reset (DEV_MODE=True)")
         # Mock password reset
-        user = find_user_by_email(users_db, email)
+        username, user = find_user_by_email(users_db, email)
         if not user:
             raise APIError.not_found("Email not found")
         
@@ -369,13 +376,30 @@ def get_user_profile(token: str) -> UserProfileResponse:
         }
     )
 
-def get_channels() -> ChannelResponse:
-    """Get all channels"""
+def get_channels(token: str) -> ChannelResponse:
+    """Get channels based on user role and permissions"""
+    current_user = RoleMiddleware.get_current_user(token)
+    if not current_user:
+        raise APIError.unauthorized("Invalid or expired token")
+    
     if DEV_MODE:
         app_logger.info("Using mock data for channels (DEV_MODE=True)")
+        
+        # Filter channels based on user role
+        if current_user["role"] == "super_admin":
+            # Super admin sees all channels
+            filtered_channels = channels_db
+        elif current_user["role"] == "admin":
+            # Admin sees only channels they created
+            filtered_channels = [channel for channel in channels_db 
+                                if channel.get("created_by") == current_user["username"]]
+        else:
+            # Other roles see channels based on permissions
+            filtered_channels = channels_db  # For now, show all - can be enhanced with permissions
+        
         return ChannelResponse(
             message="Channels retrieved successfully (mock data)",
-            channels=channels_db
+            channels=filtered_channels
         )
     else:
         app_logger.info("Using database for channels (DEV_MODE=False)")
@@ -385,13 +409,30 @@ def get_channels() -> ChannelResponse:
             channels=channels
         )
 
-def get_campaigns() -> CampaignResponse:
-    """Get all campaigns"""
+def get_campaigns(token: str) -> CampaignResponse:
+    """Get campaigns based on user role and permissions"""
+    current_user = RoleMiddleware.get_current_user(token)
+    if not current_user:
+        raise APIError.unauthorized("Invalid or expired token")
+    
     if DEV_MODE:
         app_logger.info("Using mock data for campaigns (DEV_MODE=True)")
+        
+        # Filter campaigns based on user role
+        if current_user["role"] == "super_admin":
+            # Super admin sees all campaigns
+            filtered_campaigns = campaigns_db
+        elif current_user["role"] == "admin":
+            # Admin sees only campaigns they created
+            filtered_campaigns = [campaign for campaign in campaigns_db 
+                                if campaign.get("created_by") == current_user["username"]]
+        else:
+            # Other roles see campaigns based on permissions
+            filtered_campaigns = campaigns_db  # For now, show all - can be enhanced with permissions
+        
         return CampaignResponse(
             message="Campaigns retrieved successfully (mock data)",
-            campaigns=campaigns_db
+            campaigns=filtered_campaigns
         )
     else:
         app_logger.info("Using database for campaigns (DEV_MODE=False)")
@@ -401,13 +442,30 @@ def get_campaigns() -> CampaignResponse:
             campaigns=campaigns
         )
 
-def get_leads() -> LeadResponse:
-    """Get all leads"""
+def get_leads(token: str) -> LeadResponse:
+    """Get leads based on user role and permissions"""
+    current_user = RoleMiddleware.get_current_user(token)
+    if not current_user:
+        raise APIError.unauthorized("Invalid or expired token")
+    
     if DEV_MODE:
         app_logger.info("Using mock data for leads (DEV_MODE=True)")
+        
+        # Filter leads based on user role
+        if current_user["role"] == "super_admin":
+            # Super admin sees all leads
+            filtered_leads = leads_db
+        elif current_user["role"] == "admin":
+            # Admin sees only leads they created
+            filtered_leads = [lead for lead in leads_db 
+                            if lead.get("created_by") == current_user["username"]]
+        else:
+            # Other roles see leads based on permissions
+            filtered_leads = leads_db  # For now, show all - can be enhanced with permissions
+        
         return LeadResponse(
             message="Leads retrieved successfully (mock data)",
-            leads=leads_db
+            leads=filtered_leads
         )
     else:
         app_logger.info("Using database for leads (DEV_MODE=False)")
@@ -441,6 +499,101 @@ def get_dashboard_stats() -> DashboardStatsResponse:
             stats=stats
         )
 
+def get_analytics(token: str) -> AnalyticsResponse:
+    """Get analytics based on user role and permissions"""
+    current_user = RoleMiddleware.get_current_user(token)
+    if not current_user:
+        raise APIError.unauthorized("Invalid or expired token")
+    
+    if DEV_MODE:
+        app_logger.info("Using mock data for analytics (DEV_MODE=True)")
+        
+        # Filter analytics based on user role
+        if current_user["role"] == "super_admin":
+            # Super admin sees all analytics
+            filtered_analytics = analytics_db
+        elif current_user["role"] == "admin":
+            # Admin sees only analytics they created
+            filtered_analytics = [analytic for analytic in analytics_db 
+                                if analytic.get("created_by") == current_user["username"]]
+        else:
+            # Other roles see analytics based on permissions
+            filtered_analytics = analytics_db  # For now, show all - can be enhanced with permissions
+        
+        return AnalyticsResponse(
+            message="Analytics retrieved successfully (mock data)",
+            analytics=filtered_analytics
+        )
+    else:
+        app_logger.info("Using database for analytics (DEV_MODE=False)")
+        # TODO: Implement database analytics retrieval
+        return AnalyticsResponse(
+            message="Analytics retrieved successfully (database)",
+            analytics=[]
+        )
+
+def get_scheduler(token: str) -> SchedulerResponse:
+    """Get scheduler data based on user role and permissions"""
+    current_user = RoleMiddleware.get_current_user(token)
+    if not current_user:
+        raise APIError.unauthorized("Invalid or expired token")
+    
+    if DEV_MODE:
+        app_logger.info("Using mock data for scheduler (DEV_MODE=True)")
+        
+        # Filter schedules based on user role
+        if current_user["role"] == "super_admin":
+            # Super admin sees all schedules
+            filtered_schedules = scheduler_db
+        elif current_user["role"] == "admin":
+            # Admin sees only schedules they created
+            filtered_schedules = [schedule for schedule in scheduler_db 
+                                if schedule.get("created_by") == current_user["username"]]
+        else:
+            # Other roles see schedules based on permissions
+            filtered_schedules = scheduler_db  # For now, show all - can be enhanced with permissions
+        
+        return SchedulerResponse(
+            message="Scheduler data retrieved successfully (mock data)",
+            schedules=filtered_schedules
+        )
+    else:
+        app_logger.info("Using database for scheduler (DEV_MODE=False)")
+        # TODO: Implement database scheduler retrieval
+        return SchedulerResponse(
+            message="Scheduler data retrieved successfully (database)",
+            schedules=[]
+        )
+
+def get_settings(token: str) -> SettingsResponse:
+    """Get user settings"""
+    current_user = RoleMiddleware.get_current_user(token)
+    if not current_user:
+        raise APIError.unauthorized("Invalid or expired token")
+    
+    if DEV_MODE:
+        app_logger.info("Using mock data for settings (DEV_MODE=True)")
+        
+        # Get user-specific settings
+        username = current_user["username"]
+        user_settings = user_settings_db.get(username, {
+            "notifications": {"email_alerts": True, "sms_alerts": False, "push_notifications": True, "weekly_reports": True},
+            "preferences": {"theme": "light", "language": "en", "timezone": "UTC", "date_format": "MM/DD/YYYY"},
+            "security": {"session_timeout": 30, "two_factor_auth": False, "login_notifications": True}
+        })
+        
+        return SettingsResponse(
+            message="Settings retrieved successfully (mock data)",
+            settings=user_settings
+        )
+    else:
+        app_logger.info("Using database for settings (DEV_MODE=False)")
+        # TODO: Implement database settings retrieval
+        return SettingsResponse(
+            message="Settings retrieved successfully (database)",
+            settings={}
+        )
+
 # Role-based management endpoints
 
 class CreateUserRequest(BaseModel):
@@ -460,10 +613,6 @@ def create_user(request: CreateUserRequest, token: str) -> dict:
     """Create a new user (super_admin only)"""
     current_user = RoleMiddleware.get_current_user(token)
     require_super_admin(current_user)
-    
-    # Validate role
-    if request.role not in ['admin', 'user']:
-        raise APIError.bad_request("Role must be 'admin' or 'user'")
     
     if DEV_MODE:
         # Mock implementation
@@ -674,3 +823,230 @@ def clear_all_data(token: str) -> dict:
         except Exception as e:
             app_logger.error(f"Failed to clear data: {e}")
             raise APIError.internal("Failed to clear data")
+
+# ------------------- Role Management Models -------------------
+
+class RoleRequest(BaseModel):
+    """Request model for creating/updating roles"""
+    role_name: str
+    permissions: Optional[dict] = None
+
+class PermissionUpdateRequest(BaseModel):
+    """Request model for updating role permissions"""
+    role_key: str
+    permissions: dict
+
+class RoleResponse(BaseModel):
+    """Response model for role data"""
+    roles: list
+    permissions: dict
+
+# ------------------- Role Management Services -------------------
+
+def get_roles_service(token: str) -> dict:
+    """Get all roles and their permissions"""
+    current_user = RoleMiddleware.get_current_user(token)
+    if not current_user:
+        raise APIError.unauthorized("Invalid or expired token")
+    require_super_admin(current_user)
+    
+    if DEV_MODE:
+        # Mock implementation - use in-memory roles storage
+        if not hasattr(get_roles_service, 'roles_db'):
+            get_roles_service.roles_db = []
+        if not hasattr(get_roles_service, 'permissions_db'):
+            get_roles_service.permissions_db = {}
+        
+        return {
+            "roles": get_roles_service.roles_db,
+            "permissions": get_roles_service.permissions_db
+        }
+    else:
+        # Database implementation
+        try:
+            from stored_procedures.role_service import role_service
+            roles_data = role_service.get_all_roles()
+            return roles_data
+        except Exception as e:
+            app_logger.error(f"Failed to get roles: {e}")
+            raise APIError.internal("Failed to get roles")
+
+def create_role_service(token: str, role_request: RoleRequest) -> dict:
+    """Create a new role"""
+    import re
+    
+    current_user = RoleMiddleware.get_current_user(token)
+    if not current_user:
+        raise APIError.unauthorized("Invalid or expired token")
+    require_super_admin(current_user)
+    
+    role_name = role_request.role_name.strip()
+    if not role_name:
+        raise APIError.bad_request("Role name is required")
+    
+    # Convert role name to key format
+    role_key = re.sub(r'\s+', '_', role_name.lower())
+    
+    if DEV_MODE:
+        # Mock implementation
+        if not hasattr(get_roles_service, 'roles_db'):
+            get_roles_service.roles_db = []
+        if not hasattr(get_roles_service, 'permissions_db'):
+            get_roles_service.permissions_db = {}
+        
+        # Check if role already exists
+        if role_key in get_roles_service.roles_db:
+            raise APIError.bad_request("Role already exists")
+        
+        # Add role
+        get_roles_service.roles_db.append(role_key)
+        
+        # Initialize default permissions
+        modules = ["role_management", "campaigns", "analytics", "leads", "channels", "scheduler"]
+        default_permissions = {}
+        for module in modules:
+            default_permissions[module] = {
+                "Create": False,
+                "Read": False, 
+                "Update": False,
+                "Delete": False
+            }
+        
+        get_roles_service.permissions_db[role_key] = default_permissions
+        
+        app_logger.info(f"Role {role_name} created successfully")
+        return {"message": f"Role '{role_name}' created successfully", "role_key": role_key}
+    else:
+        # Database implementation
+        try:
+            from stored_procedures.role_service import role_service
+            result = role_service.create_role(role_name, role_request.permissions or {})
+            app_logger.info(f"Role {role_name} created successfully")
+            return result
+        except Exception as e:
+            app_logger.error(f"Failed to create role: {e}")
+            raise APIError.internal("Failed to create role")
+
+def update_role_service(token: str, role_key: str, role_request: RoleRequest) -> dict:
+    """Update an existing role"""
+    import re
+    
+    current_user = RoleMiddleware.get_current_user(token)
+    if not current_user:
+        raise APIError.unauthorized("Invalid or expired token")
+    require_super_admin(current_user)
+    
+    new_role_name = role_request.role_name.strip()
+    if not new_role_name:
+        raise APIError.bad_request("Role name is required")
+    
+    new_role_key = re.sub(r'\s+', '_', new_role_name.lower())
+    
+    if DEV_MODE:
+        # Mock implementation
+        if not hasattr(get_roles_service, 'roles_db'):
+            get_roles_service.roles_db = []
+        if not hasattr(get_roles_service, 'permissions_db'):
+            get_roles_service.permissions_db = {}
+        
+        # Check if role exists
+        if role_key not in get_roles_service.roles_db:
+            raise APIError.not_found("Role not found")
+        
+        # Check if new role name conflicts with existing role (excluding current role)
+        if new_role_key != role_key and new_role_key in get_roles_service.roles_db:
+            raise APIError.bad_request("Role with this name already exists")
+        
+        # Update role key if changed
+        if new_role_key != role_key:
+            # Remove old role key and add new one
+            get_roles_service.roles_db.remove(role_key)
+            get_roles_service.roles_db.append(new_role_key)
+            
+            # Transfer permissions
+            get_roles_service.permissions_db[new_role_key] = get_roles_service.permissions_db[role_key]
+            del get_roles_service.permissions_db[role_key]
+        
+        app_logger.info(f"Role {new_role_name} updated successfully")
+        return {"message": f"Role '{new_role_name}' updated successfully", "role_key": new_role_key}
+    else:
+        # Database implementation
+        try:
+            from stored_procedures.role_service import role_service
+            result = role_service.update_role(role_key, new_role_name, role_request.permissions or {})
+            app_logger.info(f"Role {new_role_name} updated successfully")
+            return result
+        except Exception as e:
+            app_logger.error(f"Failed to update role: {e}")
+            raise APIError.internal("Failed to update role")
+
+def delete_role_service(token: str, role_key: str) -> dict:
+    """Delete a role"""
+    current_user = RoleMiddleware.get_current_user(token)
+    if not current_user:
+        raise APIError.unauthorized("Invalid or expired token")
+    require_super_admin(current_user)
+    
+    if DEV_MODE:
+        # Mock implementation
+        if not hasattr(get_roles_service, 'roles_db'):
+            get_roles_service.roles_db = []
+        if not hasattr(get_roles_service, 'permissions_db'):
+            get_roles_service.permissions_db = {}
+        
+        # Check if role exists
+        if role_key not in get_roles_service.roles_db:
+            raise APIError.not_found("Role not found")
+        
+        # Remove role
+        get_roles_service.roles_db.remove(role_key)
+        if role_key in get_roles_service.permissions_db:
+            del get_roles_service.permissions_db[role_key]
+        
+        app_logger.info(f"Role {role_key} deleted successfully")
+        return {"message": f"Role deleted successfully"}
+    else:
+        # Database implementation
+        try:
+            from stored_procedures.role_service import role_service
+            result = role_service.delete_role(role_key)
+            app_logger.info(f"Role {role_key} deleted successfully")
+            return result
+        except Exception as e:
+            app_logger.error(f"Failed to delete role: {e}")
+            raise APIError.internal("Failed to delete role")
+
+def update_permissions_service(token: str, permission_request: PermissionUpdateRequest) -> dict:
+    """Update permissions for a specific role"""
+    current_user = RoleMiddleware.get_current_user(token)
+    if not current_user:
+        raise APIError.unauthorized("Invalid or expired token")
+    require_super_admin(current_user)
+    
+    role_key = permission_request.role_key
+    permissions = permission_request.permissions
+    
+    if DEV_MODE:
+        # Mock implementation
+        if not hasattr(get_roles_service, 'permissions_db'):
+            get_roles_service.permissions_db = {}
+        
+        # Check if role exists
+        if role_key not in get_roles_service.permissions_db:
+            raise APIError.not_found("Role not found")
+        
+        # Update permissions
+        get_roles_service.permissions_db[role_key] = permissions
+        
+        app_logger.info(f"Permissions updated for role {role_key}")
+        return {"message": f"Permissions for '{role_key}' updated successfully"}
+    else:
+        # Database implementation
+        try:
+            from stored_procedures.role_service import role_service
+            result = role_service.update_role_permissions(role_key, permissions)
+            app_logger.info(f"Permissions updated for role {role_key}")
+            return result
+        except Exception as e:
+            app_logger.error(f"Failed to update permissions: {e}")
+            raise APIError.internal("Failed to update permissions")

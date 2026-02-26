@@ -66,3 +66,21 @@ class DashboardStatsResponse(BaseModel):
     message: str
     success: bool = True
     stats: Dict[str, int] = {}
+
+class AnalyticsResponse(BaseModel):
+    """Response for analytics endpoint"""
+    message: str
+    success: bool = True
+    analytics: List[Dict[str, Any]] = []
+
+class SchedulerResponse(BaseModel):
+    """Response for scheduler endpoint"""
+    message: str
+    success: bool = True
+    schedules: List[Dict[str, Any]] = []
+
+class SettingsResponse(BaseModel):
+    """Response for settings endpoint"""
+    message: str
+    success: bool = True
+    settings: Dict[str, Any] = {}

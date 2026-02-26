@@ -153,13 +153,14 @@ class RoleMiddleware:
     def require_role(required_role: str):
         """Decorator to require specific role"""
         def role_checker(current_user: dict):
-            user_role = current_user.get("role", "user")
+            user_role = current_user.get("role", "user").strip().lower()
+            required_role_clean = required_role.strip().lower()
             
-            if user_role != required_role:
-                app_logger.warning(f"Access denied: {user_role} attempted to access {required_role} endpoint")
+            if user_role != required_role_clean:
+                app_logger.warning(f"Access denied: {user_role} attempted to access {required_role_clean} endpoint")
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
-                    detail=f"Access denied. {required_role} role required."
+                    detail=f"Access denied. {required_role_clean} role required."
                 )
             
             return current_user
@@ -176,15 +177,17 @@ class RoleMiddleware:
         }
         
         def role_checker(current_user: dict):
-            user_role = current_user.get("role", "user")
+            user_role = current_user.get("role", "user").strip().lower()
+            minimum_role_clean = minimum_role.strip().lower()
+            
             user_level = role_hierarchy.get(user_role, 0)
-            required_level = role_hierarchy.get(minimum_role, 0)
+            required_level = role_hierarchy.get(minimum_role_clean, 0)
             
             if user_level < required_level:
-                app_logger.warning(f"Access denied: {user_role} (level {user_level}) attempted to access {minimum_role} (level {required_level}) endpoint")
+                app_logger.warning(f"Access denied: {user_role} (level {user_level}) attempted to access {minimum_role_clean} (level {required_level}) endpoint")
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
-                    detail=f"Access denied. {minimum_role} or higher role required."
+                    detail=f"Access denied. {minimum_role_clean} or higher role required."
                 )
             
             return current_user

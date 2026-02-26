@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Box,
     Table,
@@ -33,7 +33,8 @@ import {
     Close,
     WarningAmber 
 } from "@mui/icons-material";
-import { useAuth } from "../context/useAuth";
+import { useAuth } from "../contexts/AuthContext";
+import axios from "axios";
 
 // ------------------- Modules & Permissions -------------------
 const modules = [
@@ -48,10 +49,11 @@ const modules = [
 const permissionTypes = ["Create", "Read", "Update", "Delete"];
 
 const RoleManagementPage = () => {
-    const { logindata } = useAuth();
+    const { user, getAuthHeaders } = useAuth();
     const [roles, setRoles] = useState([]);
     const [selectedRole, setSelectedRole] = useState("");
     const [permissions, setPermissions] = useState({});
+    const [loading, setLoading] = useState(true);
     
     // Dialog states
     const [openDialog, setOpenDialog] = useState(false);
@@ -67,7 +69,90 @@ const RoleManagementPage = () => {
     // Snackbar for notifications
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
 
-    const isSuperAdmin = logindata?.role === "super_admin";
+    const isSuperAdmin = user?.role === "super_admin";
+
+    // API Functions
+    const fetchRoles = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get(
+                `${process.env.REACT_APP_API_LINKS}/api/v1/admin/roles`,
+                { headers: getAuthHeaders() }
+            );
+            setRoles(response.data.roles || []);
+            setPermissions(response.data.permissions || {});
+            if (response.data.roles?.length > 0 && !selectedRole) {
+                setSelectedRole(response.data.roles[0]);
+            }
+        } catch (error) {
+            console.error('Error fetching roles:', error);
+            setSnackbar({ 
+                open: true, 
+                message: error.response?.data?.detail || 'Failed to fetch roles', 
+                severity: 'error' 
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const createRole = async (roleName) => {
+        try {
+            const response = await axios.post(
+                `${process.env.REACT_APP_API_LINKS}/api/v1/admin/roles`,
+                { role_name: roleName },
+                { headers: getAuthHeaders() }
+            );
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    const updateRole = async (roleKey, roleName) => {
+        try {
+            const response = await axios.put(
+                `${process.env.REACT_APP_API_LINKS}/api/v1/admin/roles/${roleKey}`,
+                { role_name: roleName },
+                { headers: getAuthHeaders() }
+            );
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    const deleteRole = async (roleKey) => {
+        try {
+            const response = await axios.delete(
+                `${process.env.REACT_APP_API_LINKS}/api/v1/admin/roles/${roleKey}`,
+                { headers: getAuthHeaders() }
+            );
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    const updatePermissions = async (roleKey, permissions) => {
+        try {
+            const response = await axios.put(
+                `${process.env.REACT_APP_API_LINKS}/api/v1/admin/roles/${roleKey}/permissions`,
+                { role_key: roleKey, permissions },
+                { headers: getAuthHeaders() }
+            );
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    // Load roles on component mount
+    useEffect(() => {
+        if (isSuperAdmin) {
+            fetchRoles();
+        }
+    }, [isSuperAdmin]);
 
     // Open add role dialog
     const handleOpenAddDialog = () => {
@@ -108,59 +193,47 @@ const RoleManagementPage = () => {
     };
 
     // Save role (add or edit)
-    const handleSaveRole = () => {
+    const handleSaveRole = async () => {
         const error = validateRoleName(roleName);
         if (error) {
             setRoleError(error);
             return;
         }
 
-        const newRoleKey = roleName.toLowerCase().replace(/\s+/g, "_");
-        const newRoleLabel = roleName.trim();
-
-        if (dialogMode === "add") {
-            // Add new role
-            setRoles([...roles, newRoleKey]);
-            setPermissions({
-                ...permissions,
-                [newRoleKey]: modules.reduce((acc, mod) => {
-                    acc[mod.key] = { Create: false, Read: false, Update: false, Delete: false };
-                    return acc;
-                }, {}),
-            });
-            setSelectedRole(newRoleKey);
-            setSnackbar({
-                open: true,
-                message: `Role "${newRoleLabel}" created successfully`,
-                severity: "success"
-            });
-        } else {
-            // Edit existing role
-            if (currentRole.key !== newRoleKey) {
-                // Role name changed - update key
-                const updatedRoles = roles.map(r => 
-                    r === currentRole.key ? newRoleKey : r
-                );
-                setRoles(updatedRoles);
-                
-                // Update permissions with new key
-                const updatedPermissions = { ...permissions };
-                updatedPermissions[newRoleKey] = updatedPermissions[currentRole.key];
-                delete updatedPermissions[currentRole.key];
-                setPermissions(updatedPermissions);
-                
+        try {
+            if (dialogMode === "add") {
+                // Create new role
+                const result = await createRole(roleName);
+                setSnackbar({
+                    open: true,
+                    message: result.message,
+                    severity: "success"
+                });
+                await fetchRoles(); // Refresh data
+                setSelectedRole(result.role_key);
+            } else {
+                // Edit existing role
+                const result = await updateRole(currentRole.key, roleName);
+                setSnackbar({
+                    open: true,
+                    message: result.message,
+                    severity: "success"
+                });
+                await fetchRoles(); // Refresh data
                 if (selectedRole === currentRole.key) {
-                    setSelectedRole(newRoleKey);
+                    setSelectedRole(result.role_key);
                 }
             }
+
+            handleCloseDialog();
+        } catch (error) {
+            console.error('Error saving role:', error);
             setSnackbar({
                 open: true,
-                message: `Role "${newRoleLabel}" updated successfully`,
-                severity: "success"
+                message: error.response?.data?.detail || 'Failed to save role',
+                severity: 'error'
             });
         }
-
-        handleCloseDialog();
     };
 
     // Open delete confirmation
@@ -171,29 +244,32 @@ const RoleManagementPage = () => {
     };
 
     // Delete role
-    const handleDeleteRole = () => {
+    const handleDeleteRole = async () => {
         if (!roleToDelete) return;
 
-        const roleLabel = roleToDelete.charAt(0).toUpperCase() + roleToDelete.slice(1).replace(/_/g, ' ');
-        const updatedRoles = roles.filter((r) => r !== roleToDelete);
-        const updatedPermissions = { ...permissions };
-        delete updatedPermissions[roleToDelete];
-        
-        setRoles(updatedRoles);
-        setPermissions(updatedPermissions);
-        
-        if (selectedRole === roleToDelete) {
-            setSelectedRole(updatedRoles[0] || "");
+        try {
+            const result = await deleteRole(roleToDelete);
+            setSnackbar({
+                open: true,
+                message: result.message,
+                severity: "info"
+            });
+            
+            await fetchRoles(); // Refresh data
+            if (selectedRole === roleToDelete) {
+                setSelectedRole(roles[0] || "");
+            }
+            
+            setDeleteConfirmOpen(false);
+            setRoleToDelete(null);
+        } catch (error) {
+            console.error('Error deleting role:', error);
+            setSnackbar({
+                open: true,
+                message: error.response?.data?.detail || 'Failed to delete role',
+                severity: 'error'
+            });
         }
-        
-        setDeleteConfirmOpen(false);
-        setRoleToDelete(null);
-        
-        setSnackbar({
-            open: true,
-            message: `Role "${roleLabel}" deleted successfully`,
-            severity: "info"
-        });
     };
 
     // Toggle permission
@@ -227,13 +303,22 @@ const RoleManagementPage = () => {
     };
 
     // Save permissions
-    const handleSavePermissions = () => {
-        console.log("Permissions for", selectedRole, permissions[selectedRole]);
-        setSnackbar({
-            open: true,
-            message: `Permissions for "${selectedRole}" saved successfully!`,
-            severity: "success"
-        });
+    const handleSavePermissions = async () => {
+        try {
+            const result = await updatePermissions(selectedRole, permissions[selectedRole]);
+            setSnackbar({
+                open: true,
+                message: result.message,
+                severity: "success"
+            });
+        } catch (error) {
+            console.error('Error saving permissions:', error);
+            setSnackbar({
+                open: true,
+                message: error.response?.data?.detail || 'Failed to save permissions',
+                severity: 'error'
+            });
+        }
     };
 
     // Check if all permissions are selected for a module
@@ -250,13 +335,27 @@ const RoleManagementPage = () => {
 
     return (
         <Box p={3}>
+            {/* Access Check */}
+            {!isSuperAdmin && (
+                <Alert severity="error" sx={{ mb: 3 }}>
+                    Access Denied: Super Admin privileges required to manage roles and permissions.
+                </Alert>
+            )}
+
+            {/* Loading State */}
+            {isSuperAdmin && loading && (
+                <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
+                    <Typography>Loading roles...</Typography>
+                </Box>
+            )}
+
             {/* Header */}
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-                <Typography variant="h5" fontWeight={600}>
-                    Manage Roles & Permissions
-                </Typography>
-                
-                {isSuperAdmin && (
+            {isSuperAdmin && !loading && (
+                <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+                    <Typography variant="h5" fontWeight={600}>
+                        Manage Roles & Permissions
+                    </Typography>
+                    
                     <Button
                         variant="contained"
                         startIcon={<Add />}
@@ -269,11 +368,11 @@ const RoleManagementPage = () => {
                     >
                         Create New Role
                     </Button>
-                )}
-            </Box>
+                </Box>
+            )}
 
             {/* Roles List */}
-            {roles.length > 0 ? (
+            {isSuperAdmin && !loading && roles.length > 0 ? (
                 <Card sx={{ mb: 3, borderRadius: 2 }}>
                     <CardContent>
                         <Typography variant="subtitle2" color="text.secondary" mb={2}>
@@ -287,20 +386,18 @@ const RoleManagementPage = () => {
                                         key={role}
                                         label={roleLabel}
                                         onClick={() => setSelectedRole(role)}
-                                        onDelete={isSuperAdmin ? (e) => handleOpenDeleteConfirm(role, e) : undefined}
-                                        deleteIcon={isSuperAdmin ? <Delete /> : undefined}
+                                        onDelete={(e) => handleOpenDeleteConfirm(role, e)}
+                                        deleteIcon={<Delete />}
                                         color={selectedRole === role ? "primary" : "default"}
                                         variant={selectedRole === role ? "filled" : "outlined"}
                                         sx={{
                                             borderRadius: 2,
                                             py: 2,
                                             '& .MuiChip-label': { fontWeight: 500 },
-                                            ...(isSuperAdmin && {
-                                                '& .MuiChip-deleteIcon': {
-                                                    color: selectedRole === role ? '#fff' : '#d32f2f',
-                                                    '&:hover': { color: '#b71c1c' }
-                                                }
-                                            })
+                                            '& .MuiChip-deleteIcon': {
+                                                color: selectedRole === role ? '#fff' : '#d32f2f',
+                                                '&:hover': { color: '#b71c1c' }
+                                            }
                                         }}
                                     />
                                 );
@@ -308,14 +405,14 @@ const RoleManagementPage = () => {
                         </Box>
                     </CardContent>
                 </Card>
-            ) : (
+            ) : isSuperAdmin && !loading ? (
                 <Alert severity="info" sx={{ mb: 3, borderRadius: 2 }}>
-                    No roles created yet. {isSuperAdmin && "Click 'Create New Role' to get started."}
+                    No roles created yet. Click 'Create New Role' to get started.
                 </Alert>
-            )}
+            ) : null}
 
             {/* Permissions Table */}
-            {selectedRole && permissions[selectedRole] && (
+            {isSuperAdmin && !loading && selectedRole && permissions[selectedRole] && (
                 <Card sx={{ borderRadius: 2, overflow: 'hidden' }}>
                     <Box sx={{ p: 2, backgroundColor: '#e3f2fd', borderBottom: '1px solid rgba(0,0,0,0.12)' }}>
                         <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -327,18 +424,16 @@ const RoleManagementPage = () => {
                                     Configure permissions for this role
                                 </Typography>
                             </Box>
-                            {isSuperAdmin && (
-                                <Box>
-                                    <Tooltip title="Edit Role">
-                                        <IconButton 
-                                            onClick={() => handleOpenEditDialog(selectedRole)}
-                                            sx={{ mr: 1 }}
-                                        >
-                                            <Edit />
-                                        </IconButton>
-                                    </Tooltip>
-                                </Box>
-                            )}
+                            <Box>
+                                <Tooltip title="Edit Role">
+                                    <IconButton 
+                                        onClick={() => handleOpenEditDialog(selectedRole)}
+                                        sx={{ mr: 1 }}
+                                    >
+                                        <Edit />
+                                    </IconButton>
+                                </Tooltip>
+                            </Box>
                         </Box>
                     </Box>
 
@@ -352,11 +447,9 @@ const RoleManagementPage = () => {
                                             {perm}
                                         </TableCell>
                                     ))}
-                                    {isSuperAdmin && (
-                                        <TableCell align="center" sx={{ fontWeight: 600 }}>
-                                            Select All
-                                        </TableCell>
-                                    )}
+                                    <TableCell align="center" sx={{ fontWeight: 600 }}>
+                                        Select All
+                                    </TableCell>
                                 </TableRow>
                             </TableHead>
 
@@ -372,7 +465,6 @@ const RoleManagementPage = () => {
                                                 <Checkbox
                                                     checked={permissions[selectedRole][mod.key]?.[perm] || false}
                                                     onChange={() => togglePermission(mod.key, perm)}
-                                                    disabled={!isSuperAdmin}
                                                     color="primary"
                                                     sx={{
                                                         '&.Mui-checked': {
@@ -382,19 +474,17 @@ const RoleManagementPage = () => {
                                                 />
                                             </TableCell>
                                         ))}
-                                        {isSuperAdmin && (
-                                            <TableCell align="center">
-                                                <Checkbox
-                                                    checked={isAllSelected(mod.key)}
-                                                    onChange={(e) => handleSelectAll(mod.key, e.target.checked)}
-                                                    color="primary"
-                                                    indeterminate={
-                                                        !isAllSelected(mod.key) && 
-                                                        permissionTypes.some(perm => permissions[selectedRole][mod.key]?.[perm])
-                                                    }
-                                                />
-                                            </TableCell>
-                                        )}
+                                        <TableCell align="center">
+                                            <Checkbox
+                                                checked={isAllSelected(mod.key)}
+                                                onChange={(e) => handleSelectAll(mod.key, e.target.checked)}
+                                                color="primary"
+                                                indeterminate={
+                                                    !isAllSelected(mod.key) && 
+                                                    permissionTypes.some(perm => permissions[selectedRole][mod.key]?.[perm])
+                                                }
+                                            />
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -404,7 +494,7 @@ const RoleManagementPage = () => {
             )}
 
             {/* Save Button */}
-            {selectedRole && isSuperAdmin && (
+            {isSuperAdmin && !loading && selectedRole && permissions[selectedRole] && (
                 <Box mt={3} display="flex" justifyContent="flex-end">
                     <Button
                         variant="contained"

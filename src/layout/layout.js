@@ -40,8 +40,9 @@ import SearchIcon from "@mui/icons-material/Search";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import WorkIcon from '@mui/icons-material/Work';
 import '@fontsource/nunito';
-import { useAuth } from "../context/useAuth";
+import { useAuth } from "../contexts/AuthContext";
 import { Link, useLocation } from "react-router-dom";
+import axios from "axios";
 
 const drawerWidth = 280;
 const collapsedDrawerWidth = 64;
@@ -81,9 +82,11 @@ const theme = createTheme({
 export default function AppLayout({ onLogout, children }) {
     const [open, setOpen] = useState(true);
     const [hoverOpen, setHoverOpen] = useState(false);
-    const { logindata } = useAuth();
+    const { user, getAuthHeaders } = useAuth();
+    const [userPermissions, setUserPermissions] = useState({});
+    const [permissionsLoading, setPermissionsLoading] = useState(true);
     const location = useLocation(); // Hook to get current URL for active states
-    const currentPath = location.pathname;
+    const currentPath = location.pathname || window.location.hash.replace('#', '') || '/';
 
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
@@ -94,24 +97,61 @@ export default function AppLayout({ onLogout, children }) {
 
     const handleDrawerToggle = () => setOpen(!open);
 
+    // Fetch user permissions
+    useEffect(() => {
+        const fetchUserPermissions = async () => {
+            if (!user?.role) {
+                setPermissionsLoading(false);
+                return;
+            }
+
+            try {
+                const response = await axios.get(
+                    `${process.env.REACT_APP_API_LINKS}/api/v1/admin/roles`,
+                    { headers: getAuthHeaders() }
+                );
+                const permissions = response.data.permissions || {};
+                setUserPermissions(permissions[user.role] || {});
+            } catch (error) {
+                console.error('Error fetching permissions:', error);
+                // Fallback to role-based permissions
+                setUserPermissions({});
+            } finally {
+                setPermissionsLoading(false);
+            }
+        };
+
+        fetchUserPermissions();
+    }, [user, getAuthHeaders]);
+
+    // Check if user has permission for a module
+    const hasReadPermission = (module) => {
+        if (user?.role === 'super_admin') return true; // Super admin sees everything
+        return userPermissions[module]?.Read || false;
+    };
+
     const navItems = [
-        { label: "Dashboard", icon: <DashboardIcon />, path: "/dashboard", tooltip: "Overview" },
-        ...(logindata?.role === "super_admin" ? [
-            { label: "Super Admin", icon: <AdminPanelSettingsIcon />, path: "/super-admin", tooltip: "Admin" },
-            { label: "Role Management", icon: <WorkIcon />, path: "/roles", tooltip: "Roles" },
-            { label: "Campaigns", icon: <CampaignIcon />, path: "/campaigns", tooltip: "Campaigns" },
-            { label: "Analytics", icon: <InsightsIcon />, path: "/analytics", tooltip: "Insights" },
-            { label: "Leads", icon: <GroupIcon />, path: "/leads", tooltip: "Leads" },
-            { label: "Channels", icon: <PhoneIphoneIcon />, path: "/channels", tooltip: "Channels" },
-            { label: "Scheduler", icon: <ScheduleIcon />, path: "/scheduler", tooltip: "Schedule" }
-        ] : [
-            { label: "Campaigns", icon: <CampaignIcon />, path: "/campaigns", tooltip: "Campaigns" },
-            { label: "Analytics", icon: <InsightsIcon />, path: "/analytics", tooltip: "Insights" },
-            { label: "Leads", icon: <GroupIcon />, path: "/leads", tooltip: "Leads" },
-            { label: "Channels", icon: <PhoneIphoneIcon />, path: "/channels", tooltip: "Channels" },
-        ]),
-        ...(logindata?.role === "user" ? [{ label: "Scheduler", icon: <ScheduleIcon />, path: "/scheduler", tooltip: "Schedule" }] : []),
-        { label: "Settings", icon: <SettingsIcon />, path: "/settings", tooltip: "Settings" },
+        { label: "Dashboard", icon: <DashboardIcon />, path: "/dashboard", tooltip: "Overview", module: null }, // Always visible
+        ...(hasReadPermission('role_management') ? [
+            { label: "Admin Panel", icon: <AdminPanelSettingsIcon />, path: "/admin", tooltip: "Admin", module: "role_management" },
+            { label: "Role Management", icon: <WorkIcon />, path: "/roles", tooltip: "Roles", module: "role_management" }
+        ] : []),
+        ...(hasReadPermission('campaigns') ? [
+            { label: "Campaigns", icon: <CampaignIcon />, path: "/campaigns", tooltip: "Campaigns", module: "campaigns" }
+        ] : []),
+        ...(hasReadPermission('analytics') ? [
+            { label: "Analytics", icon: <InsightsIcon />, path: "/analytics", tooltip: "Insights", module: "analytics" }
+        ] : []),
+        ...(hasReadPermission('leads') ? [
+            { label: "Leads", icon: <GroupIcon />, path: "/leads", tooltip: "Leads", module: "leads" }
+        ] : []),
+        ...(hasReadPermission('channels') ? [
+            { label: "Channels", icon: <PhoneIphoneIcon />, path: "/channels", tooltip: "Channels", module: "channels" }
+        ] : []),
+        ...(hasReadPermission('scheduler') ? [
+            { label: "Scheduler", icon: <ScheduleIcon />, path: "/scheduler", tooltip: "Schedule", module: "scheduler" }
+        ] : []),
+        { label: "Settings", icon: <SettingsIcon />, path: "/settings", tooltip: "Settings", module: null }, // Always visible
     ];
 
     const NavList = ({ mobile = false }) => (
@@ -188,8 +228,8 @@ export default function AppLayout({ onLogout, children }) {
                             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                                 <Avatar sx={{ bgcolor: alpha("#fff", 0.2) }}><AccountCircleIcon /></Avatar>
                                 <Box sx={{ display: { xs: "none", sm: "block" } }}>
-                                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{logindata?.tenant_name}</Typography>
-                                    <Typography variant="caption" sx={{ opacity: 0.8 }}>{logindata?.role}</Typography>
+                                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{user?.name}</Typography>
+                                    <Typography variant="caption" sx={{ opacity: 0.8 }}>{user?.role}</Typography>
                                 </Box>
                             </Box>
                         </Box>
