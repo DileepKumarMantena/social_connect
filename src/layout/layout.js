@@ -81,7 +81,7 @@ const theme = createTheme({
 export default function AppLayout({ onLogout, children }) {
     const [open, setOpen] = useState(true);
     const [hoverOpen, setHoverOpen] = useState(false);
-    const { logindata } = useAuth();
+    const { logindata, permissions } = useAuth();
     const location = useLocation(); // Hook to get current URL for active states
     const currentPath = location.pathname;
 
@@ -93,6 +93,10 @@ export default function AppLayout({ onLogout, children }) {
     const currentWidth = isMobile ? 0 : isExpanded ? drawerWidth : collapsedDrawerWidth;
 
     const handleDrawerToggle = () => setOpen(!open);
+
+    useEffect(() => {
+        console.log(logindata)
+    },[permissions,logindata]);
 
     const navItems = [
         { label: "Dashboard", icon: <DashboardIcon />, path: "/dashboard", tooltip: "Overview" },
