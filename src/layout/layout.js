@@ -82,9 +82,7 @@ const theme = createTheme({
 export default function AppLayout({ onLogout, children }) {
     const [open, setOpen] = useState(true);
     const [hoverOpen, setHoverOpen] = useState(false);
-    const { user, getAuthHeaders } = useAuth();
-    const [userPermissions, setUserPermissions] = useState({});
-    const [permissionsLoading, setPermissionsLoading] = useState(true);
+    const { logindata, permissions } = useAuth();
     const location = useLocation(); // Hook to get current URL for active states
     const currentPath = location.pathname || window.location.hash.replace('#', '') || '/';
 
@@ -97,38 +95,9 @@ export default function AppLayout({ onLogout, children }) {
 
     const handleDrawerToggle = () => setOpen(!open);
 
-    // Fetch user permissions
     useEffect(() => {
-        const fetchUserPermissions = async () => {
-            if (!user?.role) {
-                setPermissionsLoading(false);
-                return;
-            }
-
-            try {
-                const response = await axios.get(
-                    `${process.env.REACT_APP_API_LINKS}/api/v1/admin/roles`,
-                    { headers: getAuthHeaders() }
-                );
-                const permissions = response.data.permissions || {};
-                setUserPermissions(permissions[user.role] || {});
-            } catch (error) {
-                console.error('Error fetching permissions:', error);
-                // Fallback to role-based permissions
-                setUserPermissions({});
-            } finally {
-                setPermissionsLoading(false);
-            }
-        };
-
-        fetchUserPermissions();
-    }, [user, getAuthHeaders]);
-
-    // Check if user has permission for a module
-    const hasReadPermission = (module) => {
-        if (user?.role === 'super_admin') return true; // Super admin sees everything
-        return userPermissions[module]?.Read || false;
-    };
+        console.log(logindata)
+    },[permissions,logindata]);
 
     const navItems = [
         { label: "Dashboard", icon: <DashboardIcon />, path: "/dashboard", tooltip: "Overview", module: null }, // Always visible
