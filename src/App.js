@@ -29,15 +29,13 @@ function ProtectedRoutes() {
   return (
     <Routes>
 
-      {!token ?
+      {!loggedin ?
         <Route path='/' element={<Login />} /> :
         <Route path='/' element={
           <AppLayout> <Dashboard /></AppLayout>
         } />
       }
-      <Route path='/dashboard' element={
-        <AppLayout> <Dashboard /></AppLayout>
-      } />
+      
       {/* <Route path='/' element={<Login />} /> */}
       <Route path='/forgot' element={<ForgotPasswordPage />} />
       <Route path='/roles' element={
