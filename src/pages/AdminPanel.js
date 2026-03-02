@@ -26,21 +26,27 @@ import {
   Alert,
   Snackbar,
   Tabs,
-  Tab
+  Tab,
+  Checkbox,
+  ListItemText
 } from '@mui/material';
 import {
   Add as AddIcon,
   Delete as DeleteIcon,
   AccessTime as AccessTimeIcon,
   Business as BusinessIcon,
-  Refresh as RefreshIcon
+  Refresh as RefreshIcon,
+  Edit as EditIcon,
+  Visibility as VisibilityIcon,
+  VisibilityOff as VisibilityOffIcon
 } from '@mui/icons-material';
+import refreshService from '../services/refreshService';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
 const AdminPanel = () => {
-  const { getAuthHeaders, hasRole } = useAuth();
+  const { getAuthHeaders, hasRole, user } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
@@ -48,6 +54,7 @@ const AdminPanel = () => {
   const [availableRoles, setAvailableRoles] = useState([]);
   const [rolesLoading, setRolesLoading] = useState(true);
   const [companies, setCompanies] = useState([
+    { id: 0, name: 'Hippo Cloud' },
     { id: 1, name: 'Company 1' },
     { id: 2, name: 'Company 2' }
   ]);
@@ -61,6 +68,13 @@ const AdminPanel = () => {
     companyid: 1,
     access_hours: 24
   });
+  
+  // Update company ID when user changes
+  useEffect(() => {
+    if (user?.companyid) {
+      setFormData(prev => ({ ...prev, companyid: user.companyid }));
+    }
+  }, [user]);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
   // Fetch available roles from role management
@@ -71,10 +85,13 @@ const AdminPanel = () => {
         `${process.env.REACT_APP_API_LINKS}/api/v1/admin/roles`,
         { headers: getAuthHeaders() }
       );
-      const roles = response.data.roles || [];
+      const rolesData = response.data?.data?.roles || response.data?.roles || {};
+      
+      // Extract role keys from the roles object
+      const roleKeys = Object.keys(rolesData);
       
       // Always include basic roles for compatibility
-      const allRoles = [...new Set([...roles, 'user', 'admin'])];
+      const allRoles = [...new Set([...roleKeys, 'user', 'admin'])];
       setAvailableRoles(allRoles);
       
       // Set default role to first available role if none selected
@@ -84,7 +101,7 @@ const AdminPanel = () => {
     } catch (error) {
       console.error('Error fetching roles:', error);
       // Fallback to basic roles if role management fails
-      const fallbackRoles = ['user', 'admin'];
+      const fallbackRoles = ['user', 'admin', 'marketing_manager', 'content_editor', 'sales_manager'];
       setAvailableRoles(fallbackRoles);
       if (!formData.role) {
         setFormData(prev => ({ ...prev, role: 'user' }));
@@ -109,6 +126,19 @@ const AdminPanel = () => {
       setLoading(false);
     }
   }, [getAuthHeaders]);
+
+  // Setup refresh listener
+  useEffect(() => {
+    refreshService.onUserCreated((data) => {
+      console.log('User created event received:', data);
+      fetchUsers(); // Refresh user list
+    });
+
+    refreshService.onAutoRefresh(() => {
+      console.log('Auto refresh triggered');
+      fetchUsers(); // Refresh user list
+    });
+  }, []);
 
   useEffect(() => {
     if (hasRole('admin') || hasRole('super_admin')) {
@@ -153,7 +183,7 @@ const AdminPanel = () => {
         password: '',
         name: '',
         role: 'user',
-        companyid: 1,
+        companyid: user?.companyid || 1,
         access_hours: 24
       });
       fetchUsers();
@@ -165,6 +195,21 @@ const AdminPanel = () => {
         severity: 'error' 
       });
     }
+  };
+
+  // Handle edit user
+  const handleEditUser = (user) => {
+    setEditingUser(user);
+    setFormData({
+      username: user.username,
+      email: user.email,
+      password: '', // Don't populate password for security
+      name: user.name,
+      role: user.role,
+      companyid: user.companyid,
+      access_hours: 24
+    });
+    setOpenDialog(true);
   };
 
   // Extend user access
@@ -350,6 +395,9 @@ const AdminPanel = () => {
     switch (role) {
       case 'super_admin': return 'error';
       case 'admin': return 'warning';
+      case 'marketing_manager': return 'secondary';
+      case 'content_editor': return 'info';
+      case 'sales_manager': return 'success';
       case 'user': return 'primary';
       default: return 'default';
     }
@@ -397,7 +445,7 @@ const AdminPanel = () => {
                   Clear All Data
                 </Button>
               )}
-              {hasRole('super_admin') && (
+              {(hasRole('super_admin') || hasRole('admin')) && (
                 <Button
                   variant="contained"
                   startIcon={<AddIcon />}
@@ -465,9 +513,17 @@ const AdminPanel = () => {
                             }
                           </TableCell>
                           <TableCell>
-                            {hasRole('super_admin') && (
+                            {(hasRole('super_admin') || hasRole('admin')) && (
                               <>
-                                {user.access_expires_at && (
+                                <IconButton
+                                  size="small"
+                                  onClick={() => handleEditUser(user)}
+                                  title="Edit User"
+                                  color="primary"
+                                >
+                                  <EditIcon />
+                                </IconButton>
+                                {hasRole('super_admin') && user.access_expires_at && (
                                   <IconButton
                                     size="small"
                                     onClick={() => handleExtendAccess(user.id || user.username)}
@@ -568,7 +624,7 @@ const AdminPanel = () => {
 
       {/* Create/Edit User Dialog */}
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Create New User</DialogTitle>
+        <DialogTitle>{editingUser ? 'Edit User' : 'Create New User'}</DialogTitle>
         <form onSubmit={handleSubmit}>
           <DialogContent>
             <TextField
@@ -579,6 +635,7 @@ const AdminPanel = () => {
               onChange={(e) => setFormData({ ...formData, username: e.target.value })}
               margin="normal"
               required
+              disabled={!!editingUser}
             />
             <TextField
               fullWidth
@@ -598,7 +655,8 @@ const AdminPanel = () => {
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               margin="normal"
-              required
+              required={!editingUser}
+              placeholder={editingUser ? "Leave blank to keep current password" : ""}
             />
             <TextField
               fullWidth
@@ -669,7 +727,7 @@ const AdminPanel = () => {
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
-            <Button type="submit" variant="contained">Create User</Button>
+            <Button type="submit" variant="contained">{editingUser ? 'Update User' : 'Create User'}</Button>
           </DialogActions>
         </form>
       </Dialog>

@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware import Middleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from typing import Optional
 from collections import defaultdict
 from datetime import datetime, timedelta
@@ -12,14 +12,21 @@ from services.routes import (
     get_analytics, get_scheduler, get_settings,
     login_user, send_forgot_password_otp, verify_otp, reset_password,
     create_access_token, APIRequest, CreateUserRequest, ExtendAccessRequest, RoleRequest, PermissionUpdateRequest,
-    get_dashboard_stats, get_roles_service, get_users, create_user, extend_user_access, deactivate_user, clear_all_data,
+    get_dashboard_stats, get_roles_service, get_users, create_user, extend_user_access, deactivate_user, delete_user, clear_all_data,
     create_role_service, update_role_service, delete_role_service, update_permissions_service
 )
-from services.util import RoleMiddleware
-from services.response import StandardResponse
+from services.util import (
+    verify_password, hash_password, generate_otp, store_otp, 
+    verify_stored_otp, find_user_by_email, cleanup_otp, send_otp_email,
+    create_access_token, get_user_from_token, validate_password_strength,
+    RoleMiddleware, require_super_admin, require_admin, require_minimum_admin
+)
+from fastapi import HTTPException
+from services.response import LoginResponse, OTPResponse, PasswordResetResponse, UserProfileResponse, ChannelResponse, CampaignResponse, LeadResponse, DashboardStatsResponse, AnalyticsResponse, SchedulerResponse, SettingsResponse
+from services.error import APIError
 from services.logger import app_logger
-from stored_procedures.database import init_database
-from constants import API_TITLE, API_VERSION, API_HOST, API_PORT, ALLOWED_ORIGINS, DEV_MODE
+from services.json_db import json_db
+from constants import API_TITLE, API_VERSION, API_HOST, API_PORT, ALLOWED_ORIGINS, campaigns_db, leads_db, channels_db, scheduler_db, user_settings_db
 
 # Security
 oauth2_scheme = HTTPBearer()
@@ -63,7 +70,7 @@ app.add_middleware(
 )
 
 # Dependency to get current user
-def get_current_user_dependency(credentials: HTTPAuthorizationCredentials = Depends(security)):
+def get_user_from_token_dependency(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Dependency to validate JWT token and get current user"""
     if not credentials:
         raise HTTPException(
@@ -72,8 +79,8 @@ def get_current_user_dependency(credentials: HTTPAuthorizationCredentials = Depe
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    from services.routes import get_current_user
-    user = get_current_user(credentials.credentials)
+    from services.routes import get_user_from_token
+    user = get_user_from_token(credentials.credentials)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -137,7 +144,10 @@ async def login(request: APIRequest, http_request: Request):
 @app.options("/api/v1/login")
 async def login_options():
     """Handle OPTIONS preflight request"""
-    return {"message": "OK"}
+    return JSONResponse(
+        content={"message": "OK"},
+        status_code=200
+    )
 
 @app.post("/api/v1/refresh-token")
 async def refresh_token(http_request: Request):
@@ -332,10 +342,37 @@ async def reset_password_endpoint(request: APIRequest):
     return result
 
 @app.get("/api/v1/profile")
-async def get_profile(current_user = Depends(get_current_user_dependency)):
+async def get_profile(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Get current user profile (protected endpoint)"""
-    app_logger.info(f"Profile request for user: {current_user.get('username', 'unknown')}")
-    return current_user
+    if not credentials:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    from services.routes import get_user_from_token
+    user = get_user_from_token(credentials.credentials)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    app_logger.info(f"Profile request for user: {user.get('username', 'unknown')}")
+    
+    # Return user profile data
+    return {
+        "username": user["username"],
+        "email": user["email"],
+        "name": user["name"],
+        "role": user["role"],
+        "companyid": user["companyid"],
+        "activitystatus": user["activitystatus"],
+        "access_expires_at": user.get("access_expires_at"),
+        "created_by": user.get("created_by")
+    }
 
 @app.get("/")
 async def root():
@@ -367,6 +404,50 @@ async def get_leads_endpoint(credentials: HTTPAuthorizationCredentials = Depends
     result = get_leads(credentials.credentials)
     app_logger.info(f"Returned {len(result.leads)} leads")
     return result
+
+@app.post("/api/v1/leads")
+async def create_lead_endpoint(request: dict, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Create a new lead"""
+    app_logger.info(f"Lead creation request: {request}")
+    
+    # Get current user from token
+    current_user = get_user_from_token(credentials.credentials)
+    
+    # Simple mock implementation - in real system, this would save to database
+    new_lead = {
+        "id": len(json_db.get_leads()) + 1,
+        "name": request.get("name", "New Lead"),
+        "email": request.get("email", ""),
+        "phone": request.get("phone", ""),
+        "status": "new",
+        "created_at": datetime.utcnow().isoformat() + "Z",
+        "created_by": current_user["username"] if current_user else "unknown"
+    }
+    
+    # Add to JSON database
+    try:
+        leads = json_db.get_leads()
+        leads.append(new_lead)
+        
+        # Save updated leads
+        import json as json_module
+        with open("data/leads.json", "w") as f:
+            json_module.dump({"leads": leads}, f, indent=2)
+        
+        app_logger.info(f"Lead created successfully: {new_lead['name']}")
+        
+        return {
+            "message": "Lead created successfully",
+            "success": True,
+            "lead": new_lead
+        }
+    except Exception as e:
+        app_logger.error(f"Failed to create lead: {e}")
+        return {
+            "message": "Failed to create lead",
+            "success": False,
+            "error": str(e)
+        }
 
 @app.get("/api/v1/dashboard/stats")
 async def get_dashboard_stats_endpoint():
@@ -403,11 +484,36 @@ async def get_settings_endpoint(credentials: HTTPAuthorizationCredentials = Depe
 # Role-based management endpoints
 @app.post("/api/v1/admin/users")
 async def create_user_endpoint(request: CreateUserRequest, credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """Create a new user (super_admin only)"""
-    app_logger.info(f"User creation request by super_admin: {request.username}")
+    """Create a new user (super_admin and admin only)"""
+    app_logger.info(f"User creation request by admin: {request.username}")
     result = create_user(request, credentials.credentials)
     app_logger.info(f"User creation result: {result['message']}")
     return result
+
+@app.put("/api/v1/admin/users/{user_id}")
+async def update_user_endpoint(user_id: str, request: CreateUserRequest, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Update an existing user (super_admin and admin only)"""
+    app_logger.info(f"User update request for: {user_id}")
+    # For now, we'll implement a basic update
+    # In a real implementation, you'd have a separate update function
+    try:
+        # Get current user to verify permissions
+        current_user = get_user_from_token(credentials.credentials)
+        require_minimum_admin(current_user)
+        
+        # For mock implementation, just return success
+        return {
+            "message": f"User {user_id} updated successfully",
+            "user": {
+                "username": request.username,
+                "email": request.email,
+                "name": request.name,
+                "role": request.role,
+                "companyid": request.companyid
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @app.get("/api/v1/admin/users")
 async def get_users_endpoint(role_filter: Optional[str] = None, credentials: HTTPAuthorizationCredentials = Depends(security)):
@@ -426,14 +532,246 @@ async def extend_user_access_endpoint(request: ExtendAccessRequest, credentials:
     return result
 
 @app.delete("/api/v1/admin/users/{user_id}")
-async def deactivate_user_endpoint(user_id: int, credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """Deactivate a user (super_admin only)"""
-    app_logger.info(f"User deactivation request for ID: {user_id}")
-    result = deactivate_user(user_id, credentials.credentials)
-    app_logger.info(f"User deactivation result: {result['message']}")
+async def deactivate_user_endpoint(user_id, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Delete a user completely (super_admin only)"""
+    app_logger.info(f"User deletion request for: {user_id}")
+    result = delete_user(user_id, credentials.credentials)
+    app_logger.info(f"User deletion result: {result['message']}")
     return result
 
-@app.get("/api/v1/user/profile", response_model=StandardResponse)
+# Campaign CRUD endpoints
+@app.post("/api/v1/campaigns")
+async def create_campaign_endpoint(request: dict, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Create a new campaign (admin and super_admin only)"""
+    current_user = get_user_from_token(credentials.credentials)
+    require_minimum_admin(current_user)
+    
+    # Mock campaign creation
+    new_campaign = {
+        "id": len(campaigns_db) + 1,
+        "name": request.get("name"),
+        "status": request.get("status", "draft"),
+        "leads": 0,
+        "conversion_rate": 0,
+        "created_by": current_user["username"]
+    }
+    campaigns_db.append(new_campaign)
+    
+    return {
+        "message": "Campaign created successfully",
+        "campaign": new_campaign
+    }
+
+@app.put("/api/v1/campaigns/{campaign_id}")
+async def update_campaign_endpoint(campaign_id: int, request: dict, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Update an existing campaign (admin and super_admin only)"""
+    current_user = get_user_from_token(credentials.credentials)
+    require_minimum_admin(current_user)
+    
+    # Find and update campaign
+    for campaign in campaigns_db:
+        if campaign["id"] == campaign_id:
+            campaign.update(request)
+            return {
+                "message": "Campaign updated successfully",
+                "campaign": campaign
+            }
+    
+    raise HTTPException(status_code=404, detail="Campaign not found")
+
+@app.delete("/api/v1/campaigns/{campaign_id}")
+async def delete_campaign_endpoint(campaign_id: int, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Delete a campaign (admin and super_admin only)"""
+    current_user = get_user_from_token(credentials.credentials)
+    require_minimum_admin(current_user)
+    
+    # Find and remove campaign
+    for i, campaign in enumerate(campaigns_db):
+        if campaign["id"] == campaign_id:
+            campaigns_db.pop(i)
+            return {"message": "Campaign deleted successfully"}
+    
+    raise HTTPException(status_code=404, detail="Campaign not found")
+
+# Leads CRUD endpoints
+@app.put("/api/v1/leads/{lead_id}")
+async def update_lead_endpoint(lead_id: int, request: dict, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Update an existing lead (admin and super_admin only)"""
+    current_user = get_user_from_token(credentials.credentials)
+    require_minimum_admin(current_user)
+    
+    # Find and update lead
+    for lead in leads_db:
+        if lead["id"] == lead_id:
+            lead.update(request)
+            return {
+                "message": "Lead updated successfully",
+                "lead": lead
+            }
+    
+    raise HTTPException(status_code=404, detail="Lead not found")
+
+@app.delete("/api/v1/leads/{lead_id}")
+async def delete_lead_endpoint(lead_id: int, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Delete a lead (admin and super_admin only)"""
+    current_user = get_user_from_token(credentials.credentials)
+    require_minimum_admin(current_user)
+    
+    # Find and remove lead
+    for i, lead in enumerate(leads_db):
+        if lead["id"] == lead_id:
+            leads_db.pop(i)
+            return {"message": "Lead deleted successfully"}
+    
+    raise HTTPException(status_code=404, detail="Lead not found")
+
+# Channels CRUD endpoints
+@app.post("/api/v1/channels")
+async def create_channel_endpoint(request: dict, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Create a new channel (admin and super_admin only)"""
+    current_user = get_user_from_token(credentials.credentials)
+    require_minimum_admin(current_user)
+    
+    # Mock channel creation
+    new_channel = {
+        "id": len(channels_db) + 1,
+        "name": request.get("name"),
+        "connected": request.get("connected", False),
+        "active": request.get("active", False),
+        "followers": request.get("followers", 0),
+        "created_by": current_user["username"]
+    }
+    channels_db.append(new_channel)
+    
+    return {
+        "message": "Channel created successfully",
+        "channel": new_channel
+    }
+
+@app.put("/api/v1/channels/{channel_id}")
+async def update_channel_endpoint(channel_id: int, request: dict, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Update an existing channel (admin and super_admin only)"""
+    current_user = get_user_from_token(credentials.credentials)
+    require_minimum_admin(current_user)
+    
+    # Find and update channel
+    for channel in channels_db:
+        if channel["id"] == channel_id:
+            channel.update(request)
+            return {
+                "message": "Channel updated successfully",
+                "channel": channel
+            }
+    
+    raise HTTPException(status_code=404, detail="Channel not found")
+
+@app.delete("/api/v1/channels/{channel_id}")
+async def delete_channel_endpoint(channel_id: int, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Delete a channel (admin and super_admin only)"""
+    current_user = get_user_from_token(credentials.credentials)
+    require_minimum_admin(current_user)
+    
+    # Find and remove channel
+    for i, channel in enumerate(channels_db):
+        if channel["id"] == channel_id:
+            channels_db.pop(i)
+            return {"message": "Channel deleted successfully"}
+    
+    raise HTTPException(status_code=404, detail="Channel not found")
+
+@app.post("/api/v1/channels/{channel_id}/connect")
+async def connect_channel_endpoint(channel_id: int, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Connect a channel (admin and super_admin only)"""
+    current_user = get_user_from_token(credentials.credentials)
+    require_minimum_admin(current_user)
+    
+    # Find and connect channel
+    for channel in channels_db:
+        if channel["id"] == channel_id:
+            channel["connected"] = True
+            channel["active"] = True
+            return {
+                "message": "Channel connected successfully",
+                "channel": channel
+            }
+    
+    raise HTTPException(status_code=404, detail="Channel not found")
+
+@app.post("/api/v1/channels/{channel_id}/disconnect")
+async def disconnect_channel_endpoint(channel_id: int, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Disconnect a channel (admin and super_admin only)"""
+    current_user = get_user_from_token(credentials.credentials)
+    require_minimum_admin(current_user)
+    
+    # Find and disconnect channel
+    for channel in channels_db:
+        if channel["id"] == channel_id:
+            channel["connected"] = False
+            channel["active"] = False
+            return {
+                "message": "Channel disconnected successfully",
+                "channel": channel
+            }
+    
+    raise HTTPException(status_code=404, detail="Channel not found")
+
+# Scheduler CRUD endpoints
+@app.post("/api/v1/scheduler")
+async def create_schedule_endpoint(request: dict, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Create a new schedule (admin and super_admin only)"""
+    current_user = get_user_from_token(credentials.credentials)
+    require_minimum_admin(current_user)
+    
+    # Mock schedule creation
+    new_schedule = {
+        "id": len(scheduler_db) + 1,
+        "campaign_id": request.get("campaign_id"),
+        "task_name": request.get("task_name"),
+        "scheduled_date": request.get("scheduled_date"),
+        "scheduled_time": request.get("scheduled_time"),
+        "status": request.get("status", "pending"),
+        "priority": request.get("priority", "medium"),
+        "created_by": current_user["username"]
+    }
+    scheduler_db.append(new_schedule)
+    
+    return {
+        "message": "Schedule created successfully",
+        "schedule": new_schedule
+    }
+
+@app.put("/api/v1/scheduler/{schedule_id}")
+async def update_schedule_endpoint(schedule_id: int, request: dict, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Update an existing schedule (admin and super_admin only)"""
+    current_user = get_user_from_token(credentials.credentials)
+    require_minimum_admin(current_user)
+    
+    # Find and update schedule
+    for schedule in scheduler_db:
+        if schedule["id"] == schedule_id:
+            schedule.update(request)
+            return {
+                "message": "Schedule updated successfully",
+                "schedule": schedule
+            }
+    
+    raise HTTPException(status_code=404, detail="Schedule not found")
+
+@app.delete("/api/v1/scheduler/{schedule_id}")
+async def delete_schedule_endpoint(schedule_id: int, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Delete a schedule (admin and super_admin only)"""
+    current_user = get_user_from_token(credentials.credentials)
+    require_minimum_admin(current_user)
+    
+    # Find and remove schedule
+    for i, schedule in enumerate(scheduler_db):
+        if schedule["id"] == schedule_id:
+            scheduler_db.pop(i)
+            return {"message": "Schedule deleted successfully"}
+    
+    raise HTTPException(status_code=404, detail="Schedule not found")
+
+@app.get("/api/v1/user/profile")
 async def get_user_profile_endpoint(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Get current user profile"""
     app_logger.info("User profile requested")
@@ -441,7 +779,7 @@ async def get_user_profile_endpoint(credentials: HTTPAuthorizationCredentials = 
     app_logger.info(f"User profile result: {result['message']}")
     return result
 
-@app.get("/api/v1/health", response_model=StandardResponse)
+@app.get("/api/v1/health")
 async def health_check_endpoint():
     """System health check"""
     app_logger.info("Health check requested")
@@ -455,7 +793,7 @@ async def get_roles_endpoint(credentials: HTTPAuthorizationCredentials = Depends
     """Get all roles and permissions (super_admin only)"""
     app_logger.info("Roles data requested")
     result = get_roles_service(credentials.credentials)
-    app_logger.info(f"Returned {len(result['roles'])} roles")
+    app_logger.info(f"Returned {len(result['data']['roles'])} roles")
     return result
 
 @app.post("/api/v1/admin/roles")
@@ -492,24 +830,38 @@ async def update_permissions_endpoint(role_key: str, request: PermissionUpdateRe
     app_logger.info(f"Permissions update result: {result['message']}")
     return result
 
+@app.post("/api/v1/trigger-refresh")
+async def trigger_refresh_endpoint():
+    """Trigger frontend refresh after data changes"""
+    app_logger.info("Refresh trigger received - notifying frontend clients")
+    return {
+        "message": "Refresh triggered successfully",
+        "timestamp": datetime.utcnow().isoformat(),
+        "type": "data_update"
+    }
+
+@app.get("/api/v1/check-refresh")
+async def check_refresh_endpoint():
+    """Check if refresh is needed (for polling)"""
+    # Simple implementation - always return no refresh needed
+    # In a real implementation, this would check for recent changes
+    return {
+        "type": "no_refresh",
+        "message": "No refresh needed",
+        "timestamp": datetime.utcnow().isoformat()
+    }
+
 if __name__ == "__main__":
     import uvicorn
     
-    # Initialize database and seed data if not in DEV_MODE
-    if not DEV_MODE:
-        app_logger.info("Initializing database (DEV_MODE=False)")
-        try:
-            init_database()
-            app_logger.info("Database initialization completed successfully")
-        except Exception as e:
-            app_logger.error(f"Database initialization failed: {e}")
-    
-    # Start server on port 8001 to avoid conflicts
-    app_logger.info(f"Starting Social Connect API server on port 8001")
+    # Start server with proper configuration
+    app_logger.info(f"Starting Social Connect API server on port {API_PORT}")
     uvicorn.run(
         "extension:app",
         host=API_HOST,
-        port=8001,  # Changed from API_PORT to avoid conflicts
+        port=API_PORT,
         reload=True,
-        log_level="info"
+        log_level="info",
+        log_config=None,  # Disable default uvicorn logging to use our custom logger
+        access_log=None  # Disable access log to prevent backend.log creation
     )

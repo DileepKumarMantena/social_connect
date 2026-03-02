@@ -41,7 +41,7 @@ function ProtectedRoutes() {
   return (
     <Routes>
 
-      {!loggedin ?
+      {!isAuthenticated ?
         <Route path='/' element={<Login />} /> :
         <Route path='/' element={
           <AppLayout onLogout={handleLogout}> <Dashboard /></AppLayout>

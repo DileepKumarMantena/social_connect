@@ -1,0 +1,56 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "superadmin",
+      "email": "superadmin@company.com",
+      "password_hash": "d357150517d3e65ae84985f7b705ad99fdc38372a22ecea0cecaf8aaf820a249",
+      "name": "Super Admin",
+      "role": "super_admin",
+      "companyid": 0,
+      "activitystatus": true,
+      "access_expires_at": null,
+      "created_by": null,
+      "created_at": "2026-03-02T18:22:00Z"
+    },
+    {
+      "id": 2,
+      "username": "admin1",
+      "email": "admin1@company.com",
+      "password_hash": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+      "name": "Admin One",
+      "role": "admin",
+      "companyid": 1,
+      "activitystatus": true,
+      "access_expires_at": null,
+      "created_by": 1,
+      "created_at": "2026-03-02T18:22:00Z"
+    },
+    {
+      "id": 3,
+      "username": "user1",
+      "email": "user1@company.com",
+      "password_hash": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+      "name": "User One",
+      "role": "user",
+      "companyid": 1,
+      "activitystatus": true,
+      "access_expires_at": null,
+      "created_by": 2,
+      "created_at": "2026-03-02T18:22:00Z"
+    },
+    {
+      "username": "dileep",
+      "email": "dileep@gmail.com",
+      "password_hash": "1624543fd88bb45aa8fb0b8673ecbdadfc8a80692587a593239762a550247c10",
+      "name": "Dileep",
+      "role": "admin",
+      "companyid": 3,
+      "activitystatus": true,
+      "access_expires_at": "2026-03-03T14:06:19.951774",
+      "created_by": "superadmin",
+      "id": 4,
+      "created_at": "2026-03-02T14:06:19.952206Z"
+    }
+  ]
+}

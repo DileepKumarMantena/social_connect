@@ -18,7 +18,15 @@ import {
     CircularProgress,
     Alert,
     TextField,
-    InputAdornment
+    InputAdornment,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem
 } from '@mui/material';
 import {
     Add as AddIcon,
@@ -31,11 +39,19 @@ import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 
 const LeadsPage = () => {
-    const { getAuthHeaders, user } = useAuth();
+    const { getAuthHeaders } = useAuth();
     const [leads, setLeads] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
+    const [openDialog, setOpenDialog] = useState(false);
+    const [editingLead, setEditingLead] = useState(null);
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        status: 'new'
+    });
 
     useEffect(() => {
         fetchLeads();
@@ -52,7 +68,12 @@ const LeadsPage = () => {
             setError('');
         } catch (error) {
             console.error('Error fetching leads:', error);
-            setError('Failed to fetch leads');
+            // Ensure error is a string, not an object
+            const errorMessage = typeof error === 'string' ? error : 
+                              error.response?.data?.message || 
+                              error.message || 
+                              'Failed to fetch leads';
+            setError(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -72,20 +93,93 @@ const LeadsPage = () => {
     };
 
     const handleCreateLead = () => {
-        // TODO: Implement create lead dialog
-        console.log('Create lead');
+        setOpenDialog(true);
+    };
+
+    const handleSaveLead = async () => {
+        try {
+            if (editingLead) {
+                // Update existing lead
+                const response = await axios.put(
+                    `${process.env.REACT_APP_API_LINKS}/api/v1/leads/${editingLead.id}`,
+                    formData,
+                    { headers: getAuthHeaders() }
+                );
+                // Update the lead in the leads array
+                setLeads(leads.map(l => 
+                    l.id === editingLead.id ? response.data.lead : l
+                ));
+            } else {
+                // Create new lead
+                const response = await axios.post(
+                    `${process.env.REACT_APP_API_LINKS}/api/v1/leads`,
+                    formData,
+                    { headers: getAuthHeaders() }
+                );
+                // Add the new lead to the leads array using functional update
+                setLeads(prevLeads => {
+                    const newLeads = [...prevLeads, response.data.lead];
+                    console.log('Updated leads array:', newLeads);
+                    console.log('New lead added:', response.data.lead);
+                    return newLeads;
+                });
+            }
+            setOpenDialog(false);
+            setEditingLead(null);
+            setFormData({ name: '', email: '', phone: '', status: 'new' });
+            console.log(`Lead ${editingLead ? 'updated' : 'created'}:`, editingLead ? formData : formData);
+        } catch (error) {
+            console.error(`Error ${editingLead ? 'updating' : 'creating'} lead:`, error);
+            const errorMessage = error.response?.data?.message || error.message || `Failed to ${editingLead ? 'update' : 'create'} lead`;
+            setError(errorMessage);
+        }
     };
 
     const handleEditLead = (lead) => {
-        // TODO: Implement edit lead dialog
-        console.log('Edit lead:', lead);
+        setEditingLead(lead);
+        setFormData({
+            name: lead.name,
+            email: lead.email,
+            phone: lead.phone,
+            status: lead.status
+        });
+        setOpenDialog(true);
     };
 
-    const handleDeleteLead = (lead) => {
-        // TODO: Implement delete lead confirmation
-        console.log('Delete lead:', lead);
+    const handleDeleteLead = async (lead) => {
+        if (window.confirm(`Are you sure you want to delete "${lead.name}"?`)) {
+            try {
+                await axios.delete(
+                    `${process.env.REACT_APP_API_LINKS}/api/v1/leads/${lead.id}`,
+                    { headers: getAuthHeaders() }
+                );
+                // Remove the lead from the leads array
+                setLeads(leads.filter(l => l.id !== lead.id));
+                console.log('Lead deleted successfully');
+            } catch (error) {
+                console.error('Error deleting lead:', error);
+            }
+        }
     };
 
+    const handleStatusChange = async (lead, newStatus) => {
+        try {
+            const response = await axios.put(
+                `${process.env.REACT_APP_API_LINKS}/api/v1/leads/${lead.id}`,
+                { status: newStatus },
+                { headers: getAuthHeaders() }
+            );
+            // Update the lead in the leads array
+            setLeads(leads.map(l => 
+                l.id === lead.id ? { ...l, status: newStatus } : l
+            ));
+            console.log('Lead status updated successfully');
+        } catch (error) {
+            console.error('Error updating lead status:', error);
+        }
+    };
+
+    // Filter leads based on search term
     const filteredLeads = leads.filter(lead =>
         lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         lead.email.toLowerCase().includes(searchTerm.toLowerCase())
@@ -96,6 +190,14 @@ const LeadsPage = () => {
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
                 <CircularProgress />
             </Box>
+        );
+    }
+
+    if (error) {
+        return (
+            <Alert severity="error" sx={{ mb: 2 }}>
+                {error}
+            </Alert>
         );
     }
 
@@ -113,12 +215,6 @@ const LeadsPage = () => {
                     Add Lead
                 </Button>
             </Box>
-
-            {error && (
-                <Alert severity="error" sx={{ mb: 2 }}>
-                    {error}
-                </Alert>
-            )}
 
             <Grid container spacing={3}>
                 <Grid item xs={12} md={8}>
@@ -165,11 +261,17 @@ const LeadsPage = () => {
                                                 </TableCell>
                                                 <TableCell>{lead.email}</TableCell>
                                                 <TableCell>
-                                                    <Chip
-                                                        label={lead.status}
-                                                        color={getStatusColor(lead.status)}
-                                                        size="small"
-                                                    />
+                                                    <FormControl size="small" sx={{ minWidth: 120 }}>
+                                                        <Select
+                                                            value={lead.status}
+                                                            onChange={(e) => handleStatusChange(lead, e.target.value)}
+                                                            size="small"
+                                                        >
+                                                            <MenuItem value="new">New</MenuItem>
+                                                            <MenuItem value="contacted">Contacted</MenuItem>
+                                                            <MenuItem value="converted">Converted</MenuItem>
+                                                        </Select>
+                                                    </FormControl>
                                                 </TableCell>
                                                 <TableCell>{lead.campaign_id}</TableCell>
                                                 <TableCell>{lead.created_by || 'Unknown'}</TableCell>
@@ -234,10 +336,59 @@ const LeadsPage = () => {
                                     {leads.filter(l => l.status === 'converted').length}
                                 </Typography>
                             </Box>
+                            {/* Debug info - remove later */}
+                            <Box mt={2} p={1} bgcolor="grey.100">
+                                <Typography variant="caption" color="textSecondary">
+                                    Debug: Total leads in state: {leads.length}
+                                </Typography>
+                            </Box>
                         </CardContent>
                     </Card>
                 </Grid>
             </Grid>
+
+            {/* Create Lead Dialog */}
+            <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="sm" fullWidth>
+                <DialogTitle>{editingLead ? 'Edit Lead' : 'Create New Lead'}</DialogTitle>
+                <form onSubmit={(e) => { e.preventDefault(); handleSaveLead(); }}>
+                    <DialogContent>
+                        <TextField
+                            fullWidth
+                            label="Name"
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            margin="normal"
+                            required
+                        />
+                        <TextField
+                            fullWidth
+                            label="Email"
+                            type="email"
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                            margin="normal"
+                            required
+                        />
+                        <TextField
+                            fullWidth
+                            label="Phone"
+                            value={formData.phone}
+                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                            margin="normal"
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => {
+                            setOpenDialog(false);
+                            setEditingLead(null);
+                            setFormData({ name: '', email: '', phone: '', status: 'new' });
+                        }}>Cancel</Button>
+                        <Button type="submit" variant="contained">
+                            {editingLead ? 'Update Lead' : 'Create Lead'}
+                        </Button>
+                    </DialogActions>
+                </form>
+            </Dialog>
         </Box>
     );
 };

@@ -1,0 +1,262 @@
+{
+  "roles": {
+    "super_admin": {
+      "roleId": "super_admin",
+      "roleName": "Super Admin",
+      "permissions": {
+        "role_management": {
+          "Create": true,
+          "Read": true,
+          "Update": true,
+          "Delete": true
+        },
+        "campaigns": {
+          "Create": true,
+          "Read": true,
+          "Update": true,
+          "Delete": true
+        },
+        "analytics": {
+          "Create": true,
+          "Read": true,
+          "Update": true,
+          "Delete": true
+        },
+        "leads": {
+          "Create": true,
+          "Read": true,
+          "Update": true,
+          "Delete": true
+        },
+        "channels": {
+          "Create": true,
+          "Read": true,
+          "Update": true,
+          "Delete": true
+        },
+        "scheduler": {
+          "Create": true,
+          "Read": true,
+          "Update": true,
+          "Delete": true
+        }
+      }
+    },
+    "admin": {
+      "roleId": "admin",
+      "roleName": "Admin",
+      "permissions": {
+        "campaigns": {
+          "Create": true,
+          "Read": true,
+          "Update": true,
+          "Delete": true
+        },
+        "analytics": {
+          "Create": false,
+          "Read": true,
+          "Update": false,
+          "Delete": false
+        },
+        "leads": {
+          "Create": true,
+          "Read": true,
+          "Update": true,
+          "Delete": true
+        },
+        "channels": {
+          "Create": true,
+          "Read": true,
+          "Update": true,
+          "Delete": true
+        },
+        "scheduler": {
+          "Create": true,
+          "Read": true,
+          "Update": true,
+          "Delete": true
+        }
+      }
+    },
+    "marketing_manager": {
+      "roleId": "marketing_manager",
+      "roleName": "Marketing Manager",
+      "permissions": {
+        "campaigns": {
+          "Create": true,
+          "Read": true,
+          "Update": false,
+          "Delete": false
+        },
+        "analytics": {
+          "Create": false,
+          "Read": true,
+          "Update": false,
+          "Delete": false
+        },
+        "leads": {
+          "Create": true,
+          "Read": true,
+          "Update": true,
+          "Delete": false
+        },
+        "channels": {
+          "Create": false,
+          "Read": true,
+          "Update": false,
+          "Delete": false
+        },
+        "scheduler": {
+          "Create": true,
+          "Read": true,
+          "Update": true,
+          "Delete": false
+        }
+      }
+    },
+    "content_editor": {
+      "roleId": "content_editor",
+      "roleName": "Content Editor",
+      "permissions": {
+        "campaigns": {
+          "Create": false,
+          "Read": true,
+          "Update": true,
+          "Delete": false
+        },
+        "analytics": {
+          "Create": false,
+          "Read": true,
+          "Update": false,
+          "Delete": false
+        },
+        "leads": {
+          "Create": false,
+          "Read": true,
+          "Update": false,
+          "Delete": false
+        },
+        "channels": {
+          "Create": false,
+          "Read": true,
+          "Update": false,
+          "Delete": false
+        },
+        "scheduler": {
+          "Create": false,
+          "Read": true,
+          "Update": false,
+          "Delete": false
+        }
+      }
+    },
+    "sales_manager": {
+      "roleId": "sales_manager",
+      "roleName": "Sales Manager",
+      "permissions": {
+        "campaigns": {
+          "Create": false,
+          "Read": true,
+          "Update": false,
+          "Delete": false
+        },
+        "analytics": {
+          "Create": false,
+          "Read": true,
+          "Update": false,
+          "Delete": false
+        },
+        "leads": {
+          "Create": true,
+          "Read": true,
+          "Update": true,
+          "Delete": true
+        },
+        "channels": {
+          "Create": false,
+          "Read": true,
+          "Update": false,
+          "Delete": false
+        },
+        "scheduler": {
+          "Create": false,
+          "Read": true,
+          "Update": false,
+          "Delete": false
+        }
+      }
+    },
+    "user": {
+      "roleId": "user",
+      "roleName": "User",
+      "permissions": {
+        "campaigns": {
+          "Create": false,
+          "Read": true,
+          "Update": false,
+          "Delete": false
+        },
+        "analytics": {
+          "Create": false,
+          "Read": false,
+          "Update": false,
+          "Delete": false
+        },
+        "leads": {
+          "Create": false,
+          "Read": true,
+          "Update": false,
+          "Delete": false
+        },
+        "channels": {
+          "Create": false,
+          "Read": true,
+          "Update": false,
+          "Delete": false
+        },
+        "scheduler": {
+          "Create": false,
+          "Read": true,
+          "Update": false,
+          "Delete": false
+        }
+      }
+    },
+    "lead": {
+      "roleId": "lead",
+      "roleName": "Lead",
+      "permissions": {
+        "campaigns": {
+          "Create": true,
+          "Read": true,
+          "Update": true,
+          "Delete": true
+        },
+        "analytics": {
+          "Create": false,
+          "Read": true,
+          "Update": false,
+          "Delete": false
+        },
+        "leads": {
+          "Create": true,
+          "Read": true,
+          "Update": true,
+          "Delete": true
+        },
+        "channels": {
+          "Create": true,
+          "Read": true,
+          "Update": true,
+          "Delete": true
+        },
+        "scheduler": {
+          "Create": true,
+          "Read": true,
+          "Update": true,
+          "Delete": true
+        }
+      }
+    }
+  }
+}

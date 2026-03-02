@@ -79,10 +79,11 @@ const RoleManagementPage = () => {
                 `${process.env.REACT_APP_API_LINKS}/api/v1/admin/roles`,
                 { headers: getAuthHeaders() }
             );
-            setRoles(response.data.roles || []);
-            setPermissions(response.data.permissions || {});
-            if (response.data.roles?.length > 0 && !selectedRole) {
-                setSelectedRole(response.data.roles[0]);
+            const rolesData = response.data?.data?.roles || response.data?.roles || {};
+            setRoles(Object.keys(rolesData));
+            setPermissions(rolesData);
+            if (Object.keys(rolesData).length > 0 && !selectedRole) {
+                setSelectedRole(Object.keys(rolesData)[0]);
             }
         } catch (error) {
             console.error('Error fetching roles:', error);
@@ -100,12 +101,37 @@ const RoleManagementPage = () => {
         try {
             const response = await axios.post(
                 `${process.env.REACT_APP_API_LINKS}/api/v1/admin/roles`,
-                { role_name: roleName },
+                { 
+                    role_name: roleName,
+                    role_key: roleName.toLowerCase().replace(/\s+/g, '_'), // Convert to role_key format
+                    permissions: {
+                        "campaigns": {"Create": true, "Read": true, "Update": true, "Delete": true},
+                        "analytics": {"Create": false, "Read": true, "Update": false, "Delete": false},
+                        "leads": {"Create": true, "Read": true, "Update": true, "Delete": true},
+                        "channels": {"Create": true, "Read": true, "Update": true, "Delete": true},
+                        "scheduler": {"Create": true, "Read": true, "Update": true, "Delete": true}
+                    }
+                },
                 { headers: getAuthHeaders() }
             );
+            
+            if (response.data.success || response.data.message) {
+                // Refresh roles list after successful creation
+                await fetchRoles();
+                setSnackbar({ 
+                    open: true, 
+                    message: 'Role created successfully', 
+                    severity: 'success' 
+                });
+            }
+            
             return response.data;
         } catch (error) {
-            throw error;
+            setSnackbar({ 
+                open: true, 
+                message: error.response?.data?.detail || 'Failed to create role', 
+                severity: 'error' 
+            });
         }
     };
 
@@ -116,9 +142,24 @@ const RoleManagementPage = () => {
                 { role_name: roleName },
                 { headers: getAuthHeaders() }
             );
+            
+            if (response.data.success || response.data.message) {
+                // Refresh roles list after successful update
+                await fetchRoles();
+                setSnackbar({ 
+                    open: true, 
+                    message: 'Role updated successfully', 
+                    severity: 'success' 
+                });
+            }
+            
             return response.data;
         } catch (error) {
-            throw error;
+            setSnackbar({ 
+                open: true, 
+                message: error.response?.data?.detail || 'Failed to update role', 
+                severity: 'error' 
+            });
         }
     };
 
@@ -128,9 +169,24 @@ const RoleManagementPage = () => {
                 `${process.env.REACT_APP_API_LINKS}/api/v1/admin/roles/${roleKey}`,
                 { headers: getAuthHeaders() }
             );
+            
+            if (response.data.success || response.data.message) {
+                // Refresh roles list after successful deletion
+                await fetchRoles();
+                setSnackbar({ 
+                    open: true, 
+                    message: 'Role deleted successfully', 
+                    severity: 'success' 
+                });
+            }
+            
             return response.data;
         } catch (error) {
-            throw error;
+            setSnackbar({ 
+                open: true, 
+                message: error.response?.data?.detail || 'Failed to delete role', 
+                severity: 'error' 
+            });
         }
     };
 
@@ -141,9 +197,24 @@ const RoleManagementPage = () => {
                 { role_key: roleKey, permissions },
                 { headers: getAuthHeaders() }
             );
+            
+            if (response.data.success || response.data.message) {
+                // Refresh roles list after successful update
+                await fetchRoles();
+                setSnackbar({ 
+                    open: true, 
+                    message: 'Permissions updated successfully', 
+                    severity: 'success' 
+                });
+            }
+            
             return response.data;
         } catch (error) {
-            throw error;
+            setSnackbar({ 
+                open: true, 
+                message: error.response?.data?.detail || 'Failed to update permissions', 
+                severity: 'error' 
+            });
         }
     };
 
@@ -381,13 +452,14 @@ const RoleManagementPage = () => {
                         <Box display="flex" gap={1} flexWrap="wrap">
                             {roles.map((role) => {
                                 const roleLabel = role.charAt(0).toUpperCase() + role.slice(1).replace(/_/g, ' ');
+                                const isProtectedRole = ['super_admin'].includes(role);
                                 return (
                                     <Chip
                                         key={role}
                                         label={roleLabel}
                                         onClick={() => setSelectedRole(role)}
-                                        onDelete={(e) => handleOpenDeleteConfirm(role, e)}
-                                        deleteIcon={<Delete />}
+                                        onDelete={isProtectedRole ? undefined : (e) => handleOpenDeleteConfirm(role, e)}
+                                        deleteIcon={isProtectedRole ? undefined : <Delete />}
                                         color={selectedRole === role ? "primary" : "default"}
                                         variant={selectedRole === role ? "filled" : "outlined"}
                                         sx={{
@@ -397,8 +469,11 @@ const RoleManagementPage = () => {
                                             '& .MuiChip-deleteIcon': {
                                                 color: selectedRole === role ? '#fff' : '#d32f2f',
                                                 '&:hover': { color: '#b71c1c' }
-                                            }
+                                            },
+                                            opacity: isProtectedRole ? 0.7 : 1,
+                                            border: isProtectedRole ? '2px dashed #ccc' : 'none'
                                         }}
+                                        title={isProtectedRole ? 'Protected role - cannot be deleted' : 'Click to delete role'}
                                     />
                                 );
                             })}

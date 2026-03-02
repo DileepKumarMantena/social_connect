@@ -16,7 +16,16 @@ import {
     IconButton,
     Grid,
     CircularProgress,
-    Alert
+    Alert,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    TextField,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem
 } from '@mui/material';
 import {
     Add as AddIcon,
@@ -32,6 +41,12 @@ const CampaignsPage = () => {
     const [campaigns, setCampaigns] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [openDialog, setOpenDialog] = useState(false);
+    const [editingCampaign, setEditingCampaign] = useState(null);
+    const [formData, setFormData] = useState({
+        name: '',
+        status: 'draft'
+    });
 
     useEffect(() => {
         fetchCampaigns();
@@ -68,18 +83,64 @@ const CampaignsPage = () => {
     };
 
     const handleCreateCampaign = () => {
-        // TODO: Implement create campaign dialog
-        console.log('Create campaign');
+        setOpenDialog(true);
+    };
+
+    const handleSaveCampaign = async () => {
+        try {
+            if (editingCampaign) {
+                // Update existing campaign
+                const response = await axios.put(
+                    `${process.env.REACT_APP_API_LINKS}/api/v1/campaigns/${editingCampaign.id}`,
+                    formData,
+                    { headers: getAuthHeaders() }
+                );
+                // Update the campaign in the campaigns array
+                setCampaigns(campaigns.map(c => 
+                    c.id === editingCampaign.id ? response.data.campaign : c
+                ));
+            } else {
+                // Create new campaign
+                const response = await axios.post(
+                    `${process.env.REACT_APP_API_LINKS}/api/v1/campaigns`,
+                    formData,
+                    { headers: getAuthHeaders() }
+                );
+                // Add the new campaign to the campaigns array
+                setCampaigns([...campaigns, response.data.campaign]);
+            }
+            setOpenDialog(false);
+            setEditingCampaign(null);
+            setFormData({ name: '', status: 'draft' });
+            console.log(`Campaign ${editingCampaign ? 'updated' : 'created'}:`, editingCampaign ? formData : formData);
+        } catch (error) {
+            console.error(`Error ${editingCampaign ? 'updating' : 'creating'} campaign:`, error);
+        }
     };
 
     const handleEditCampaign = (campaign) => {
-        // TODO: Implement edit campaign dialog
-        console.log('Edit campaign:', campaign);
+        setEditingCampaign(campaign);
+        setFormData({
+            name: campaign.name,
+            status: campaign.status
+        });
+        setOpenDialog(true);
     };
 
-    const handleDeleteCampaign = (campaign) => {
-        // TODO: Implement delete campaign confirmation
-        console.log('Delete campaign:', campaign);
+    const handleDeleteCampaign = async (campaign) => {
+        if (window.confirm(`Are you sure you want to delete "${campaign.name}"?`)) {
+            try {
+                await axios.delete(
+                    `${process.env.REACT_APP_API_LINKS}/api/v1/campaigns/${campaign.id}`,
+                    { headers: getAuthHeaders() }
+                );
+                // Remove the campaign from the campaigns array
+                setCampaigns(campaigns.filter(c => c.id !== campaign.id));
+                console.log('Campaign deleted successfully');
+            } catch (error) {
+                console.error('Error deleting campaign:', error);
+            }
+        }
     };
 
     if (loading) {
@@ -201,6 +262,44 @@ const CampaignsPage = () => {
                     </Card>
                 </Grid>
             </Grid>
+
+            {/* Create Campaign Dialog */}
+            <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="sm" fullWidth>
+                <DialogTitle>{editingCampaign ? 'Edit Campaign' : 'Create New Campaign'}</DialogTitle>
+                <form onSubmit={(e) => { e.preventDefault(); handleSaveCampaign(); }}>
+                    <DialogContent>
+                        <TextField
+                            fullWidth
+                            label="Campaign Name"
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            margin="normal"
+                            required
+                        />
+                        <FormControl fullWidth margin="normal">
+                            <InputLabel>Status</InputLabel>
+                            <Select
+                                value={formData.status}
+                                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                            >
+                                <MenuItem value="draft">Draft</MenuItem>
+                                <MenuItem value="active">Active</MenuItem>
+                                <MenuItem value="completed">Completed</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => {
+                            setOpenDialog(false);
+                            setEditingCampaign(null);
+                            setFormData({ name: '', status: 'draft' });
+                        }}>Cancel</Button>
+                        <Button type="submit" variant="contained">
+                            {editingCampaign ? 'Update Campaign' : 'Create Campaign'}
+                        </Button>
+                    </DialogActions>
+                </form>
+            </Dialog>
         </Box>
     );
 };

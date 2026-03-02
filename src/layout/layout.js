@@ -86,6 +86,12 @@ export default function AppLayout({ onLogout, children }) {
     const location = useLocation(); // Hook to get current URL for active states
     const currentPath = location.pathname || window.location.hash.replace('#', '') || '/';
 
+    // Helper function to check read permissions
+    const hasReadPermission = (module) => {
+        if (!permissions || !module) return true; // Always show if no module specified
+        return permissions[module]?.Read || false;
+    };
+
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
     
@@ -197,8 +203,8 @@ export default function AppLayout({ onLogout, children }) {
                             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                                 <Avatar sx={{ bgcolor: alpha("#fff", 0.2) }}><AccountCircleIcon /></Avatar>
                                 <Box sx={{ display: { xs: "none", sm: "block" } }}>
-                                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{user?.name}</Typography>
-                                    <Typography variant="caption" sx={{ opacity: 0.8 }}>{user?.role}</Typography>
+                                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{logindata?.name}</Typography>
+                                    <Typography variant="caption" sx={{ opacity: 0.8 }}>{logindata?.role}</Typography>
                                 </Box>
                             </Box>
                         </Box>

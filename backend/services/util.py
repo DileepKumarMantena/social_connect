@@ -4,7 +4,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
-from constants import OTP_EXPIRY_MINUTES, OTP_LENGTH, users_db
+from constants import OTP_EXPIRY_MINUTES, OTP_LENGTH, users_db, created_users
 import os
 from jose import JWTError, jwt
 from constants import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES,SMTP_EMAIL, SMTP_PASSWORD, SMTP_SERVER, SMTP_PORT
@@ -138,16 +138,7 @@ class RoleMiddleware:
     @staticmethod
     def get_current_user(token: str) -> dict:
         """Get current user from token"""
-        try:
-            payload = verify_token(token)
-            return payload
-        except Exception as e:
-            app_logger.error(f"Token verification failed: {e}")
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid authentication credentials",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+        return get_user_from_token(token)
     
     @staticmethod
     def require_role(required_role: str):
@@ -261,7 +252,7 @@ def verify_token(token: str) -> dict:
     except JWTError:
         return None
 
-def get_current_user(token: str) -> dict:
+def get_user_from_token(token: str) -> dict:
     """Get current user from JWT token"""
     payload = verify_token(token)
     if payload is None:
@@ -272,6 +263,8 @@ def get_current_user(token: str) -> dict:
         return None
     
     user = users_db.get(username)
+    if user is None:
+        user = created_users.get(username)
     if user is None:
         return None
     

@@ -1,0 +1,28 @@
+{
+  "analytics": [
+    {
+      "id": 1,
+      "metric": "Total Leads",
+      "value": 1247,
+      "change": "+12.5%",
+      "period": "last_30_days",
+      "created_at": "2026-03-02T18:22:00Z"
+    },
+    {
+      "id": 2,
+      "metric": "Conversion Rate",
+      "value": 8.3,
+      "change": "+2.1%",
+      "period": "last_30_days",
+      "created_at": "2026-03-02T18:22:00Z"
+    },
+    {
+      "id": 3,
+      "metric": "Active Campaigns",
+      "value": 3,
+      "change": "0%",
+      "period": "current",
+      "created_at": "2026-03-02T18:22:00Z"
+    }
+  ]
+}

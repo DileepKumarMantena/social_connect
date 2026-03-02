@@ -34,33 +34,54 @@ users_db = {
         "activitystatus": True,
         "access_expires_at": None,
         "created_by": 2
+    },
+    "marketing1": {
+        "username": "marketing1",
+        "email": "marketing1@company.com",
+        "password_hash": hashlib.sha256("Marketing123!".encode()).hexdigest(),
+        "name": "Marketing Manager",
+        "role": "marketing_manager",
+        "companyid": 1,
+        "activitystatus": True,
+        "access_expires_at": None,
+        "created_by": 1
+    },
+    "content1": {
+        "username": "content1",
+        "email": "content1@company.com",
+        "password_hash": hashlib.sha256("Content123!".encode()).hexdigest(),
+        "name": "Content Editor",
+        "role": "content_editor",
+        "companyid": 1,
+        "activitystatus": True,
+        "access_expires_at": None,
+        "created_by": 1
+    },
+    "sales1": {
+        "username": "sales1",
+        "email": "sales1@company.com",
+        "password_hash": hashlib.sha256("Sales123!".encode()).hexdigest(),
+        "name": "Sales Manager",
+        "role": "sales_manager",
+        "companyid": 1,
+        "activitystatus": True,
+        "access_expires_at": None,
+        "created_by": 1
     }
 }
 
 # OTP storage (in production, use Redis or database)
 otp_storage = {}
 
-# Development Mode Configuration
-DEV_MODE = True  # Set to False to use database instead of mock data
-
-# Database Configuration
-DB_CONFIG = {
-    'host': '127.0.0.1',
-    'port': 3306,
-    'user': 'root',
-    'password': '',  # Try with no password first
-    'database': 'social_connect',
-    'autocommit': True
-}
-
-# SQLite fallback for testing
-SQLITE_DB_PATH = '/Users/dileepk/Documents/Projects/social_connect/backend/social_connect.db'
+# JSON Database Configuration
+USE_JSON_DB = False  # Disable JSON database for now
+DEV_MODE = True  # Use mock data from constants
 
 # API Configuration
 API_TITLE = "Social Connect API"
 API_VERSION = "1.0.0"
 API_HOST = "0.0.0.0"
-API_PORT = 8000
+API_PORT = 8003
 
 # CORS Configuration
 ALLOWED_ORIGINS = ["http://localhost:3000", "http://192.168.1.6:3000"]
@@ -80,6 +101,11 @@ DEFAULT_USERNAME = "testuser"
 DEFAULT_EMAIL = "test@example.com"
 DEFAULT_PASSWORD = "Password123!"
 
+# In-memory tracking for mock mode (resets on server restart)
+created_users = {}
+created_roles = {}
+deleted_roles = set()
+
 # JWT Configuration
 SECRET_KEY = "your-secret-key-change-this-in-production"  # Change this in production!
 ALGORITHM = "HS256"
@@ -90,20 +116,25 @@ channels_db = [
     {"id": 1, "name": "facebook", "connected": True, "active": True, "followers": 1500, "created_by": "admin1"},
     {"id": 2, "name": "instagram", "connected": True, "active": False, "followers": 800, "created_by": "admin1"},
     {"id": 3, "name": "linkedin", "connected": False, "active": False, "followers": 0, "created_by": "superadmin"},
-    {"id": 4, "name": "twitter", "connected": False, "active": False, "followers": 0, "created_by": "admin1"}
+    {"id": 4, "name": "twitter", "connected": False, "active": False, "followers": 0, "created_by": "admin1"},
+    {"id": 5, "name": "youtube", "connected": True, "active": True, "followers": 2500, "created_by": "superadmin"}
 ]
 
 campaigns_db = [
     {"id": 1, "name": "Summer Sale", "status": "active", "leads": 45, "conversion_rate": 12.5, "created_by": "admin1"},
     {"id": 2, "name": "Product Launch", "status": "completed", "leads": 120, "conversion_rate": 8.3, "created_by": "admin1"},
-    {"id": 3, "name": "Holiday Special", "status": "draft", "leads": 0, "conversion_rate": 0, "created_by": "superadmin"}
+    {"id": 3, "name": "Holiday Special", "status": "draft", "leads": 0, "conversion_rate": 0, "created_by": "superadmin"},
+    {"id": 4, "name": "New Year Campaign", "status": "active", "leads": 25, "conversion_rate": 15.2, "created_by": "superadmin"},
+    {"id": 5, "name": "Admin Campaign", "status": "active", "leads": 30, "conversion_rate": 10.5, "created_by": "admin1"}
 ]
 
 leads_db = [
     {"id": 1, "name": "John Doe", "email": "john@example.com", "status": "new", "campaign_id": 1, "created_by": "admin1"},
     {"id": 2, "name": "Jane Smith", "email": "jane@example.com", "status": "contacted", "campaign_id": 1, "created_by": "admin1"},
     {"id": 3, "name": "Bob Johnson", "email": "bob@example.com", "status": "converted", "campaign_id": 2, "created_by": "admin1"},
-    {"id": 4, "name": "Alice Brown", "email": "alice@example.com", "status": "new", "campaign_id": 1, "created_by": "superadmin"}
+    {"id": 4, "name": "Alice Brown", "email": "alice@example.com", "status": "new", "campaign_id": 1, "created_by": "superadmin"},
+    {"id": 5, "name": "David Lee", "email": "david@example.com", "status": "new", "campaign_id": 4, "created_by": "superadmin"},
+    {"id": 6, "name": "Emma Wilson", "email": "emma@example.com", "status": "contacted", "campaign_id": 4, "created_by": "superadmin"}
 ]
 
 # Analytics database
@@ -162,6 +193,63 @@ user_settings_db = {
         "security": {
             "session_timeout": 60,
             "two_factor_auth": True,
+            "login_notifications": True
+        }
+    },
+    "marketing1": {
+        "notifications": {
+            "email_alerts": True,
+            "sms_alerts": False,
+            "push_notifications": True,
+            "weekly_reports": True
+        },
+        "preferences": {
+            "theme": "light",
+            "language": "en",
+            "timezone": "UTC",
+            "date_format": "MM/DD/YYYY"
+        },
+        "security": {
+            "session_timeout": 30,
+            "two_factor_auth": False,
+            "login_notifications": True
+        }
+    },
+    "content1": {
+        "notifications": {
+            "email_alerts": True,
+            "sms_alerts": False,
+            "push_notifications": False,
+            "weekly_reports": False
+        },
+        "preferences": {
+            "theme": "light",
+            "language": "en",
+            "timezone": "UTC",
+            "date_format": "MM/DD/YYYY"
+        },
+        "security": {
+            "session_timeout": 30,
+            "two_factor_auth": False,
+            "login_notifications": True
+        }
+    },
+    "sales1": {
+        "notifications": {
+            "email_alerts": True,
+            "sms_alerts": True,
+            "push_notifications": True,
+            "weekly_reports": True
+        },
+        "preferences": {
+            "theme": "light",
+            "language": "en",
+            "timezone": "UTC",
+            "date_format": "MM/DD/YYYY"
+        },
+        "security": {
+            "session_timeout": 30,
+            "two_factor_auth": False,
             "login_notifications": True
         }
     }

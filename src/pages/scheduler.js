@@ -144,10 +144,42 @@ const SchedulerPage = () => {
         console.log('Delete schedule:', schedule);
     };
 
-    const handleSaveSchedule = () => {
-        // TODO: Implement save schedule
-        console.log('Save schedule:', formData);
-        setOpenDialog(false);
+    const handleSaveSchedule = async () => {
+        try {
+            const url = editingSchedule 
+                ? `${process.env.REACT_APP_API_LINKS}/api/v1/scheduler/${editingSchedule.id}`
+                : `${process.env.REACT_APP_API_LINKS}/api/v1/scheduler`;
+            
+            const method = editingSchedule ? 'put' : 'post';
+            
+            const response = await axios({
+                method,
+                url,
+                data: formData,
+                headers: getAuthHeaders()
+            });
+            
+            if (response.data.success || response.data.message) {
+                // Refresh schedules list
+                fetchSchedules();
+                setOpenDialog(false);
+                setEditingSchedule(null);
+                setFormData({
+                    task_name: '',
+                    campaign_id: '',
+                    scheduled_date: '',
+                    scheduled_time: '',
+                    priority: 'medium'
+                });
+                console.log('Schedule saved successfully:', response.data);
+            } else {
+                console.error('Failed to save schedule:', response.data.message);
+            }
+        } catch (error) {
+            console.error('Error saving schedule:', error);
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to save schedule';
+            setError(errorMessage);
+        }
     };
 
     const handleCloseDialog = () => {
