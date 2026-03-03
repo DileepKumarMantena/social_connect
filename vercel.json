@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "src/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "build"
+      }
+    },
+    {
+      "src": "backend/extension.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/backend/extension.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/src/build/$1"
+    }
+  ],
+  "env": {
+    "DEV_MODE": "false",
+    "PRODUCTION_MODE": "true",
+    "MONGODB_URL": "mongodb+srv://social_connect:secure_password_2024@cluster.mongodb.net/social_connect",
+    "JWT_SECRET_KEY": "social_connect_jwt_secret_key_2024_secure_32_chars_min",
+    "CORS_ORIGINS": "https://social-connect-test.vercel.app"
+  },
+  "functions": {
+    "backend/extension.py": {
+      "runtime": "python3.9"
+    }
+  }
+}
