@@ -1,0 +1,12 @@
+{
+  "name": "social-connect",
+  "description": "Social Media Management Platform",
+  "keywords": ["social", "media", "management", "marketing"],
+  "website": "https://github.com/DileepKumarMantena/social_connect",
+  "repository": "https://github.com/DileepKumarMantena/social_connect",
+  "logo": "https://nodei.co/npm/social-connect.png",
+  "success_url": "/",
+  "env": {
+    "NODE_ENV": "production"
+  }
+}

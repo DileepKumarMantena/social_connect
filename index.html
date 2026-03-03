@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Connect - Live Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <div class="bg-white rounded-lg shadow-xl p-8 max-w-4xl mx-auto">
+                <h1 class="text-4xl font-bold text-gray-800 mb-2">
+                    <i class="fas fa-share-nodes text-purple-600 mr-3"></i>
+                    Social Connect
+                </h1>
+                <p class="text-xl text-gray-600">Social Media Management Platform</p>
+                <div class="mt-4">
+                    <span class="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold pulse">
+                        <i class="fas fa-circle mr-2"></i>LIVE DEMO
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-6xl mx-auto">
+            <!-- Demo Section -->
+            <section class="bg-white rounded-lg shadow-xl p-8 mb-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
+                    <i class="fas fa-rocket text-purple-600 mr-3"></i>
+                    Live Demo Access
+                </h2>
+                
+                <div class="grid md:grid-cols-2 gap-8 mb-8">
+                    <div class="bg-purple-50 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-purple-800 mb-4">
+                            <i class="fas fa-link mr-2"></i>Application URL
+                        </h3>
+                        <div class="space-y-3">
+                            <a href="https://social-connect-demo.glitch.me" target="_blank" 
+                               class="block bg-purple-600 text-white px-4 py-3 rounded-lg hover:bg-purple-700 transition text-center">
+                                <i class="fas fa-external-link-alt mr-2"></i>
+                                https://social-connect-demo.glitch.me
+                            </a>
+                            <p class="text-sm text-purple-600">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Primary demo URL - Fully functional
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-blue-800 mb-4">
+                            <i class="fas fa-heartbeat mr-2"></i>Health Check
+                        </h3>
+                        <div class="space-y-3">
+                            <a href="https://social-connect-demo.glitch.me/api/v1/health" target="_blank" 
+                               class="block bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition text-center">
+                                <i class="fas fa-heartbeat mr-2"></i>
+                                API Health Status
+                            </a>
+                            <p class="text-sm text-blue-600">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Check API availability
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Login Credentials -->
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-key mr-2"></i>Test Login Credentials
+                    </h3>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div class="bg-white rounded-lg p-4 border border-gray-200">
+                            <h4 class="font-semibold text-purple-600 mb-2">Super Admin</h4>
+                            <p class="text-sm font-mono bg-gray-100 p-2 rounded">superadmin</p>
+                            <p class="text-sm font-mono bg-gray-100 p-2 rounded mt-1">SuperAdmin123!</p>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 border border-gray-200">
+                            <h4 class="font-semibold text-blue-600 mb-2">Admin</h4>
+                            <p class="text-sm font-mono bg-gray-100 p-2 rounded">admin1</p>
+                            <p class="text-sm font-mono bg-gray-100 p-2 rounded mt-1">Admin123!</p>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 border border-gray-200">
+                            <h4 class="font-semibold text-green-600 mb-2">User</h4>
+                            <p class="text-sm font-mono bg-gray-100 p-2 rounded">user1</p>
+                            <p class="text-sm font-mono bg-gray-100 p-2 rounded mt-1">User123!</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Section -->
+            <section class="bg-white rounded-lg shadow-xl p-8 mb-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
+                    <i class="fas fa-star text-yellow-500 mr-3"></i>
+                    Available Features
+                </h2>
+                
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="text-center card-hover bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-6">
+                        <div class="feature-icon text-purple-600">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Authentication</h3>
+                        <p class="text-sm text-gray-600">Role-based login system with secure JWT tokens</p>
+                    </div>
+                    
+                    <div class="text-center card-hover bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-6">
+                        <div class="feature-icon text-blue-600">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Dashboard</h3>
+                        <p class="text-sm text-gray-600">Real-time statistics and performance metrics</p>
+                    </div>
+                    
+                    <div class="text-center card-hover bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-6">
+                        <div class="feature-icon text-green-600">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Campaigns</h3>
+                        <p class="text-sm text-gray-600">Create and manage marketing campaigns</p>
+                    </div>
+                    
+                    <div class="text-center card-hover bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-lg p-6">
+                        <div class="feature-icon text-yellow-600">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Lead Management</h3>
+                        <p class="text-sm text-gray-600">Track and manage customer leads</p>
+                    </div>
+                    
+                    <div class="text-center card-hover bg-gradient-to-br from-red-50 to-red-100 rounded-lg p-6">
+                        <div class="feature-icon text-red-600">
+                            <i class="fas fa-share-alt"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Social Channels</h3>
+                        <p class="text-sm text-gray-600">Connect multiple social media platforms</p>
+                    </div>
+                    
+                    <div class="text-center card-hover bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg p-6">
+                        <div class="feature-icon text-indigo-600">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Scheduler</h3>
+                        <p class="text-sm text-gray-600">Schedule posts and tasks</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Start Section -->
+            <section class="bg-white rounded-lg shadow-xl p-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
+                    <i class="fas fa-play-circle text-green-500 mr-3"></i>
+                    Quick Start Guide
+                </h2>
+                
+                <div class="grid md:grid-cols-4 gap-4">
+                    <div class="text-center">
+                        <div class="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
+                            <span class="text-purple-600 font-bold text-xl">1</span>
+                        </div>
+                        <h3 class="font-semibold mb-2">Open URL</h3>
+                        <p class="text-sm text-gray-600">Click the demo link above</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
+                            <span class="text-blue-600 font-bold text-xl">2</span>
+                        </div>
+                        <h3 class="font-semibold mb-2">Login</h3>
+                        <p class="text-sm text-gray-600">Use any test credentials</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
+                            <span class="text-green-600 font-bold text-xl">3</span>
+                        </div>
+                        <h3 class="font-semibold mb-2">Explore</h3>
+                        <p class="text-sm text-gray-600">Test all features</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="bg-yellow-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
+                            <span class="text-yellow-600 font-bold text-xl">4</span>
+                        </div>
+                        <h3 class="font-semibold mb-2">Enjoy!</h3>
+                        <p class="text-sm text-gray-600">Experience the platform</p>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-8">
+                    <a href="https://social-connect-demo.glitch.me" target="_blank" 
+                       class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition transform hover:scale-105">
+                        <i class="fas fa-rocket mr-3"></i>
+                        Launch Live Demo Now
+                    </a>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="text-center mt-12 text-white">
+            <p class="text-sm opacity-75">
+                © 2024 Social Connect - Social Media Management Platform
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Auto-redirect after 3 seconds
+        setTimeout(() => {
+            window.open('https://social-connect-demo.glitch.me', '_blank');
+        }, 3000);
+        
+        // Add interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.card-hover');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
