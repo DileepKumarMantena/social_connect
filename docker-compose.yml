@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: social-connect-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: social_connect
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    networks:
+      - social-connect-network
+
+  # Redis for caching and sessions
+  redis:
+    image: redis:7-alpine
+    container_name: social-connect-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - social-connect-network
+
+  # Backend API
+  backend:
+    build: .
+    container_name: social-connect-backend
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - DEV_MODE=False
+      - MONGODB_URL=mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongodb:27017/social_connect
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - CORS_ORIGINS=${FRONTEND_URL}
+    ports:
+      - "8003:8003"
+    depends_on:
+      - mongodb
+      - redis
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+    networks:
+      - social-connect-network
+
+  # Nginx reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: social-connect-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - ./src/build:/usr/share/nginx/html:ro
+    depends_on:
+      - backend
+    networks:
+      - social-connect-network
+
+volumes:
+  mongodb_data:
+  redis_data:
+
+networks:
+  social-connect-network:
+    driver: bridge

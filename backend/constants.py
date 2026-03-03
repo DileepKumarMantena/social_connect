@@ -76,6 +76,8 @@ otp_storage = {}
 # JSON Database Configuration
 USE_JSON_DB = False  # Disable JSON database for now
 DEV_MODE = False  # Use MongoDB instead of mock data
+PRODUCTION_MODE = True  # Production environment
+API_HOST = "0.0.0.0"  # Accept connections from any IP
 
 # MongoDB Configuration
 MONGODB_URL = "mongodb://localhost:27017"

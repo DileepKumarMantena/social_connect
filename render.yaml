@@ -1,0 +1,45 @@
+services:
+  # Web Service (Frontend + Backend)
+  - type: web
+    name: social-connect
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: starter
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DEV_MODE
+        value: False
+      - key: PRODUCTION_MODE
+        value: True
+      - key: API_HOST
+        value: 0.0.0.0
+      - key: API_PORT
+        value: 8003
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: https://social-connect.onrender.com
+
+  # MongoDB Service
+  - type: pserv
+    name: social-connect-mongodb
+    env: docker
+    dockerfilePath: ./Dockerfile.mongodb
+    plan: starter
+    envVars:
+      - key: MONGO_INITDB_ROOT_USERNAME
+        value: admin
+      - key: MONGO_INITDB_ROOT_PASSWORD
+        generateValue: true
+      - key: MONGO_INITDB_DATABASE
+        value: social_connect
+
+  # Redis Service
+  - type: pserv
+    name: social-connect-redis
+    env: docker
+    image: redis:7-alpine
+    plan: starter
