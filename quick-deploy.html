@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Connect - Live Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .logo h1 {
+            color: #667eea;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .logo p {
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        .demo-info {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        
+        .demo-info h3 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        
+        .demo-info p {
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .credentials {
+            background: #e3f2fd;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        
+        .credentials h4 {
+            color: #1976d2;
+            margin-bottom: 1rem;
+        }
+        
+        .credential-item {
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 4px;
+        }
+        
+        .credential-item strong {
+            color: #333;
+        }
+        
+        .credential-item span {
+            color: #666;
+            font-family: monospace;
+        }
+        
+        .features {
+            margin-top: 2rem;
+        }
+        
+        .features h3 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-list {
+            list-style: none;
+        }
+        
+        .feature-list li {
+            padding: 0.5rem 0;
+            color: #666;
+        }
+        
+        .feature-list li:before {
+            content: "✓";
+            color: #4caf50;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+        
+        .button {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 1rem;
+            transition: background 0.3s ease;
+        }
+        
+        .button:hover {
+            background: #5a67d8;
+        }
+        
+        .status {
+            background: #4caf50;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>Social Connect</h1>
+            <p>Social Media Management Platform</p>
+        </div>
+        
+        <div class="status">
+            🟢 LIVE DEMO AVAILABLE
+        </div>
+        
+        <div class="demo-info">
+            <h3>🚀 Live Demo URL</h3>
+            <p><strong>Frontend:</strong> <a href="https://social-connect-demo.vercel.app" target="_blank">https://social-connect-demo.vercel.app</a></p>
+            <p><strong>API:</strong> <a href="https://social-connect-demo.vercel.app/api/v1/health" target="_blank">https://social-connect-demo.vercel.app/api/v1/health</a></p>
+        </div>
+        
+        <div class="credentials">
+            <h4>🔑 Test Login Credentials</h4>
+            
+            <div class="credential-item">
+                <strong>Super Admin:</strong> <span>superadmin / SuperAdmin123!</span>
+            </div>
+            
+            <div class="credential-item">
+                <strong>Admin:</strong> <span>admin1 / Admin123!</span>
+            </div>
+            
+            <div class="credential-item">
+                <strong>User:</strong> <span>user1 / User123!</span>
+            </div>
+        </div>
+        
+        <div class="features">
+            <h3>✨ Available Features</h3>
+            <ul class="feature-list">
+                <li>User authentication with role-based access</li>
+                <li>Campaign management and tracking</li>
+                <li>Lead generation and management</li>
+                <li>Social media channel integration</li>
+                <li>Analytics and reporting dashboard</li>
+                <li>Task scheduling system</li>
+                <li>User settings and preferences</li>
+                <li>Role-based permissions</li>
+            </ul>
+        </div>
+        
+        <div style="text-align: center;">
+            <a href="https://social-connect-demo.vercel.app" class="button" target="_blank">
+                🚀 Launch Live Demo
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        // Auto-redirect after 5 seconds
+        setTimeout(() => {
+            window.open('https://social-connect-demo.vercel.app', '_blank');
+        }, 5000);
+    </script>
+</body>
+</html>

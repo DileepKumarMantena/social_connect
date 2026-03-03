@@ -1,0 +1,17 @@
+{
+  "name": "social-connect-deploy",
+  "version": "1.0.0",
+  "description": "Social Connect Quick Deployment",
+  "main": "deploy-now.js",
+  "scripts": {
+    "start": "node deploy-now.js",
+    "build": "cd src && npm run build"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
