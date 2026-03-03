@@ -1,0 +1,230 @@
+Social Connect - API Endpoints List & Database Schema
+
+==========================================
+DATABASE SCHEMA
+==========================================
+
+Database Configuration:
+- Primary: MongoDB (mongodb://localhost:27017/social_connect)
+- Fallback: JSON files (/backend/data/)
+- Development: In-memory mock data
+
+Collections Overview:
+├── users (User accounts & authentication)
+├── roles (Role-based access control)
+├── campaigns (Marketing campaigns)
+├── leads (Customer leads)
+├── channels (Social media channels)
+├── analytics (Performance metrics)
+├── scheduler (Task scheduling)
+└── settings (User preferences)
+
+Collection Schemas:
+
+1. USERS COLLECTION
+{
+  "username": "string (PK)",
+  "email": "string (Unique)",
+  "password_hash": "string (SHA256)",
+  "name": "string",
+  "role": "string (FK → roles.roleId)",
+  "companyid": "integer",
+  "activitystatus": "boolean",
+  "access_expires_at": "datetime",
+  "created_by": "string (FK → users.username)",
+  "created_at": "datetime",
+  "updated_at": "datetime"
+}
+
+2. ROLES COLLECTION
+{
+  "roleId": "string (PK)",
+  "roleName": "string",
+  "permissions": {
+    "campaigns": {"Create": boolean, "Read": boolean, "Update": boolean, "Delete": boolean},
+    "analytics": {"Create": boolean, "Read": boolean, "Update": boolean, "Delete": boolean},
+    "leads": {"Create": boolean, "Read": boolean, "Update": boolean, "Delete": boolean},
+    "channels": {"Create": boolean, "Read": boolean, "Update": boolean, "Delete": boolean},
+    "scheduler": {"Create": boolean, "Read": boolean, "Update": boolean, "Delete": boolean},
+    "role_management": {"Create": boolean, "Read": boolean, "Update": boolean, "Delete": boolean}
+  },
+  "created_at": "datetime",
+  "updated_at": "datetime"
+}
+
+3. CAMPAIGNS COLLECTION
+{
+  "id": "integer (PK, Auto-increment)",
+  "name": "string",
+  "status": "string (active|completed|draft)",
+  "leads": "integer",
+  "conversion_rate": "float",
+  "created_by": "string (FK → users.username)",
+  "created_at": "datetime",
+  "updated_at": "datetime"
+}
+
+4. LEADS COLLECTION
+{
+  "id": "integer (PK, Auto-increment)",
+  "name": "string",
+  "email": "string",
+  "status": "string (new|contacted|converted)",
+  "campaign_id": "integer (FK → campaigns.id)",
+  "created_by": "string (FK → users.username)",
+  "created_at": "datetime",
+  "updated_at": "datetime"
+}
+
+5. CHANNELS COLLECTION
+{
+  "id": "integer (PK, Auto-increment)",
+  "name": "string (facebook|instagram|linkedin|twitter|youtube)",
+  "connected": "boolean",
+  "active": "boolean",
+  "followers": "integer",
+  "created_by": "string (FK → users.username)",
+  "created_at": "datetime",
+  "updated_at": "datetime"
+}
+
+6. ANALYTICS COLLECTION
+{
+  "id": "integer (PK, Auto-increment)",
+  "metric": "string (campaign_performance|lead_conversion|engagement_rate|roi|click_through_rate|cost_per_lead)",
+  "value": "float",
+  "period": "string (weekly|monthly|quarterly)",
+  "campaign_id": "integer (FK → campaigns.id, optional)",
+  "channel_id": "integer (FK → channels.id, optional)",
+  "date": "string (YYYY-MM-DD)",
+  "created_by": "string (FK → users.username)",
+  "created_at": "datetime"
+}
+
+7. SCHEDULER COLLECTION
+{
+  "id": "integer (PK, Auto-increment)",
+  "campaign_id": "integer (FK → campaigns.id)",
+  "task_name": "string",
+  "scheduled_date": "string (YYYY-MM-DD)",
+  "scheduled_time": "string (HH:MM)",
+  "status": "string (pending|scheduled|completed)",
+  "priority": "string (high|medium|low)",
+  "created_by": "string (FK → users.username)",
+  "created_at": "datetime",
+  "updated_at": "datetime"
+}
+
+8. SETTINGS COLLECTION
+{
+  "username": "string (PK, FK → users.username)",
+  "notifications": {
+    "email_alerts": "boolean",
+    "sms_alerts": "boolean",
+    "push_notifications": "boolean",
+    "weekly_reports": "boolean"
+  },
+  "preferences": {
+    "theme": "string (light|dark)",
+    "language": "string",
+    "timezone": "string",
+    "date_format": "string"
+  },
+  "security": {
+    "session_timeout": "integer (minutes)",
+    "two_factor_auth": "boolean",
+    "login_notifications": "boolean"
+  },
+  "created_at": "datetime",
+  "updated_at": "datetime"
+}
+
+Key Relationships:
+- users.role → roles.roleId
+- users.username → settings.username
+- campaigns.created_by → users.username
+- leads.campaign_id → campaigns.id
+- leads.created_by → users.username
+- channels.created_by → users.username
+- analytics.campaign_id → campaigns.id
+- analytics.channel_id → channels.id
+- analytics.created_by → users.username
+- scheduler.campaign_id → campaigns.id
+- scheduler.created_by → users.username
+
+==========================================
+API ENDPOINTS
+==========================================
+
+Authentication Endpoints
+Login : http://localhost:8003/api/v1/login : fe, be
+Logout : http://localhost:8003/api/v1/logout : fe, be
+Forgot Password : http://localhost:8003/api/v1/forgot-password : fe, be
+Verify OTP : http://localhost:8003/api/v1/verify-otp : fe, be
+Reset Password : http://localhost:8003/api/v1/reset-password : fe, be
+Verify Token : http://localhost:8003/api/v1/verify-token : fe, be
+Refresh Token : http://localhost:8003/api/v1/refresh-token : fe, be
+
+User Management Endpoints
+Get Users : http://localhost:8003/api/v1/users : be
+Create User : http://localhost:8003/api/v1/users : fe, be
+Update User : http://localhost:8003/api/v1/users/{user_id} : fe, be
+Delete User : http://localhost:8003/api/v1/users/{user_id} : fe, be
+Extend Access : http://localhost:8003/api/v1/users/{user_id}/extend-access : fe, be
+Deactivate User : http://localhost:8003/api/v1/users/{user_id}/deactivate : fe, be
+
+Role Management Endpoints
+Get Roles : http://localhost:8003/api/v1/roles : fe, be
+Create Role : http://localhost:8003/api/v1/roles : fe, be
+Update Role : http://localhost:8003/api/v1/roles/{role_id} : fe, be
+Delete Role : http://localhost:8003/api/v1/roles/{role_id} : fe, be
+Update Permissions : http://localhost:8003/api/v1/roles/{role_id}/permissions : fe, be
+
+Dashboard Endpoints
+Dashboard Stats : http://localhost:8003/api/v1/dashboard/stats : fe, be
+Profile : http://localhost:8003/api/v1/profile : fe, be
+
+Campaign Management Endpoints
+Get Campaigns : http://localhost:8003/api/v1/campaigns : fe, be
+Create Campaign : http://localhost:8003/api/v1/campaigns : fe, be
+Update Campaign : http://localhost:8003/api/v1/campaigns/{campaign_id} : fe, be
+Delete Campaign : http://localhost:8003/api/v1/campaigns/{campaign_id} : fe, be
+
+Lead Management Endpoints
+Get Leads : http://localhost:8003/api/v1/leads : fe, be
+Create Lead : http://localhost:8003/api/v1/leads : fe, be
+Update Lead : http://localhost:8003/api/v1/leads/{lead_id} : fe, be
+Delete Lead : http://localhost:8003/api/v1/leads/{lead_id} : fe, be
+
+Channel Management Endpoints
+Get Channels : http://localhost:8003/api/v1/channels : fe, be
+Create Channel : http://localhost:8003/api/v1/channels : fe, be
+Update Channel : http://localhost:8003/api/v1/channels/{channel_id} : fe, be
+Delete Channel : http://localhost:8003/api/v1/channels/{channel_id} : fe, be
+Connect Channel : http://localhost:8003/api/v1/channels/{channel_id}/connect : fe, be
+Disconnect Channel : http://localhost:8003/api/v1/channels/{channel_id}/disconnect : fe, be
+
+Scheduler Endpoints
+Get Scheduler : http://localhost:8003/api/v1/scheduler : fe, be
+Create Schedule : http://localhost:8003/api/v1/scheduler : fe, be
+Update Schedule : http://localhost:8003/api/v1/scheduler/{schedule_id} : fe, be
+Delete Schedule : http://localhost:8003/api/v1/scheduler/{schedule_id} : fe, be
+
+Analytics Endpoints
+Get Analytics : http://localhost:8003/api/v1/analytics : fe, be
+
+Settings Endpoints
+Get Settings : http://localhost:8003/api/v1/settings : fe, be
+Update Settings : http://localhost:8003/api/v1/settings : fe, be
+
+System Endpoints
+Health Check : http://localhost:8003/api/v1/health : fe, be
+Clear All Data : http://localhost:8003/api/v1/clear-all-data : be
+
+==========================================
+LEGEND
+==========================================
+fe = Frontend, be = Backend
+PK = Primary Key, FK = Foreign Key
+All endpoints require JWT authentication unless marked as public
+Role-based access control enforced on all endpoints

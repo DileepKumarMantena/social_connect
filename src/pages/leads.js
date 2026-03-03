@@ -41,6 +41,7 @@ import axios from 'axios';
 const LeadsPage = () => {
     const { getAuthHeaders } = useAuth();
     const [leads, setLeads] = useState([]);
+    const [campaigns, setCampaigns] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
@@ -50,12 +51,26 @@ const LeadsPage = () => {
         name: '',
         email: '',
         phone: '',
+        campaign_id: '',
         status: 'new'
     });
 
     useEffect(() => {
         fetchLeads();
+        fetchCampaigns();
     }, []);
+
+    const fetchCampaigns = async () => {
+        try {
+            const response = await axios.get(
+                `${process.env.REACT_APP_API_LINKS}/api/v1/campaigns`,
+                { headers: getAuthHeaders() }
+            );
+            setCampaigns(response.data.campaigns || []);
+        } catch (error) {
+            console.error('Error fetching campaigns:', error);
+        }
+    };
 
     const fetchLeads = async () => {
         try {
@@ -109,6 +124,8 @@ const LeadsPage = () => {
                 setLeads(leads.map(l => 
                     l.id === editingLead.id ? response.data.lead : l
                 ));
+                // Refresh leads to ensure data consistency
+                await fetchLeads();
             } else {
                 // Create new lead
                 const response = await axios.post(
@@ -123,10 +140,12 @@ const LeadsPage = () => {
                     console.log('New lead added:', response.data.lead);
                     return newLeads;
                 });
+                // Refresh leads to ensure data consistency
+                await fetchLeads();
             }
             setOpenDialog(false);
             setEditingLead(null);
-            setFormData({ name: '', email: '', phone: '', status: 'new' });
+            setFormData({ name: '', email: '', phone: '', campaign_id: '', status: 'new' });
             console.log(`Lead ${editingLead ? 'updated' : 'created'}:`, editingLead ? formData : formData);
         } catch (error) {
             console.error(`Error ${editingLead ? 'updating' : 'creating'} lead:`, error);
@@ -141,6 +160,7 @@ const LeadsPage = () => {
             name: lead.name,
             email: lead.email,
             phone: lead.phone,
+            campaign_id: lead.campaign_id || '',
             status: lead.status
         });
         setOpenDialog(true);
@@ -155,9 +175,13 @@ const LeadsPage = () => {
                 );
                 // Remove the lead from the leads array
                 setLeads(leads.filter(l => l.id !== lead.id));
+                // Refresh leads to ensure data consistency
+                await fetchLeads();
                 console.log('Lead deleted successfully');
             } catch (error) {
                 console.error('Error deleting lead:', error);
+                // Refresh leads to ensure data consistency
+                await fetchLeads();
             }
         }
     };
@@ -376,12 +400,30 @@ const LeadsPage = () => {
                             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                             margin="normal"
                         />
+                        <FormControl fullWidth margin="normal">
+                            <InputLabel id="campaign-select-label">Campaign</InputLabel>
+                            <Select
+                                labelId="campaign-select-label"
+                                value={formData.campaign_id}
+                                onChange={(e) => setFormData({ ...formData, campaign_id: e.target.value })}
+                                label="Campaign"
+                            >
+                                <MenuItem value="">
+                                    <em>None</em>
+                                </MenuItem>
+                                {campaigns.map((campaign) => (
+                                    <MenuItem key={campaign.id} value={campaign.id}>
+                                        {campaign.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={() => {
                             setOpenDialog(false);
                             setEditingLead(null);
-                            setFormData({ name: '', email: '', phone: '', status: 'new' });
+                            setFormData({ name: '', email: '', phone: '', campaign_id: '', status: 'new' });
                         }}>Cancel</Button>
                         <Button type="submit" variant="contained">
                             {editingLead ? 'Update Lead' : 'Create Lead'}

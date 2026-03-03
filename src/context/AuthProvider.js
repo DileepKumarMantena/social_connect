@@ -59,6 +59,7 @@ export const AuthProvider = ({ children }) => {
         if (!token) return;
 
         try {
+            console.log("Verifying token with API:", `${process.env.REACT_APP_API_LINKS}/api/v1/verify-token`);
             const response = await axios.get(
                 `${process.env.REACT_APP_API_LINKS}/api/v1/verify-token`,
                 {
@@ -68,14 +69,23 @@ export const AuthProvider = ({ children }) => {
                     withCredentials: true,
                 }
             );
+            console.log("Verify token response:", response);
+            console.log("Response status:", response.status);
+            console.log("Response data:", response.data);
+            
             if (response.status === 200) {
                 var data = response.data.data;
+                console.log("Token verification successful, setting data:", data);
+                console.log("Setting permissions:", data.permissions);
                 setLogindata(data);
                 setPermissions(data.permissions);
+            } else {
+                console.log("Unexpected response status:", response.status);
             }
 
         } catch (error) {
-            console.error("Token verification failed:");
+            console.error("Token verification failed:", error);
+            console.error("Error response:", error.response);
             setLoggedin(false);
             setToken(null);
             setPermissions({
@@ -121,11 +131,14 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const cookie = getCookie('token');
+        console.log("AuthProvider useEffect - cookie found:", cookie);
 
         if (!cookie) {
+            console.log("No token found, setting loggedin false");
             setLoggedin(false);
             setToken(null);
         } else {
+            console.log("Token found, setting loggedin true and verifying token");
             setLoggedin(true);
             setToken(cookie);
             verifyToken(cookie);

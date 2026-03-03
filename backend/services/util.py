@@ -262,9 +262,19 @@ def get_user_from_token(token: str) -> dict:
     if username is None:
         return None
     
-    user = users_db.get(username)
-    if user is None:
-        user = created_users.get(username)
+    # Check if we should use MongoDB or mock data
+    from constants import DEV_MODE
+    from services.mongo_db import mongo_db
+    
+    if DEV_MODE:
+        # Use mock data
+        user = users_db.get(username)
+        if user is None:
+            user = created_users.get(username)
+    else:
+        # Use MongoDB
+        user = mongo_db.get_user_by_username(username)
+    
     if user is None:
         return None
     

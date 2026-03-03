@@ -18,7 +18,6 @@ import {
     alpha,
     Avatar,
     Badge,
-    Paper,
     Tooltip,
     Zoom,
     Fade,
@@ -36,13 +35,11 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
-import SearchIcon from "@mui/icons-material/Search";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import WorkIcon from '@mui/icons-material/Work';
 import '@fontsource/nunito';
 import { useAuth } from "../contexts/AuthContext";
 import { Link, useLocation } from "react-router-dom";
-import axios from "axios";
 
 const drawerWidth = 280;
 const collapsedDrawerWidth = 64;
@@ -82,14 +79,16 @@ const theme = createTheme({
 export default function AppLayout({ onLogout, children }) {
     const [open, setOpen] = useState(true);
     const [hoverOpen, setHoverOpen] = useState(false);
-    const { logindata, permissions } = useAuth();
+    const { user, token } = useAuth();
     const location = useLocation(); // Hook to get current URL for active states
     const currentPath = location.pathname || window.location.hash.replace('#', '') || '/';
 
     // Helper function to check read permissions
     const hasReadPermission = (module) => {
-        if (!permissions || !module) return true; // Always show if no module specified
-        return permissions[module]?.Read || false;
+        if (!user || !user.permissions || !user.permissions[module]) {
+            return false;
+        }
+        return user.permissions[module].Read || false;
     };
 
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -102,8 +101,17 @@ export default function AppLayout({ onLogout, children }) {
     const handleDrawerToggle = () => setOpen(!open);
 
     useEffect(() => {
-        console.log(logindata)
-    },[permissions,logindata]);
+        console.log('user:', user)
+        console.log('user.permissions:', user?.permissions)
+        console.log('hasReadPermission test:', {
+            role_management: hasReadPermission('role_management'),
+            campaigns: hasReadPermission('campaigns'),
+            analytics: hasReadPermission('analytics'),
+            leads: hasReadPermission('leads'),
+            channels: hasReadPermission('channels'),
+            scheduler: hasReadPermission('scheduler')
+        })
+    },[user]);
 
     const navItems = [
         { label: "Dashboard", icon: <DashboardIcon />, path: "/dashboard", tooltip: "Overview", module: null }, // Always visible
@@ -203,8 +211,8 @@ export default function AppLayout({ onLogout, children }) {
                             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                                 <Avatar sx={{ bgcolor: alpha("#fff", 0.2) }}><AccountCircleIcon /></Avatar>
                                 <Box sx={{ display: { xs: "none", sm: "block" } }}>
-                                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{logindata?.name}</Typography>
-                                    <Typography variant="caption" sx={{ opacity: 0.8 }}>{logindata?.role}</Typography>
+                                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{user?.name}</Typography>
+                                    <Typography variant="caption" sx={{ opacity: 0.8 }}>{user?.role}</Typography>
                                 </Box>
                             </Box>
                         </Box>

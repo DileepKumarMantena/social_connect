@@ -3,14 +3,8 @@ from pydantic import BaseModel
 from typing import Optional, Union
 from datetime import datetime, timedelta
 import hashlib
-from constants import (
-    users_db, channels_db, campaigns_db, leads_db, analytics_db, 
-    scheduler_db, otp_storage, USE_JSON_DB, DEV_MODE, API_TITLE, 
-    API_VERSION, API_HOST, API_PORT, ALLOWED_ORIGINS, OTP_EXPIRY_MINUTES, 
-    OTP_LENGTH, SMTP_EMAIL, SMTP_PASSWORD, SMTP_SERVER, SMTP_PORT,
-    SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, DEFAULT_USERNAME,
-    DEFAULT_EMAIL, DEFAULT_PASSWORD, created_users, created_roles, deleted_roles
-)
+from constants import users_db, otp_storage, channels_db, campaigns_db, leads_db, analytics_db, scheduler_db, user_settings_db, DEV_MODE
+from services.mongo_db import mongo_db
 from services.util import (
     verify_password, hash_password, generate_otp, store_otp, 
     verify_stored_otp, find_user_by_email, cleanup_otp, send_otp_email,
@@ -20,7 +14,6 @@ from services.util import (
 from services.response import LoginResponse, OTPResponse, PasswordResetResponse, UserProfileResponse, ChannelResponse, CampaignResponse, LeadResponse, DashboardStatsResponse, AnalyticsResponse, SchedulerResponse, SettingsResponse
 from services.error import APIError
 from services.logger import app_logger
-from services.json_db import json_db
 
 # Request Models
 class APIRequest(BaseModel):
@@ -63,58 +56,38 @@ def create_user_service(username, email, password, name, role, companyid, create
         if access_hours and role != 'super_admin':  # Super admins don't expire
             access_expires_at = datetime.utcnow() + timedelta(hours=access_hours)
         
-        if USE_JSON_DB:
-            # JSON database implementation
-            if json_db.get_user_by_username(username):
+        # Check if we should use MongoDB or mock data
+        from constants import DEV_MODE
+        from services.mongo_db import mongo_db
+        
+        new_user = {
+            "username": username,
+            "email": email,
+            "password_hash": password_hash,
+            "name": name,
+            "role": role,
+            "companyid": companyid,
+            "activitystatus": True,
+            "access_expires_at": access_expires_at.isoformat() if access_expires_at else None,
+            "created_by": created_by
+        }
+        
+        if DEV_MODE:
+            # Mock implementation
+            if username in users_db:
                 raise Exception("Username already exists")
-                
-            new_user = {
-                "username": username,
-                "email": email,
-                "password_hash": password_hash,
-                "name": name,
-                "role": role,
-                "companyid": companyid,
-                "activitystatus": True,
-                "access_expires_at": access_expires_at.isoformat() if access_expires_at else None,
-                "created_by": created_by
-            }
-            
-            if json_db.add_user(new_user):
-                app_logger.info(f"User {username} created with role {role}")
-                
-                # Trigger frontend refresh
-                try:
-                    import requests
-                    refresh_response = requests.post("http://localhost:3000/refresh", 
-                        json={"type": "user_created", "data": {"username": username}},
-                        timeout=2
-                    )
-                    app_logger.info("Frontend refresh triggered")
-                except Exception as e:
-                    app_logger.warning(f"Failed to trigger frontend refresh: {e}")
-                
-                return new_user
-            else:
-                raise Exception("Failed to create user")
+            users_db[username] = new_user
         else:
-            # Mock implementation - add to created users for session persistence
-            new_user = {
-                "username": username,
-                "email": email,
-                "password_hash": password_hash,
-                "name": name,
-                "role": role,
-                "companyid": companyid,
-                "activitystatus": True,
-                "access_expires_at": access_expires_at.isoformat() if access_expires_at else None,
-                "created_by": created_by
-            }
-            
-            created_users[username] = new_user
-            app_logger.info(f"User {username} created and added to session tracking")
-            
-            return new_user
+            # MongoDB implementation
+            existing_user = mongo_db.get_user_by_username(username)
+            if existing_user:
+                raise Exception("Username already exists")
+            # Create user in MongoDB
+            collection = mongo_db.get_collection("users")
+            collection.insert_one(new_user)
+        
+        app_logger.info(f"User {username} created with role {role}")
+        return new_user
             
     except Exception as e:
         app_logger.error(f"Failed to create user {username}: {e}")
@@ -184,21 +157,15 @@ def login_user(request: APIRequest) -> LoginResponse:
     if not username or not password:
         raise APIError.bad_request("Username and password are required")
     
-    if USE_JSON_DB:
-        app_logger.info("Using JSON database for login")
-        # JSON database authentication
-        user = json_db.get_user_by_username(username)
-        if not user or not verify_password(password, user["password_hash"]):
-            raise APIError.unauthorized("Invalid username or password")
-    else:
+    if DEV_MODE:
         app_logger.info("Using mock data for login")
-        # Mock authentication - check both default users and created users
         user = users_db.get(username)
-        if not user:
-            user = created_users.get(username)
-        
-        if not user or not verify_password(password, user["password_hash"]):
-            raise APIError.unauthorized("Invalid username or password")
+    else:
+        app_logger.info("Using MongoDB for login")
+        user = mongo_db.get_user_by_username(username)
+    
+    if not user or not verify_password(password, user["password_hash"]):
+        raise APIError.unauthorized("Invalid username or password")
     
     # Generate JWT token with complete user data
     # Add 'sub' field for JWT standard compliance
@@ -296,28 +263,27 @@ def get_channels(token: str) -> ChannelResponse:
     if not current_user:
         raise APIError.unauthorized("Invalid or expired token")
     
-    app_logger.info("Using JSON database for channels" if USE_JSON_DB else "Using mock data for channels")
-    
-    # Get channels from appropriate source
-    channels_data = json_db.get_channels() if USE_JSON_DB else channels_db
+    if DEV_MODE:
+        app_logger.info("Using mock data for channels")
+        all_channels = channels_db
+    else:
+        app_logger.info("Using MongoDB for channels")
+        all_channels = mongo_db.get_channels()
     
     # Filter channels based on user role
     if current_user["role"] == "super_admin":
         # Super admin sees all channels
-        filtered_channels = channels_data
+        filtered_channels = all_channels
     elif current_user["role"] == "admin":
-        # Admin sees channels they created + channels created by super_admin + channels from same company
-        filtered_channels = [channel for channel in channels_data 
-                            if channel.get("created_by") == current_user["username"] or 
-                               channel.get("created_by") == "superadmin" or
-                               channel.get("created_by") and channel.get("created_by") != "superadmin" and 
-                               channel.get("companyid") == current_user.get("companyid")]
+        # Admin sees only channels they created
+        filtered_channels = [channel for channel in all_channels 
+                           if channel.get("created_by") == current_user["username"]]
     else:
         # Other roles see channels based on permissions
-        filtered_channels = channels_data  # For now, show all - can be enhanced with permissions
+        filtered_channels = all_channels  # For now, show all - can be enhanced with permissions
     
     return ChannelResponse(
-        message="Channels retrieved successfully (mock data)",
+        message=f"Channels retrieved successfully ({'mock data' if DEV_MODE else 'MongoDB'})",
         success=True,
         channels=filtered_channels
     )
@@ -328,28 +294,27 @@ def get_campaigns(token: str) -> CampaignResponse:
     if not current_user:
         raise APIError.unauthorized("Invalid or expired token")
     
-    app_logger.info("Using JSON database for campaigns" if USE_JSON_DB else "Using mock data for campaigns")
-    
-    # Get campaigns from appropriate source
-    campaigns_data = json_db.get_campaigns() if USE_JSON_DB else campaigns_db
+    if DEV_MODE:
+        app_logger.info("Using mock data for campaigns")
+        all_campaigns = campaigns_db
+    else:
+        app_logger.info("Using MongoDB for campaigns")
+        all_campaigns = mongo_db.get_campaigns()
     
     # Filter campaigns based on user role
     if current_user["role"] == "super_admin":
         # Super admin sees all campaigns
-        filtered_campaigns = campaigns_data
+        filtered_campaigns = all_campaigns
     elif current_user["role"] == "admin":
-        # Admin sees campaigns they created + campaigns created by super_admin + campaigns from same company
-        filtered_campaigns = [campaign for campaign in campaigns_data 
-                             if campaign.get("created_by") == current_user["username"] or 
-                                campaign.get("created_by") == "superadmin" or
-                                campaign.get("companyid") == current_user.get("companyid")]
+        # Admin sees only campaigns they created
+        filtered_campaigns = [campaign for campaign in all_campaigns 
+                            if campaign.get("created_by") == current_user["username"]]
     else:
         # Other roles see campaigns based on permissions
-        filtered_campaigns = [campaign for campaign in campaigns_data 
-                             if campaign.get("companyid") == current_user.get("companyid")]
+        filtered_campaigns = all_campaigns  # For now, show all - can be enhanced with permissions
     
     return CampaignResponse(
-        message="Campaigns retrieved successfully (mock data)",
+        message=f"Campaigns retrieved successfully ({'mock data' if DEV_MODE else 'MongoDB'})",
         success=True,
         campaigns=filtered_campaigns
     )
@@ -360,56 +325,37 @@ def get_leads(token: str) -> LeadResponse:
     if not current_user:
         raise APIError.unauthorized("Invalid or expired token")
     
-    app_logger.info("Using JSON database for leads" if USE_JSON_DB else "Using mock data for leads")
-    
-    # Get leads from appropriate source
-    leads_data = json_db.get_leads() if USE_JSON_DB else leads_db
+    if DEV_MODE:
+        app_logger.info("Using mock data for leads")
+        all_leads = leads_db
+    else:
+        app_logger.info("Using MongoDB for leads")
+        all_leads = mongo_db.get_leads()
     
     # Filter leads based on user role
     if current_user["role"] == "super_admin":
-        # Super admin sees all data
-        filtered_leads = leads_data
-        filtered_campaigns = campaigns_data
-        filtered_channels = channels_data
+        # Super admin sees all leads
+        filtered_leads = all_leads
     elif current_user["role"] == "admin":
-        # Admin sees all data from their company + can edit their own created data
-        filtered_leads = [lead for lead in leads_data 
-                         if lead.get("created_by") == current_user["username"] or 
-                            lead.get("created_by") == "superadmin" or
-                            lead.get("created_by") and lead.get("created_by") != "superadmin" and 
-                            lead.get("companyid") == current_user.get("companyid")]
-        filtered_campaigns = [campaign for campaign in campaigns_data 
-                             if campaign.get("created_by") == current_user["username"] or 
-                                campaign.get("created_by") == "superadmin" or
-                                campaign.get("created_by") and campaign.get("created_by") != "superadmin" and 
-                                campaign.get("companyid") == current_user.get("companyid")]
-        filtered_channels = [channel for channel in channels_data 
-                            if channel.get("created_by") == current_user["username"] or 
-                               channel.get("created_by") == "superadmin" or
-                               channel.get("created_by") and channel.get("created_by") != "superadmin" and 
-                               channel.get("companyid") == current_user.get("companyid")]
+        # Admin sees only leads they created
+        filtered_leads = [lead for lead in all_leads 
+                         if lead.get("created_by") == current_user["username"]]
     else:
-        # Other roles see data based on permissions
-        filtered_leads = leads_data  # For now, show all - can be enhanced with permissions
+        # Other roles see leads based on permissions
+        filtered_leads = all_leads  # For now, show all - can be enhanced with permissions
     
     return LeadResponse(
-        message="Leads retrieved successfully (mock data)",
+        message=f"Leads retrieved successfully ({'mock data' if DEV_MODE else 'MongoDB'})",
         success=True,
         leads=filtered_leads
     )
 
 def get_dashboard_stats() -> DashboardStatsResponse:
     """Get dashboard statistics"""
-    app_logger.info("Using JSON database for dashboard stats" if USE_JSON_DB else "Using mock data for dashboard stats")
-    
-    # Get data from appropriate source
-    channels_data = json_db.get_channels() if USE_JSON_DB else channels_db
-    campaigns_data = json_db.get_campaigns() if USE_JSON_DB else campaigns_db
-    leads_data = json_db.get_leads() if USE_JSON_DB else leads_db
-    
-    connected_channels = len([ch for ch in channels_data if ch.get("connected", False)])
-    active_campaigns = len([ca for ca in campaigns_data if ca.get("status") == "active"])
-    total_leads = len(leads_data)
+    app_logger.info("Using mock data for dashboard stats")
+    connected_channels = len([ch for ch in channels_db if ch.get("connected", False)])
+    active_campaigns = len([ca for ca in campaigns_db if ca.get("status") == "active"])
+    total_leads = len(leads_db)
     
     return DashboardStatsResponse(
         message="Dashboard stats retrieved successfully (mock data)",
@@ -427,22 +373,26 @@ def get_analytics(token: str) -> AnalyticsResponse:
     if not current_user:
         raise APIError.unauthorized("Invalid or expired token")
     
-    app_logger.info("Using mock data for analytics")
+    # Use MongoDB for analytics
+    from services.mongo_db import mongo_db
+    analytics_data = mongo_db.get_analytics()
+    
+    app_logger.info(f"Using MongoDB for analytics - found {len(analytics_data)} records")
     
     # Filter analytics based on user role
     if current_user["role"] == "super_admin":
         # Super admin sees all analytics
-        filtered_analytics = analytics_db
+        filtered_analytics = analytics_data
     elif current_user["role"] == "admin":
-        # Admin sees analytics they created + analytics created by super_admin
-        filtered_analytics = [analytic for analytic in analytics_db 
-                           if analytic.get("created_by") == current_user["username"] or analytic.get("created_by") == "superadmin"]
+        # Admin sees only analytics they created
+        filtered_analytics = [analytic for analytic in analytics_data 
+                           if analytic.get("created_by") == current_user["username"]]
     else:
         # Other roles see analytics based on permissions
-        filtered_analytics = analytics_db  # For now, show all - can be enhanced with permissions
+        filtered_analytics = analytics_data  # For now, show all - can be enhanced with permissions
     
     return AnalyticsResponse(
-        message="Analytics retrieved successfully (mock data)",
+        message="Analytics retrieved successfully (MongoDB)",
         success=True,
         analytics=filtered_analytics
     )
@@ -453,22 +403,26 @@ def get_scheduler(token: str) -> SchedulerResponse:
     if not current_user:
         raise APIError.unauthorized("Invalid or expired token")
     
-    app_logger.info("Using mock data for scheduler")
+    # Use MongoDB for scheduler
+    from services.mongo_db import mongo_db
+    scheduler_data = mongo_db.get_scheduler()
+    
+    app_logger.info(f"Using MongoDB for scheduler - found {len(scheduler_data)} records")
     
     # Filter schedules based on user role
     if current_user["role"] == "super_admin":
         # Super admin sees all schedules
-        filtered_schedules = scheduler_db
+        filtered_schedules = scheduler_data
     elif current_user["role"] == "admin":
-        # Admin sees schedules they created + schedules created by super_admin
-        filtered_schedules = [schedule for schedule in scheduler_db 
-                          if schedule.get("created_by") == current_user["username"] or schedule.get("created_by") == "superadmin"]
+        # Admin sees only schedules they created
+        filtered_schedules = [schedule for schedule in scheduler_data 
+                          if schedule.get("created_by") == current_user["username"]]
     else:
         # Other roles see schedules based on permissions
-        filtered_schedules = scheduler_db  # For now, show all - can be enhanced with permissions
+        filtered_schedules = scheduler_data  # For now, show all - can be enhanced with permissions
     
     return SchedulerResponse(
-        message="Scheduler data retrieved successfully (mock data)",
+        message="Scheduler retrieved successfully (MongoDB)",
         success=True,
         schedules=filtered_schedules
     )
@@ -501,104 +455,19 @@ def get_roles_service(token: str) -> dict:
     current_user = RoleMiddleware.get_current_user(token)
     require_super_admin(current_user)
     
-    # Use JSON database
-    if USE_JSON_DB:
-        roles_data = json_db.get_roles()
-        app_logger.info(f"Retrieved {len(roles_data)} roles from JSON database")
-        return {
-            "message": "Roles retrieved successfully",
-            "data": {
-                "roles": roles_data
-            }
-        }
-    else:
-        # Mock role-based permissions
-        role_permissions = {
-            "super_admin": {
-                "roleId": "super_admin",
-                "roleName": "Super Admin",
-                "permissions": {
-                    "role_management": {"Create": True, "Read": True, "Update": True, "Delete": True},
-                    "campaigns": {"Create": True, "Read": True, "Update": True, "Delete": True},
-                    "analytics": {"Create": True, "Read": True, "Update": True, "Delete": True},
-                    "leads": {"Create": True, "Read": True, "Update": True, "Delete": True},
-                    "channels": {"Create": True, "Read": True, "Update": True, "Delete": True},
-                    "scheduler": {"Create": True, "Read": True, "Update": True, "Delete": True}
-                }
-            },
-            "admin": {
-                "roleId": "admin",
-                "roleName": "Admin",
-                "permissions": {
-                    "campaigns": {"Create": True, "Read": True, "Update": True, "Delete": True},
-                    "analytics": {"Create": False, "Read": True, "Update": False, "Delete": False},
-                    "leads": {"Create": True, "Read": True, "Update": True, "Delete": True},
-                    "channels": {"Create": True, "Read": True, "Update": True, "Delete": True},
-                    "scheduler": {"Create": True, "Read": True, "Update": True, "Delete": True}
-                }
-            },
-            "marketing_manager": {
-                "roleId": "marketing_manager",
-                "roleName": "Marketing Manager",
-                "permissions": {
-                    "campaigns": {"Create": True, "Read": True, "Update": False, "Delete": False},
-                    "analytics": {"Create": False, "Read": True, "Update": False, "Delete": False},
-                    "leads": {"Create": True, "Read": True, "Update": True, "Delete": False},
-                    "channels": {"Create": False, "Read": True, "Update": False, "Delete": False},
-                    "scheduler": {"Create": True, "Read": True, "Update": True, "Delete": False}
-                }
-            },
-            "content_editor": {
-                "roleId": "content_editor",
-                "roleName": "Content Editor",
-                "permissions": {
-                    "campaigns": {"Create": False, "Read": True, "Update": True, "Delete": False},
-                    "analytics": {"Create": False, "Read": True, "Update": False, "Delete": False},
-                    "leads": {"Create": False, "Read": True, "Update": False, "Delete": False},
-                    "channels": {"Create": False, "Read": True, "Update": False, "Delete": False},
-                    "scheduler": {"Create": False, "Read": True, "Update": False, "Delete": False}
-                }
-            },
-            "sales_manager": {
-                "roleId": "sales_manager",
-                "roleName": "Sales Manager",
-                "permissions": {
-                    "campaigns": {"Create": False, "Read": True, "Update": False, "Delete": False},
-                    "analytics": {"Create": False, "Read": True, "Update": False, "Delete": False},
-                    "leads": {"Create": True, "Read": True, "Update": True, "Delete": True},
-                    "channels": {"Create": False, "Read": True, "Update": False, "Delete": False},
-                    "scheduler": {"Create": False, "Read": True, "Update": False, "Delete": False}
-                }
-            },
-            "user": {
-                "roleId": "user",
-                "roleName": "User",
-                "permissions": {
-                    "campaigns": {"Create": False, "Read": True, "Update": False, "Delete": False},
-                    "analytics": {"Create": False, "Read": False, "Update": False, "Delete": False},
-                    "leads": {"Create": False, "Read": True, "Update": False, "Delete": False},
-                    "channels": {"Create": False, "Read": True, "Update": False, "Delete": False},
-                    "scheduler": {"Create": False, "Read": True, "Update": False, "Delete": False}
-                }
-            }
-        }
-        
-        # Filter out super_admin and deleted roles, add created roles
-        filtered_roles = {k: v for k, v in role_permissions.items() if k != "super_admin" and k not in deleted_roles}
-        # Add newly created roles
-        filtered_roles.update(created_roles)
-        
-        return {
-            "message": "Roles retrieved successfully",
-            "data": {
-                "roles": filtered_roles
-            }
-        }
+    # Get roles from MongoDB
+    from services.mongo_db import mongo_db
+    roles = mongo_db.get_roles()
+    
+    return {
+        "message": "Roles retrieved successfully from MongoDB",
+        "roles": roles
+    }
 
 def create_user(request: CreateUserRequest, token: str) -> dict:
-    """Create a new user (super_admin and admin only)"""
+    """Create a new user (super_admin only)"""
     current_user = RoleMiddleware.get_current_user(token)
-    require_minimum_admin(current_user)
+    require_super_admin(current_user)
     
     # Create mock user
     new_user = create_user_service(
@@ -623,14 +492,28 @@ def get_users(token: str, role_filter: Optional[str] = None) -> dict:
     current_user = RoleMiddleware.get_current_user(token)
     require_minimum_admin(current_user)
     
-    # Mock implementation - only show created users, not default mock users
-    if current_user["role"] == "super_admin":
-        # Super admin can see all created users
-        users_list = list(created_users.values())
+    # Check if we should use MongoDB or mock data
+    from constants import DEV_MODE
+    from services.mongo_db import mongo_db
+    
+    if DEV_MODE:
+        # Mock implementation
+        if current_user["role"] == "super_admin":
+            # Super admin can see all users
+            users_list = list(users_db.values())
+        else:
+            # Admin can only see users they created
+            users_list = [u for u in users_db.values() 
+                         if u.get("created_by") == current_user["username"]]
     else:
-        # Admin can only see users they created
-        users_list = [u for u in created_users.values() 
-                     if u.get("created_by") == current_user["username"]]
+        # MongoDB implementation
+        if current_user["role"] == "super_admin":
+            # Super admin can see all users
+            users_list = mongo_db.get_users()
+        else:
+            # Admin can only see users they created
+            users_list = mongo_db.get_users()
+            users_list = [u for u in users_list if u.get("created_by") == current_user["username"]]
     
     if role_filter:
         users_list = [u for u in users_list if u.get("role") == role_filter]
@@ -681,9 +564,9 @@ def deactivate_user(user_id, token: str) -> dict:
     current_user = RoleMiddleware.get_current_user(token)
     require_super_admin(current_user)
     
-    # Mock implementation - check created_users
+    # Mock implementation
     user_found = False
-    for user in created_users.values():
+    for user in users_db.values():
         # Handle both numeric ID and username
         if (user.get("id") == user_id or 
             user["username"] == str(user_id) or 
@@ -698,90 +581,55 @@ def deactivate_user(user_id, token: str) -> dict:
     
     return {"message": "User deactivated successfully"}
 
-def delete_user(user_id, token: str) -> dict:
-    """Delete a user completely (super_admin only)"""
-    current_user = RoleMiddleware.get_current_user(token)
-    require_super_admin(current_user)
-    
-    # Mock implementation - remove from created_users
-    user_found = False
-    username_to_delete = None
-    for user in created_users.values():
-        # Handle both numeric ID and username
-        if (user.get("id") == user_id or 
-            user["username"] == str(user_id) or 
-            user["username"] == user_id):
-            user_found = True
-            username_to_delete = user["username"]
-            break
-    
-    if not user_found:
-        raise APIError.not_found("User not found")
-    
-    # Remove the user from created_users
-    if username_to_delete in created_users:
-        del created_users[username_to_delete]
-        app_logger.info(f"User {username_to_delete} deleted completely")
-    
-    return {"message": "User deleted successfully"}
-
 def create_role_service(token: str, request: RoleRequest) -> dict:
     """Create a new role (super_admin only)"""
     current_user = RoleMiddleware.get_current_user(token)
     require_super_admin(current_user)
     
-    # Use JSON database
-    if USE_JSON_DB:
-        role_data = {
+    # Create role in MongoDB
+    from services.mongo_db import mongo_db
+    
+    role_data = {
+        "roleId": request.role_key,
+        "roleName": request.role_name,
+        "permissions": request.permissions
+    }
+    
+    success = mongo_db.create_role(role_data)
+    if not success:
+        raise Exception(f"Role {request.role_key} already exists or failed to create")
+    
+    return {
+        "message": f"Role {request.role_name} created successfully in MongoDB",
+        "role": {
             "roleId": request.role_key,
             "roleName": request.role_name,
             "permissions": request.permissions
         }
-        
-        if json_db.add_role(request.role_key, role_data):
-            return {
-                "message": f"Role {request.role_name} created successfully",
-                "role": {
-                    "role_key": request.role_key,
-                    "role_name": request.role_name,
-                    "permissions": request.permissions
-                }
-            }
-        else:
-            return {
-                "message": f"Failed to create role {request.role_name}",
-                "error": "Database error"
-            }
-    else:
-        # Mock implementation - add to created roles for session persistence
-        role_data = {
-            "roleId": request.role_key,
-            "roleName": request.role_name,
-            "permissions": request.permissions
-        }
-        created_roles[request.role_key] = role_data
-        app_logger.info(f"Role {request.role_key} created and added to session tracking")
-        
-        return {
-            "message": f"Role {request.role_name} created successfully",
-            "role": {
-                "role_key": request.role_key,
-                "role_name": request.role_name,
-                "permissions": request.permissions
-            }
-        }
+    }
 
 def update_role_service(token: str, role_key: str, request: RoleRequest) -> dict:
     """Update an existing role (super_admin only)"""
     current_user = RoleMiddleware.get_current_user(token)
     require_super_admin(current_user)
     
-    # In mock implementation, just return success
+    # Update role in MongoDB
+    from services.mongo_db import mongo_db
+    
+    updates = {
+        "roleName": request.role_name,
+        "permissions": request.permissions
+    }
+    
+    success = mongo_db.update_role(role_key, updates)
+    if not success:
+        raise Exception(f"Role {role_key} not found or failed to update")
+    
     return {
-        "message": f"Role {request.role_name} updated successfully",
+        "message": f"Role {request.role_name} updated successfully in MongoDB",
         "role": {
-            "role_key": role_key,
-            "role_name": request.role_name,
+            "roleId": role_key,
+            "roleName": request.role_name,
             "permissions": request.permissions
         }
     }
@@ -791,22 +639,15 @@ def delete_role_service(token: str, role_key: str) -> dict:
     current_user = RoleMiddleware.get_current_user(token)
     require_super_admin(current_user)
     
-    # Protect core roles that cannot be deleted
-    protected_roles = ["super_admin"]
-    if role_key in protected_roles:
-        return {
-            "message": f"Cannot delete protected role '{role_key}'",
-            "error": "Protected role cannot be deleted"
-        }
+    # Delete role from MongoDB
+    from services.mongo_db import mongo_db
     
-    # Add to deleted roles and remove from created roles if it exists there
-    deleted_roles.add(role_key)
-    if role_key in created_roles:
-        del created_roles[role_key]
-    app_logger.info(f"Role {role_key} deleted and added to deleted tracking")
+    success = mongo_db.delete_role(role_key)
+    if not success:
+        raise Exception(f"Role {role_key} not found or failed to delete")
     
     return {
-        "message": f"Role {role_key} deleted successfully"
+        "message": f"Role {role_key} deleted successfully from MongoDB"
     }
 
 def update_permissions_service(token: str, request: PermissionUpdateRequest) -> dict:
@@ -843,4 +684,107 @@ def clear_all_data(token: str) -> dict:
             "analytics": len(analytics_db),
             "scheduler": len(scheduler_db)
         }
+    }
+
+def delete_user(user_id: str, token: str) -> dict:
+    """Delete a user (super_admin only)"""
+    current_user = RoleMiddleware.get_current_user(token)
+    require_super_admin(current_user)
+    
+    # Check if we should use MongoDB or mock data
+    from constants import DEV_MODE
+    from services.mongo_db import mongo_db
+    
+    if DEV_MODE:
+        # Mock implementation - just remove from users_db
+        if user_id in users_db:
+            del users_db[user_id]
+            success = True
+        else:
+            success = False
+    else:
+        # MongoDB implementation
+        success = mongo_db.delete_user(user_id)
+    
+    if success:
+        return {
+            "message": f"User {user_id} deleted successfully"
+        }
+    else:
+        return {
+            "message": f"User {user_id} not found or deletion failed"
+        }
+
+def deactivate_user(user_id: str, token: str) -> dict:
+    """Deactivate a user (super_admin only)"""
+    current_user = RoleMiddleware.get_current_user(token)
+    require_super_admin(current_user)
+    
+    # Check if we should use MongoDB or mock data
+    from constants import DEV_MODE
+    from services.mongo_db import mongo_db
+    
+    if DEV_MODE:
+        # Mock implementation - set activitystatus to False
+        if user_id in users_db:
+            users_db[user_id]["activitystatus"] = False
+            success = True
+        else:
+            success = False
+    else:
+        # MongoDB implementation
+        success = mongo_db.update_user_activity(user_id, False)
+    
+    if success:
+        return {
+            "message": f"User {user_id} deactivated successfully"
+        }
+    else:
+        return {
+            "message": f"User {user_id} not found or deactivation failed"
+        }
+
+def extend_user_access(request: ExtendAccessRequest, token: str) -> dict:
+    """Extend user access (super_admin only)"""
+    current_user = RoleMiddleware.get_current_user(token)
+    require_super_admin(current_user)
+    
+    # In mock implementation, just return success
+    return {
+        "message": f"Access extended for user {request.user_id} by {request.hours} hours"
+    }
+
+def get_user_profile_service(token: str) -> dict:
+    """Get current user profile"""
+    current_user = RoleMiddleware.get_current_user(token)
+    if not current_user:
+        raise APIError.unauthorized("Invalid token")
+    
+    if DEV_MODE:
+        user = users_db.get(current_user["username"])
+    else:
+        user = mongo_db.get_user_by_username(current_user["username"])
+    
+    if not user:
+        raise APIError.not_found("User not found")
+        
+    # Remove sensitive data
+    profile_data = {
+        "username": user["username"],
+        "email": user["email"],
+        "name": user["name"],
+        "role": user["role"],
+        "companyid": user["companyid"],
+        "activitystatus": user["activitystatus"],
+        "message": "Profile retrieved successfully"
+    }
+    
+    return profile_data
+
+def health_check() -> dict:
+    """System health check"""
+    return {
+        "status": "healthy",
+        "database": "MongoDB" if not DEV_MODE else "Mock Data",
+        "timestamp": datetime.utcnow().isoformat() + "Z"
     }

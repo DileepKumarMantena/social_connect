@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
+import { useAuth } from '../contexts/AuthContext';
 import {
     Toolbar,
     Typography,
@@ -162,7 +163,8 @@ const SECTIONS = [
     },
 ];
 
-export default function Dashboard({ token, user, onNavigate }) {
+export default function Dashboard({ onNavigate }) {
+    const { user, token, getAuthHeaders } = useAuth();
     const [stats, setStats] = useState({ channels: 0, campaigns: 0, leads: 0 });
     const [loading, setLoading] = useState(true);
     const [hasFetched, setHasFetched] = useState(false);
@@ -173,8 +175,7 @@ export default function Dashboard({ token, user, onNavigate }) {
         const fetchStats = async () => {
             try {
                 // Fetch real data from APIs
-                const token = localStorage.getItem('token');
-                const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
+                const authHeaders = getAuthHeaders();
                 
                 const [statsResponse, channelsResponse, campaignsResponse, leadsResponse] = await Promise.all([
                     axios.get(`${process.env.REACT_APP_API_LINKS}/api/v1/dashboard/stats`, { 
@@ -266,7 +267,7 @@ export default function Dashboard({ token, user, onNavigate }) {
                                 WebkitTextFillColor: "transparent",
                                 mb: 0.5,
                             }}>
-                                Welcome back, {user?.username || "User"}!
+                                Welcome back, {user?.username ? user.username.charAt(0).toUpperCase() + user.username.slice(1) : "User"}!
                             </Typography>
                             <Typography variant="body1" color="text.secondary">
                                 Here's what's happening with your social presence today

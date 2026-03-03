@@ -75,7 +75,11 @@ otp_storage = {}
 
 # JSON Database Configuration
 USE_JSON_DB = False  # Disable JSON database for now
-DEV_MODE = True  # Use mock data from constants
+DEV_MODE = False  # Use MongoDB instead of mock data
+
+# MongoDB Configuration
+MONGODB_URL = "mongodb://localhost:27017"
+MONGODB_DB_NAME = "social_connect"
 
 # API Configuration
 API_TITLE = "Social Connect API"
@@ -84,7 +88,7 @@ API_HOST = "0.0.0.0"
 API_PORT = 8003
 
 # CORS Configuration
-ALLOWED_ORIGINS = ["http://localhost:3000", "http://192.168.1.6:3000"]
+ALLOWED_ORIGINS = ["http://localhost:3000", "http://localhost:3001", "http://192.168.1.6:3000"]
 
 # OTP Configuration
 OTP_EXPIRY_MINUTES = 10

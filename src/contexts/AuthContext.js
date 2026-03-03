@@ -29,6 +29,8 @@ export const AuthProvider = ({ children }) => {
   // Validate token with backend
   const validateToken = async (token) => {
     try {
+      console.log('validateToken called with token:', token ? 'token exists' : 'no token');
+      console.log('Making profile request to:', `${process.env.REACT_APP_API_LINKS}/api/v1/profile`);
       const response = await axios.get(`${process.env.REACT_APP_API_LINKS}/api/v1/profile`, {
         withCredentials: true,
         headers: { Authorization: `Bearer ${token}` }
@@ -144,30 +146,52 @@ export const AuthProvider = ({ children }) => {
   const verifyToken = useCallback(async () => {
     try {
       const currentToken = token || localStorage.getItem('token');
+      console.log("verifyToken called, currentToken:", currentToken);
       if (!currentToken) {
+        console.log("No token available");
         return { success: false, error: 'No token available' };
       }
 
-      const response = await axios.get(`${process.env.REACT_APP_API_LINKS}/api/v1/verify-token`, {
-        headers: { 
-          Authorization: `Bearer ${currentToken}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      console.log("Making verify token request to:", `${process.env.REACT_APP_API_LINKS}/api/v1/verify-token`);
+      try {
+        console.log("Making verify token request to:", `${process.env.REACT_APP_API_LINKS}/api/v1/verify-token`);
+        const response = await axios.get(`${process.env.REACT_APP_API_LINKS}/api/v1/verify-token`, {
+          headers: { 
+            Authorization: `Bearer ${currentToken}`,
+            'Content-Type': 'application/json'
+          }
+        });
 
-      if (response.data.valid) {
-        return { 
-          success: true, 
-          data: response.data.data 
-        };
-      } else {
+        console.log("Verify token response:", response);
+        console.log("Response status:", response.status);
+        console.log("Response data:", response.data);
+
+        if (response.status === 200 && response.data.valid) {
+          console.log("Token valid, setting user data:", response.data.data);
+          console.log("User data permissions:", response.data.data.permissions);
+          setUser(response.data.data);
+          return { 
+            success: true, 
+            data: response.data.data 
+          };
+        } else {
+          console.log("Token invalid or bad response:", response.status, response.data);
+          return { 
+            success: false, 
+            error: 'Invalid token' 
+          };
+        }
+      } catch (error) {
+        console.error("Network error in verifyToken:", error);
+        console.error("Error details:", error.response?.data);
         return { 
           success: false, 
-          error: 'Invalid token' 
+          error: error.response?.data?.detail || 'Network error' 
         };
       }
     } catch (error) {
       console.error('Token verification error:', error);
+      console.error('Error response:', error.response);
       return { 
         success: false, 
         error: error.response?.data?.detail || 'Token verification failed' 

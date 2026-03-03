@@ -85,7 +85,9 @@ const AdminPanel = () => {
         `${process.env.REACT_APP_API_LINKS}/api/v1/admin/roles`,
         { headers: getAuthHeaders() }
       );
+      console.log('Roles response:', response.data);
       const rolesData = response.data?.data?.roles || response.data?.roles || {};
+      console.log('Parsed rolesData:', rolesData);
       
       // Extract role keys from the roles object
       const roleKeys = Object.keys(rolesData);
@@ -118,6 +120,8 @@ const AdminPanel = () => {
         `${process.env.REACT_APP_API_LINKS}/api/v1/admin/users`,
         { headers: getAuthHeaders() }
       );
+      console.log('Users response:', response.data);
+      console.log('Setting users:', response.data.users || []);
       setUsers(response.data.users || []);
     } catch (error) {
       console.error('Error fetching users:', error);

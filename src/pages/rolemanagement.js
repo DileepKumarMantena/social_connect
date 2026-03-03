@@ -54,13 +54,16 @@ const RoleManagementPage = () => {
     const [selectedRole, setSelectedRole] = useState("");
     const [permissions, setPermissions] = useState({});
     const [loading, setLoading] = useState(true);
+    const [dialogMode, setDialogMode] = useState("add");
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [newRoleName, setNewRoleName] = useState("");
+    const [editingRole, setEditingRole] = useState(null);
     
-    // Dialog states
-    const [openDialog, setOpenDialog] = useState(false);
-    const [dialogMode, setDialogMode] = useState("add"); // "add" or "edit"
-    const [currentRole, setCurrentRole] = useState({ key: "", label: "" });
+    // Role dialog states
     const [roleName, setRoleName] = useState("");
     const [roleError, setRoleError] = useState("");
+    const [currentRole, setCurrentRole] = useState("");
+    const [openDialog, setOpenDialog] = useState(false);
     
     // Delete confirmation
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -70,6 +73,25 @@ const RoleManagementPage = () => {
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
 
     const isSuperAdmin = user?.role === "super_admin";
+
+    // Helper function to ensure permissions structure exists
+    const ensurePermissionStructure = (roleKey, moduleKey) => {
+        setPermissions(prev => {
+            const newPermissions = { ...prev };
+            if (!newPermissions[roleKey]) {
+                newPermissions[roleKey] = {};
+            }
+            if (!newPermissions[roleKey][moduleKey]) {
+                newPermissions[roleKey][moduleKey] = {
+                    Create: false,
+                    Read: false,
+                    Update: false,
+                    Delete: false
+                };
+            }
+            return newPermissions;
+        });
+    };
 
     // API Functions
     const fetchRoles = async () => {
@@ -182,11 +204,10 @@ const RoleManagementPage = () => {
             
             return response.data;
         } catch (error) {
-            setSnackbar({ 
-                open: true, 
-                message: error.response?.data?.detail || 'Failed to delete role', 
-                severity: 'error' 
-            });
+            // Don't handle the error here, let the caller handle it
+            // Just log it for debugging
+            console.error('Delete role API error:', error);
+            throw error;
         }
     };
 
@@ -224,6 +245,15 @@ const RoleManagementPage = () => {
             fetchRoles();
         }
     }, [isSuperAdmin]);
+
+    // Initialize permission structure when selected role changes
+    useEffect(() => {
+        if (selectedRole && isSuperAdmin) {
+            modules.forEach(module => {
+                ensurePermissionStructure(selectedRole, module.key);
+            });
+        }
+    }, [selectedRole, isSuperAdmin]);
 
     // Open add role dialog
     const handleOpenAddDialog = () => {
@@ -318,11 +348,23 @@ const RoleManagementPage = () => {
     const handleDeleteRole = async () => {
         if (!roleToDelete) return;
 
+        // Prevent deletion of critical roles
+        if (roleToDelete === 'super_admin' || roleToDelete === 'admin') {
+            setSnackbar({
+                open: true,
+                message: `Cannot delete critical role: ${roleToDelete}`,
+                severity: 'error'
+            });
+            setDeleteConfirmOpen(false);
+            setRoleToDelete(null);
+            return;
+        }
+
         try {
             const result = await deleteRole(roleToDelete);
             setSnackbar({
                 open: true,
-                message: result.message,
+                message: result?.message || 'Role deleted successfully',
                 severity: "info"
             });
             
@@ -345,32 +387,47 @@ const RoleManagementPage = () => {
 
     // Toggle permission
     const togglePermission = (moduleKey, perm) => {
-        setPermissions((prev) => ({
-            ...prev,
-            [selectedRole]: {
-                ...prev[selectedRole],
-                [moduleKey]: {
-                    ...prev[selectedRole][moduleKey],
-                    [perm]: !prev[selectedRole][moduleKey][perm],
+        // Ensure the structure exists before toggling
+        ensurePermissionStructure(selectedRole, moduleKey);
+        
+        setPermissions((prev) => {
+            const currentRole = prev[selectedRole] || {};
+            const currentModule = currentRole[moduleKey] || {};
+            
+            return {
+                ...prev,
+                [selectedRole]: {
+                    ...currentRole,
+                    [moduleKey]: {
+                        ...currentModule,
+                        [perm]: !currentModule[perm],
+                    },
                 },
-            },
-        }));
+            };
+        });
     };
 
     // Select all permissions for a module
     const handleSelectAll = (moduleKey, checked) => {
-        setPermissions((prev) => ({
-            ...prev,
-            [selectedRole]: {
-                ...prev[selectedRole],
-                [moduleKey]: {
-                    Create: checked,
-                    Read: checked,
-                    Update: checked,
-                    Delete: checked,
+        // Ensure the structure exists before selecting
+        ensurePermissionStructure(selectedRole, moduleKey);
+        
+        setPermissions((prev) => {
+            const currentRole = prev[selectedRole] || {};
+            
+            return {
+                ...prev,
+                [selectedRole]: {
+                    ...currentRole,
+                    [moduleKey]: {
+                        Create: checked,
+                        Read: checked,
+                        Update: checked,
+                        Delete: checked,
+                    },
                 },
-            },
-        }));
+            };
+        });
     };
 
     // Save permissions
@@ -395,7 +452,7 @@ const RoleManagementPage = () => {
     // Check if all permissions are selected for a module
     const isAllSelected = (moduleKey) => {
         if (!permissions[selectedRole]?.[moduleKey]) return false;
-        return permissionTypes.every(perm => permissions[selectedRole][moduleKey][perm]);
+        return permissionTypes.every(perm => permissions[selectedRole][moduleKey]?.[perm] || false);
     };
 
     // Modules to display
@@ -538,7 +595,7 @@ const RoleManagementPage = () => {
                                         {permissionTypes.map((perm) => (
                                             <TableCell key={perm} align="center">
                                                 <Checkbox
-                                                    checked={permissions[selectedRole][mod.key]?.[perm] || false}
+                                                    checked={permissions[selectedRole]?.[mod.key]?.[perm] || false}
                                                     onChange={() => togglePermission(mod.key, perm)}
                                                     color="primary"
                                                     sx={{
@@ -556,7 +613,7 @@ const RoleManagementPage = () => {
                                                 color="primary"
                                                 indeterminate={
                                                     !isAllSelected(mod.key) && 
-                                                    permissionTypes.some(perm => permissions[selectedRole][mod.key]?.[perm])
+                                                    permissionTypes.some(perm => permissions[selectedRole]?.[mod.key]?.[perm] || false)
                                                 }
                                             />
                                         </TableCell>

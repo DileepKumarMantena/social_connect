@@ -139,9 +139,20 @@ const SchedulerPage = () => {
         setOpenDialog(true);
     };
 
-    const handleDeleteSchedule = (schedule) => {
-        // TODO: Implement delete schedule
-        console.log('Delete schedule:', schedule);
+    const handleDeleteSchedule = async (schedule) => {
+        if (window.confirm(`Are you sure you want to delete "${schedule.task_name}"?`)) {
+            try {
+                await axios.delete(
+                    `${process.env.REACT_APP_API_LINKS}/api/v1/scheduler/${schedule.id}`,
+                    { headers: getAuthHeaders() }
+                );
+                // Remove the schedule from the schedules array
+                setSchedules(schedules.filter(s => s.id !== schedule.id));
+                console.log('Schedule deleted successfully');
+            } catch (error) {
+                console.error('Error deleting schedule:', error);
+            }
+        }
     };
 
     const handleSaveSchedule = async () => {
