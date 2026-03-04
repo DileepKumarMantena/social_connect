@@ -30,6 +30,7 @@ import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import PeopleIcon from "@mui/icons-material/People";
 import ConnectWithoutContactIcon from "@mui/icons-material/ConnectWithoutContact";
 import DataUsageIcon from "@mui/icons-material/DataUsage";
+import ChatBot from '../components/ChatBot/ChatBot';
 
 // Mock data
 const getChannels = ['facebook', 'instagram'];
@@ -577,6 +578,9 @@ export default function Dashboard({ onNavigate }) {
                     </Grid>
                 </Paper>
             </Box>
+            
+            {/* ChatBot Integration */}
+            <ChatBot />
         </ThemeProvider>
     );
 }
