@@ -98,9 +98,33 @@ EMAIL_TEMPLATES = {
                     <h2 style="color: #023047; margin-top: 0; font-size: 24px;">Your Login OTP</h2>
                     <p style="color: #2b5f8a; font-size: 16px; line-height: 1.6;">Hi {name},</p>
                     <p style="color: #2b5f8a; font-size: 16px; line-height: 1.6;">You requested to login to your Social Connect account.</p>
+                    
+                    <div style="background: #f8f9fa; padding: 25px; border-radius: 12px; margin: 30px 0; border-left: 4px solid #00b4d8;">
+                        <h3 style="color: #023047; margin: 0 0 15px 0; font-size: 18px;">👤 Account Details:</h3>
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <td style="padding: 8px 0; color: #2b5f8a; font-weight: 600;">Username:</td>
+                                <td style="padding: 8px 0; color: #2b5f8a;"><strong>{username}</strong></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; color: #2b5f8a; font-weight: 600;">Email:</td>
+                                <td style="padding: 8px 0; color: #2b5f8a;"><strong>{email}</strong></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; color: #2b5f8a; font-weight: 600;">Role:</td>
+                                <td style="padding: 8px 0; color: #2b5f8a;"><strong>{role}</strong></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; color: #2b5f8a; font-weight: 600;">Login Time:</td>
+                                <td style="padding: 8px 0; color: #2b5f8a;"><strong>{login_time}</strong></td>
+                            </tr>
+                        </table>
+                    </div>
+                    
                     <div style="background: #f8f9fa; padding: 30px; text-align: center; border-radius: 12px; margin: 30px 0; border: 2px dashed #00b4d8;">
                         <h1 style="color: #00b4d8; font-size: 36px; letter-spacing: 8px; margin: 0; font-weight: 700;">{otp}</h1>
                     </div>
+                    
                     <p style="color: #2b5f8a; font-size: 14px; line-height: 1.6;">This OTP will expire in <strong>10 minutes</strong>.</p>
                     <p style="color: #2b5f8a; font-size: 14px; line-height: 1.6;">If you didn't request this, please ignore this email.</p>
                 </div>
@@ -118,6 +142,12 @@ Social Connect - Login OTP Verification
 Hello {name},
 
 You requested to login to your Social Connect account.
+
+Account Details:
+Username: {username}
+Email: {email}
+Role: {role}
+Login Time: {login_time}
 
 Your OTP is: {otp}
 

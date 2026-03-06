@@ -1,4 +1,4 @@
-from fastapi import status
+from fastapi import status, HTTPException
 from pydantic import BaseModel
 from typing import Optional, Union
 from datetime import datetime, timedelta
@@ -9,7 +9,8 @@ from services.util import (
     verify_password, hash_password, generate_otp, store_otp, 
     verify_stored_otp, find_user_by_email, cleanup_otp, send_otp_email,
     create_access_token, get_user_from_token, validate_password_strength,
-    RoleMiddleware, require_super_admin, require_admin, require_minimum_admin
+    RoleMiddleware, require_super_admin, require_admin, require_minimum_admin,
+    send_user_created_email
 )
 from services.response import LoginResponse, OTPResponse, PasswordResetResponse, UserProfileResponse, ChannelResponse, CampaignResponse, LeadResponse, DashboardStatsResponse, AnalyticsResponse, SchedulerResponse, SettingsResponse
 from services.error import APIError
@@ -169,7 +170,9 @@ def login_user(request: APIRequest) -> Union[OTPResponse, LoginResponse]:
         raise APIError.unauthorized("Invalid username or password")
     
     # Check if user access has expired BEFORE allowing login
-    if not check_access_expiration(user):
+    try:
+        RoleMiddleware.check_access_expiration(user)
+    except HTTPException as e:
         raise APIError.unauthorized("Access has expired. Please contact administrator.")
     
     # If OTP is provided, verify it and return JWT token
@@ -511,6 +514,20 @@ def create_user(request: CreateUserRequest, token: str) -> dict:
         request.name, request.role, request.companyid,
         current_user["username"], request.access_hours
     )
+    
+    # Send welcome email to the new user
+    try:
+        user_data = {
+            "name": new_user["name"],
+            "username": new_user["username"],
+            "email": new_user["email"],
+            "password": request.password,  # Include password in welcome email
+            "role": new_user["role"]
+        }
+        send_user_created_email(new_user["email"], user_data)
+        app_logger.info(f"Welcome email sent to new user: {new_user['username']}")
+    except Exception as e:
+        app_logger.error(f"Failed to send welcome email to {new_user['email']}: {e}")
     
     return {
         "message": "User created successfully",

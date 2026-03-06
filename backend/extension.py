@@ -1017,7 +1017,7 @@ async def check_refresh_endpoint():
 
 def check_expiring_users():
     """Background job to check for users with expiring access"""
-    from services.util import check_access_expiration
+    from services.util import RoleMiddleware
     from services.mongo_db import mongo_db
     from constants import DEV_MODE
     
@@ -1028,7 +1028,7 @@ def check_expiring_users():
             users = mongo_db.get_all_users()
         
         for user in users:
-            if check_access_expiration(user):
+            if not RoleMiddleware.check_access_expiration(user):
                 # User is expired, send expired email
                 send_access_expired_email(user)
                 app_logger.warning(f"Access expired email sent to user: {user.get('username', 'Unknown')}")

@@ -192,15 +192,37 @@ def send_otp_email(recipient_email: str, otp: str, purpose: str = "login") -> bo
     """Send OTP email using template system"""
     # Get user name from users_db or use default
     user_name = "User"
-    for username, user_data in users_db.items():
-        if user_data.get("email") == recipient_email:
-            user_name = user_data.get("name", username)
-            break
+    user_username = "Unknown"
+    user_role = "Unknown"
+    
+    from constants import DEV_MODE
+    from services.mongo_db import mongo_db
+    
+    if DEV_MODE:
+        for username, user in users_db.items():
+            if user.get("email") == recipient_email:
+                user_name = user.get("name", username)
+                user_username = username
+                user_role = user.get("role", "Unknown")
+                break
+    else:
+        # Get user from MongoDB
+        user = mongo_db.get_user_by_email(recipient_email)
+        if user:
+            user_name = user.get("name", "User")
+            user_username = user.get("username", "Unknown")
+            user_role = user.get("role", "Unknown")
+    
+    from datetime import datetime
+    login_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     template_vars = {
         "name": user_name,
-        "otp": otp,
-        "email": recipient_email
+        "username": user_username,
+        "email": recipient_email,
+        "role": user_role,
+        "login_time": login_time,
+        "otp": otp
     }
     
     template_key = f"{purpose}_otp"
@@ -273,6 +295,7 @@ def send_access_expired_email(user_data: dict) -> bool:
 
 from fastapi import HTTPException, status
 from services.logger import app_logger
+from services.error import APIError
 
 # Role-based authentication middleware
 class RoleMiddleware:
@@ -337,10 +360,7 @@ class RoleMiddleware:
             from datetime import datetime
             if datetime.utcnow() > datetime.fromisoformat(access_expires_at.replace('Z', '+00:00')):
                 app_logger.warning(f"Access expired for user: {current_user.get('username')}")
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Access expired. Please contact administrator."
-                )
+                raise APIError.unauthorized("Access expired. Please contact administrator.")
         
         return current_user
     

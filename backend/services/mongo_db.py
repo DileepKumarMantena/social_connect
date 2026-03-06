@@ -37,6 +37,20 @@ class MongoDB:
             app_logger.error(f"Error getting all users: {e}")
             return []
     
+    def get_user_by_email(self, email: str) -> Dict[str, Any]:
+        """Get user by email"""
+        try:
+            collection = self.get_collection("users")
+            user = collection.find_one({"email": email})
+            if user:
+                # Convert ObjectId to string for consistency
+                user["_id"] = str(user["_id"])
+                return user
+            return None
+        except PyMongoError as e:
+            app_logger.error(f"Error getting user by email: {e}")
+            return None
+    
     def get_user_by_username(self, username: str) -> Dict[str, Any]:
         """Get user by username"""
         try:
