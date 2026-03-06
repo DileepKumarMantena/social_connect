@@ -437,6 +437,17 @@ created_users = {}
 created_roles = {}
 deleted_roles = set()
 
+# OTP storage (resets on server restart)
+otp_storage = {}
+
+# Mock databases (resets on server restart)
+channels_db = {}
+campaigns_db = {}
+leads_db = {}
+analytics_db = {}
+scheduler_db = {}
+user_settings_db = {}
+
 # JWT Configuration
 SECRET_KEY = "your-secret-key-change-this-in-production"  # Change this in production!
 ALGORITHM = "HS256"
