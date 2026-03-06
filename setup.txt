@@ -1,0 +1,238 @@
+Social Connect - Developer Setup Guide
+==========================================
+
+This guide will help you set up the Social Connect application from scratch.
+Social Connect is a full-stack web application with a React frontend and FastAPI backend.
+
+==========================================
+PREREQUISITES
+==========================================
+
+Required Software:
+- Node.js (v16 or higher)
+- Python (v3.8 or higher)
+- MongoDB (v5.0 or higher)
+- Git
+- Code Editor (VS Code recommended)
+
+Optional but Recommended:
+
+- MongoDB Compass (for database GUI)
+- Chrome Developer Tools
+
+
+==========================================
+INSTALLATION STEPS
+==========================================
+
+1. CLONE THE REPOSITORY
+-----------------------
+git clone <repository-url>
+cd social_connect
+
+2. BACKEND SETUP
+----------------
+
+2.1. Create Python Virtual Environment
+--------------------------------------
+# On macOS/Linux
+python3 -m venv backend/venv
+source backend/venv/bin/activate
+
+# On Windows
+python -m venv backend/venv
+backend\venv\Scripts\activate
+
+2.2. Install Python Dependencies
+--------------------------------
+cd backend
+pip install -r requirements.txt
+
+2.3. Verify MongoDB Installation
+--------------------------------
+# Make sure MongoDB is running
+mongosh --eval "db.adminCommand('ping')"
+
+# Expected output: { ok: 1 }
+
+2.4. Initialize Database
+-------------------------
+# Run the MongoDB initialization script
+python init_mongodb.py
+
+# This will:
+# - Connect to MongoDB
+# - Create collections
+# - Insert sample data
+# - Create indexes
+
+3. FRONTEND SETUP
+-----------------
+
+3.1. Install Node Dependencies
+------------------------------
+cd ../src
+npm install
+
+3.2. Environment Configuration
+-------------------------------
+# Create environment file in src/
+# Create .env file with the following content:
+REACT_APP_API_LINKS=http://localhost:8003
+
+Note: The backend runs on port 8003 by default.
+
+==========================================
+RUNNING THE APPLICATION
+==========================================
+
+1. START MONGODB (if not already running)
+------------------------------------------
+# On macOS with Homebrew
+brew services start mongodb-community
+
+# On Windows
+net start MongoDB
+
+# On Linux
+sudo systemctl start mongod
+
+2. START BACKEND SERVER
+-----------------------
+cd backend
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+python extension.py
+
+Expected Output:
+INFO: Connected to MongoDB: social_connect
+INFO: Application startup complete.
+INFO: Uvicorn running on http://0.0.0.0:8003
+
+3. START FRONTEND DEVELOPMENT SERVER
+------------------------------------
+Open a new terminal window:
+cd src
+npm start
+
+Expected Output:
+Starting the development server...
+Compiled successfully!
+You can now view social-connect in the browser.
+Local:            http://localhost:3000
+
+==========================================
+DEFAULT LOGIN CREDENTIALS
+==========================================
+
+Super Admin Account:
+- Username: superadmin
+- Email: deelipkumar261997@gmail.com
+- Password: SuperAdmin123!
+
+Admin Account:
+- Username: admin1
+- Email: admin1@company.com
+- Password: Admin123!
+
+Regular User Account:
+- Username: user1
+- Email: user1@company.com
+- Password: User123!
+
+Other Test Accounts:
+- Marketing Manager: marketing1 / Marketing123!
+- Content Editor: content1 / Content123!
+- Sales Manager: sales1 / Sales123!
+
+==========================================
+ACCESSING THE APPLICATION
+==========================================
+
+Frontend Application:
+- URL: http://localhost:3000
+- Use any of the default credentials above
+
+Backend API Documentation:
+- URL: http://localhost:8003/docs
+- Interactive Swagger UI for API testing
+
+Health Check:
+- URL: http://localhost:8003/api/v1/health
+- Should return {"status": "healthy"}
+
+==========================================
+PROJECT STRUCTURE
+==========================================
+
+social_connect/
+├── backend/                    # FastAPI backend
+│   ├── services/              # Business logic services
+│   │   ├── json_db.py        # JSON database handler
+│   │   ├── mongo_db.py       # MongoDB handler
+│   │   ├── routes.py         # API route definitions
+│   │   ├── util.py           # Utility functions
+│   │   ├── logger.py         # Logging configuration
+│   │   ├── error.py          # Error handling
+│   │   └── response.py       # Response models
+│   ├── data/                  # JSON data files (fallback)
+│   ├── logs/                  # Application logs
+│   ├── constants.py           # Application constants
+│   ├── extension.py           # Main FastAPI application
+│   ├── init_mongodb.py       # Database initialization
+│   ├── requirements.txt       # Python dependencies
+│   └── venv/                 # Python virtual environment
+├── src/                       # React frontend
+│   ├── components/           # Reusable components
+│   ├── pages/                # Page components
+│   ├── AuthPages/            # Authentication pages
+│   ├── context/              # React contexts
+│   ├── services/             # API service functions
+│   ├── layout/               # Layout components
+│   ├── App.js               # Main application component
+│   └── index.js             # Application entry point
+├── public/                   # Static assets
+├── ENDPOINTS.txt            # API documentation
+├── setup.txt                # This setup guide
+└── README.md                # Project overview
+
+==========================================
+DEVELOPMENT WORKFLOW
+==========================================
+
+1. Making Changes to Backend:
+----------------------------
+- Edit files in backend/ directory
+- Restart the backend server (Ctrl+C, then python extension.py)
+- Test changes using http://localhost:8003/docs
+
+2. Making Changes to Frontend:
+------------------------------
+- Edit files in src/ directory
+- Frontend automatically reloads on save
+- Changes appear immediately in browser at http://localhost:3000
+
+3. Database Changes:
+-------------------
+- Modify backend/constants.py for mock data
+- Run python init_mongodb.py to reinitialize MongoDB
+- Or use MongoDB Compass for manual changes
+
+4. Testing API Endpoints:
+------------------------
+- Use Swagger UI: http://localhost:8003/docs
+- Or use Postman with the collection in ENDPOINTS.txt
+- All endpoints (except login) require JWT authentication
+
+
+==========================================
+VERSION INFORMATION
+==========================================
+
+- Backend: FastAPI with Python 3.8+
+- Frontend: React with Node.js 16+
+- Database: MongoDB 5.0+
+- Authentication: JWT tokens
+- Deployment: Docker ready (optional)
+
+Last Updated: 2026-03-04
+Version: 1.0.0
