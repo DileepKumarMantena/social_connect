@@ -8,7 +8,9 @@ from jose import JWTError, jwt
 from constants import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, BREVO_API_KEY, BREVO_SENDER_EMAIL, BREVO_SENDER_NAME, EMAIL_TEMPLATES
 
 # Load environment variables from .env file
-load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
+import os
+from dotenv import load_dotenv
+load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
 
 
 def generate_otp():
@@ -244,6 +246,30 @@ def send_campaign_created_email(recipient_email: str, campaign_data: dict) -> bo
     }
     
     return send_email("campaign_created", recipient_email, template_vars)
+
+def send_access_expiring_email(user_data: dict, hours_remaining: int = 24) -> bool:
+    """Send email reminder when user access is about to expire"""
+    if hours_remaining <= 24:  # Only send if expires in next 24 hours
+        template_vars = {
+            "name": user_data.get("name", "User"),
+            "username": user_data.get("username", ""),
+            "hours_remaining": hours_remaining,
+            "expiry_date": user_data.get("access_expires_at", "Unknown")
+        }
+        
+        return send_email("access_expiring", user_data.get("email", ""), template_vars)
+    
+    return True
+
+def send_access_expired_email(user_data: dict) -> bool:
+    """Send email when user access has expired"""
+    template_vars = {
+        "name": user_data.get("name", "User"),
+        "username": user_data.get("username", ""),
+        "expiry_date": user_data.get("access_expires_at", "Unknown")
+    }
+    
+    return send_email("access_expired", user_data.get("email", ""), template_vars)
 
 from fastapi import HTTPException, status
 from services.logger import app_logger

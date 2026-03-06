@@ -168,6 +168,10 @@ def login_user(request: APIRequest) -> Union[OTPResponse, LoginResponse]:
     if not user or not verify_password(password, user["password_hash"]):
         raise APIError.unauthorized("Invalid username or password")
     
+    # Check if user access has expired BEFORE allowing login
+    if not check_access_expiration(user):
+        raise APIError.unauthorized("Access has expired. Please contact administrator.")
+    
     # If OTP is provided, verify it and return JWT token
     if otp:
         # Verify OTP

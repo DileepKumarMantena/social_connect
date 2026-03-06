@@ -21,6 +21,22 @@ class MongoDB:
         """Get MongoDB collection"""
         return self.db[collection_name]
     
+    def get_all_users(self) -> List[Dict[str, Any]]:
+        """Get all users from database"""
+        try:
+            collection = self.get_collection("users")
+            users = list(collection.find({}))
+            
+            # Convert ObjectId to string for consistency
+            for user in users:
+                if "_id" in user:
+                    user["_id"] = str(user["_id"])
+            
+            return users
+        except PyMongoError as e:
+            app_logger.error(f"Error getting all users: {e}")
+            return []
+    
     def get_user_by_username(self, username: str) -> Dict[str, Any]:
         """Get user by username"""
         try:

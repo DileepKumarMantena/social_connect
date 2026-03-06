@@ -429,6 +429,112 @@ Good luck with your campaign!
 Best regards,
 Social Connect Team
         """
+    },
+    
+    # Access Expiring Email
+    "access_expiring": {
+        "subject": "⏰ Access Expiring Soon! - Social Connect",
+        "html_template": """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Social Connect - Access Expiring</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #fffbeb;">
+            <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 8px 32px rgba(251, 146, 60, 0.08);">
+                <div style="background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%); padding: 40px 30px; text-align: center;">
+                    <h1 style="color: white; margin: 0; font-size: 32px; font-weight: 700;">⏰ Access Expiring!</h1>
+                    <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">Your access will expire soon</p>
+                </div>
+                <div style="padding: 40px 30px;">
+                    <h2 style="color: #92400e; margin-top: 0; font-size: 24px;">Action Required</h2>
+                    <p style="color: #a16207; font-size: 16px; line-height: 1.6;">Hi {name},</p>
+                    <p style="color: #a16207; font-size: 16px; line-height: 1.6;">Your Social Connect access will expire in <strong>{hours_remaining} hours</strong>.</p>
+                    
+                    <div style="background: #fef3c7; padding: 25px; border-radius: 12px; margin: 30px 0; border-left: 4px solid #f59e0b;">
+                        <p style="color: #92400e; margin: 0; font-size: 14px; line-height: 1.6;">
+                            <strong>📅 Expiry Date:</strong> {expiry_date}
+                        </p>
+                    </div>
+                    
+                    <p style="color: #a16207; font-size: 16px; line-height: 1.6;">Please contact your administrator to extend your access.</p>
+                </div>
+                <div style="background: #fffbeb; padding: 30px; text-align: center; border-top: 1px solid #fed7aa;">
+                    <p style="color: #6b7280; font-size: 12px; margin: 0;">Best regards,<br><strong>Social Connect Team</strong></p>
+                    <p style="color: #9ca3af; font-size: 10px; margin: 10px 0 0 0;">This is an automated message. Please do not reply.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """,
+        "text_template": """
+Social Connect - Access Expiring Soon
+
+Hello {name},
+
+Your Social Connect access will expire in {hours_remaining} hours.
+
+Expiry Date: {expiry_date}
+
+Please contact your administrator to extend your access.
+
+Best regards,
+Social Connect Team
+        """
+    },
+    
+    # Access Expired Email
+    "access_expired": {
+        "subject": "🚫 Access Expired! - Social Connect",
+        "html_template": """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Social Connect - Access Expired</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #fef2f2;">
+            <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 8px 32px rgba(220, 38, 38, 0.08);">
+                <div style="background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); padding: 40px 30px; text-align: center;">
+                    <h1 style="color: white; margin: 0; font-size: 32px; font-weight: 700;">🚫 Access Expired!</h1>
+                    <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">Your access has expired</p>
+                </div>
+                <div style="padding: 40px 30px;">
+                    <h2 style="color: #991b1b; margin-top: 0; font-size: 24px;">Access Denied</h2>
+                    <p style="color: #7f1d1d; font-size: 16px; line-height: 1.6;">Hi {name},</p>
+                    <p style="color: #7f1d1d; font-size: 16px; line-height: 1.6;">Your Social Connect access expired on <strong>{expiry_date}</strong>.</p>
+                    
+                    <div style="background: #fef2f2; padding: 25px; border-radius: 12px; margin: 30px 0; border-left: 4px solid #ef4444;">
+                        <p style="color: #991b1b; margin: 0; font-size: 14px; line-height: 1.6;">
+                            <strong>📅 Expired On:</strong> {expiry_date}
+                        </p>
+                    </div>
+                    
+                    <p style="color: #7f1d1d; font-size: 16px; line-height: 1.6;">Please contact your administrator to regain access.</p>
+                </div>
+                <div style="background: #fef2f2; padding: 30px; text-align: center; border-top: 1px solid #fecaca;">
+                    <p style="color: #6b7280; font-size: 12px; margin: 0;">Best regards,<br><strong>Social Connect Team</strong></p>
+                    <p style="color: #9ca3af; font-size: 10px; margin: 10px 0 0 0;">This is an automated message. Please do not reply.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """,
+        "text_template": """
+Social Connect - Access Expired
+
+Hello {name},
+
+Your Social Connect access expired on {expiry_date}.
+
+Please contact your administrator to regain access.
+
+Best regards,
+Social Connect Team
+        """
     }
 }
 

@@ -7,6 +7,8 @@ from typing import Optional
 from collections import defaultdict
 from datetime import datetime, timedelta
 import time
+import asyncio
+import threading
 from services.routes import (
     get_campaigns, get_leads, get_channels,
     get_analytics, get_scheduler, get_settings,
@@ -18,6 +20,8 @@ from services.routes import (
 from services.util import (
     verify_password, hash_password, generate_otp, store_otp, 
     verify_stored_otp, find_user_by_email, cleanup_otp, send_otp_email,
+    send_user_created_email, send_lead_created_email, send_campaign_created_email,
+    send_access_expiring_email, send_access_expired_email,
     create_access_token, get_user_from_token, validate_password_strength,
     RoleMiddleware, require_super_admin, require_admin, require_minimum_admin
 )
@@ -1011,6 +1015,58 @@ async def check_refresh_endpoint():
         "timestamp": datetime.utcnow().isoformat()
     }
 
+def check_expiring_users():
+    """Background job to check for users with expiring access"""
+    from services.util import check_access_expiration
+    from services.mongo_db import mongo_db
+    from constants import DEV_MODE
+    
+    try:
+        if DEV_MODE:
+            users = users_db.values()
+        else:
+            users = mongo_db.get_all_users()
+        
+        for user in users:
+            if check_access_expiration(user):
+                # User is expired, send expired email
+                send_access_expired_email(user)
+                app_logger.warning(f"Access expired email sent to user: {user.get('username', 'Unknown')}")
+            else:
+                # Check if access expires in next 24 hours
+                access_expires_at = user.get("access_expires_at")
+                if access_expires_at:
+                    from datetime import datetime
+                    expiry_time = datetime.fromisoformat(access_expires_at.replace('Z', '+00:00'))
+                    hours_remaining = (expiry_time - datetime.utcnow()).total_seconds() / 3600
+                    
+                    if hours_remaining <= 24 and hours_remaining > 0:
+                        send_access_expiring_email(user, int(hours_remaining))
+                        app_logger.info(f"Access expiring email sent to user: {user.get('username', 'Unknown')} ({hours_remaining:.1f} hours remaining)")
+                        
+    except Exception as e:
+        app_logger.error(f"Error in expiring users check: {e}")
+
+def start_expiring_users_scheduler():
+    """Start background scheduler to check expiring users"""
+    import asyncio
+    
+    async def scheduler_task():
+        while True:
+            try:
+                check_expiring_users()
+                app_logger.info("Completed expiring users check")
+            except Exception as e:
+                app_logger.error(f"Error in scheduler: {e}")
+            
+            # Check every hour (3600 seconds)
+            await asyncio.sleep(3600)
+    
+    # Run scheduler in background
+    scheduler_thread = threading.Thread(target=lambda: asyncio.run(scheduler_task()), daemon=True)
+    scheduler_thread.start()
+    app_logger.info("Expiring users scheduler started (checks every hour)")
+
 @app.on_event("startup")
 async def startup_event():
     """Initialize MongoDB roles and data on startup"""
@@ -1028,6 +1084,10 @@ async def startup_event():
             app_logger.info("MongoDB default data initialization completed successfully")
         else:
             app_logger.error("Failed to initialize MongoDB default data")
+        
+        # Start the expiring users scheduler
+        start_expiring_users_scheduler()
+        
     except Exception as e:
         app_logger.error(f"Error during startup initialization: {e}")
 
