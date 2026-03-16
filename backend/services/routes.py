@@ -30,8 +30,9 @@ class CreateUserRequest(BaseModel):
     password: str
     name: str
     role: str
-    companyid: int
+    companyid: Optional[int] = None
     access_hours: Optional[int] = None
+    user_type: Optional[str] = None
 
 class ExtendAccessRequest(BaseModel):
     user_id: int
@@ -47,8 +48,8 @@ class PermissionUpdateRequest(BaseModel):
     permissions: dict
 
 # User Management Functions
-def create_user_service(username, email, password, name, role, companyid, created_by, access_hours=None):
-    """Create a new user with optional time-based access"""
+def create_user_service(username, email, password, name, role, companyid, created_by, access_hours=None, user_type=None):
+    """Create a new user with optional time-based access and user type"""
     try:
         password_hash = hashlib.sha256(password.encode()).hexdigest()
         
@@ -56,6 +57,17 @@ def create_user_service(username, email, password, name, role, companyid, create
         access_expires_at = None
         if access_hours and role != 'super_admin':  # Super admins don't expire
             access_expires_at = datetime.utcnow() + timedelta(hours=access_hours)
+        
+        # Determine user_type if not provided
+        if user_type is None:
+            if role == "super_admin":
+                user_type = "platform_owner"
+            elif companyid == 0:
+                user_type = "self_company_employee"
+            elif created_by and created_by != "superadmin":
+                user_type = "tenant_employee"
+            else:
+                user_type = "tenant_user"
         
         # Check if we should use MongoDB or mock data
         from constants import DEV_MODE
@@ -68,6 +80,7 @@ def create_user_service(username, email, password, name, role, companyid, create
             "name": name,
             "role": role,
             "companyid": companyid,
+            "user_type": user_type,
             "activitystatus": True,
             "access_expires_at": access_expires_at.isoformat() if access_expires_at else None,
             "created_by": created_by
@@ -87,7 +100,7 @@ def create_user_service(username, email, password, name, role, companyid, create
             collection = mongo_db.get_collection("users")
             collection.insert_one(new_user)
         
-        app_logger.info(f"User {username} created with role {role}")
+        app_logger.info(f"User {username} created with role {role} and user_type {user_type}")
         return new_user
             
     except Exception as e:
@@ -183,9 +196,21 @@ def login_user(request: APIRequest) -> Union[OTPResponse, LoginResponse]:
         
         cleanup_otp(otp_storage, user["email"])
         
-        # Generate JWT token with complete user data
+        # Generate JWT token with complete user data including user_type
         user_data = user.copy()
         user_data["sub"] = user["username"]
+        
+        # Ensure user_type is included (for mock data compatibility)
+        if "user_type" not in user_data:
+            # Determine user_type based on role and companyid if not present
+            if user.get("role") == "super_admin":
+                user_data["user_type"] = "platform_owner"
+            elif user.get("companyid") == 0:
+                user_data["user_type"] = "self_company_employee"
+            elif user.get("created_by") and user.get("created_by") != "superadmin":
+                user_data["user_type"] = "tenant_employee"
+            else:
+                user_data["user_type"] = "tenant_user"
         
         token = create_access_token(user_data)
         
@@ -235,11 +260,20 @@ def send_forgot_password_otp(request: APIRequest) -> OTPResponse:
     if not request.email:
         raise APIError.bad_request("Email is required")
     
-    app_logger.info("Using mock data for OTP generation")
-    # Mock user check
-    username, user = find_user_by_email(users_db, request.email)
+    # Check if we should use MongoDB or mock data
+    from constants import DEV_MODE
+    from services.mongo_db import mongo_db
+    
+    if DEV_MODE:
+        app_logger.info("Using mock data for forgot password")
+        username, user = find_user_by_email(users_db, request.email)
+    else:
+        app_logger.info("Using MongoDB for forgot password")
+        user = mongo_db.get_user_by_email(request.email)
+        username = user.get("username") if user else None
+    
     if not user:
-        raise APIError.not_found("Email not found")
+        raise APIError.not_found("No user found with this email")
     
     # Generate and store OTP
     otp = generate_otp()
@@ -249,7 +283,7 @@ def send_forgot_password_otp(request: APIRequest) -> OTPResponse:
     app_logger.info(f"OTP for {request.email}: {otp} (development mode)")
     
     try:
-        send_otp_email(request.email, otp)
+        send_otp_email(request.email, otp, "forgot")
     except Exception as e:
         app_logger.error(f"Failed to send OTP email: {e}")
     
@@ -281,14 +315,30 @@ def reset_password(request: APIRequest) -> PasswordResetResponse:
     if not validate_password_strength(request.new_password)[0]:
         raise APIError.bad_request("Password must be at least 8 characters long and contain uppercase, lowercase, and numbers")
     
-    app_logger.info("Using mock data for password reset")
-    # Mock password reset
-    username, user = find_user_by_email(users_db, request.email)
-    if not user:
-        raise APIError.not_found("Email not found")
+    # Check if we should use MongoDB or mock data
+    from constants import DEV_MODE
+    from services.mongo_db import mongo_db
     
-    # Update password in mock database
-    user["password_hash"] = hash_password(request.new_password)
+    if DEV_MODE:
+        app_logger.info("Using mock data for password reset")
+        username, user = find_user_by_email(users_db, request.email)
+    else:
+        app_logger.info("Using MongoDB for password reset")
+        user = mongo_db.get_user_by_email(request.email)
+        username = user.get("username") if user else None
+    
+    if not user:
+        raise APIError.not_found("No user found with this email")
+    
+    # Update password in appropriate database
+    new_password_hash = hash_password(request.new_password)
+    
+    if DEV_MODE:
+        # Mock implementation
+        user["password_hash"] = new_password_hash
+    else:
+        # MongoDB implementation
+        mongo_db.update_user_password(username, new_password_hash)
     
     return PasswordResetResponse(
         message="Password reset successfully",
@@ -508,11 +558,11 @@ def create_user(request: CreateUserRequest, token: str) -> dict:
     current_user = RoleMiddleware.get_current_user(token)
     require_super_admin(current_user)
     
-    # Create mock user
+    # Create mock user with user_type
     new_user = create_user_service(
         request.username, request.email, request.password,
         request.name, request.role, request.companyid,
-        current_user["username"], request.access_hours
+        current_user["username"], request.access_hours, request.user_type
     )
     
     # Send welcome email to the new user

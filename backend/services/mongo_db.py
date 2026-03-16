@@ -354,6 +354,72 @@ class MongoDB:
             app_logger.error(f"Error deleting user {user_id}: {e}")
             return False
     
+    def get_companies(self) -> List[Dict[str, Any]]:
+        """Get all companies"""
+        try:
+            collection = self.get_collection("companies")
+            companies = list(collection.find({}))
+            # Convert ObjectId to string for consistency
+            for company in companies:
+                if "_id" in company:
+                    company["_id"] = str(company["_id"])
+            return companies
+        except PyMongoError as e:
+            app_logger.error(f"Error getting companies: {e}")
+            return []
+    
+    def create_company(self, company_data: Dict[str, Any]) -> bool:
+        """Create a new company"""
+        try:
+            collection = self.get_collection("companies")
+            # Check if company already exists
+            existing_company = collection.find_one({"companyId": company_data["companyId"]})
+            if existing_company:
+                app_logger.warning(f"Company {company_data['companyId']} already exists")
+                return False
+            
+            # Get next ID by finding the maximum existing ID
+            existing_companies = list(collection.find({}, {"id": 1}).sort("id", -1).limit(1))
+            next_id = (existing_companies[0]["id"] + 1) if existing_companies else 1
+            
+            # Add generated ID
+            company_data["id"] = next_id
+            
+            result = collection.insert_one(company_data)
+            success = result.acknowledged
+            if success:
+                app_logger.info(f"Company {company_data['name']} created successfully with ID {next_id}")
+            return success
+        except PyMongoError as e:
+            app_logger.error(f"Error creating company: {e}")
+            return False
+    
+    def delete_company(self, company_id: int) -> bool:
+        """Delete a company by ID"""
+        try:
+            collection = self.get_collection("companies")
+            result = collection.delete_one({"id": company_id})
+            success = result.deleted_count > 0
+            if success:
+                app_logger.info(f"Company {company_id} deleted successfully")
+            return success
+        except PyMongoError as e:
+            app_logger.error(f"Error deleting company {company_id}: {e}")
+            return False
+    
+    def delete_users_by_company(self, company_id: int) -> int:
+        """Delete all users belonging to a specific company"""
+        try:
+            collection = self.get_collection("users")
+            result = collection.delete_many({"companyid": company_id})
+            users_deleted = result.deleted_count
+            if users_deleted > 0:
+                app_logger.info(f"Deleted {users_deleted} users from company {company_id}")
+            return users_deleted
+        except PyMongoError as e:
+            app_logger.error(f"Error deleting users from company {company_id}: {e}")
+            return 0
+    
     def update_user_activity(self, user_id: str, activity_status: bool) -> bool:
         """Update user activity status"""
         try:
@@ -365,6 +431,22 @@ class MongoDB:
             return result.modified_count > 0
         except PyMongoError as e:
             app_logger.error(f"Error updating user activity {user_id}: {e}")
+            return False
+    
+    def update_user_password(self, username: str, password_hash: str) -> bool:
+        """Update user password"""
+        try:
+            collection = self.get_collection("users")
+            result = collection.update_one(
+                {"username": username},
+                {"$set": {"password_hash": password_hash}}
+            )
+            success = result.modified_count > 0
+            if success:
+                app_logger.info(f"Password updated successfully for user: {username}")
+            return success
+        except PyMongoError as e:
+            app_logger.error(f"Error updating password for user {username}: {e}")
             return False
     
     # Role Management Methods
@@ -405,15 +487,18 @@ class MongoDB:
         try:
             collection = self.get_collection("roles")
             # Check if role already exists
-            existing_role = collection.find_one({"roleId": role_data["roleId"]})
+            existing_role = collection.find_one({"roleId": role_data["roleId"], "companyid": role_data.get("companyid", 0)})
             if existing_role:
-                app_logger.warning(f"Role {role_data['roleId']} already exists")
+                app_logger.warning(f"Role {role_data['roleId']} already exists for company {role_data.get('companyid', 0)}")
                 return False
+            
+            # Add default status if not provided
+            role_data.setdefault("status", "active")
             
             result = collection.insert_one(role_data)
             success = result.acknowledged
             if success:
-                app_logger.info(f"Role {role_data['roleId']} created successfully")
+                app_logger.info(f"Role {role_data['roleId']} created successfully for company {role_data.get('companyid', 0)}")
             return success
         except PyMongoError as e:
             app_logger.error(f"Error creating role: {e}")

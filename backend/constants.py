@@ -5,7 +5,15 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
 
-# Mock user database
+# User type definitions for multi-tenancy
+USER_TYPES = {
+    "platform_owner": "platform_owner",      # Owns the entire platform
+    "tenant_user": "tenant_user",            # Created by platform owner for a company
+    "tenant_employee": "tenant_employee",     # Employee of a tenant company
+    "self_company_employee": "self_company_employee"  # Employee of platform owner's company
+}
+
+# Mock user database with proper user types and company assignments
 users_db = {
     "superadmin": {
         "username": "superadmin",
@@ -13,7 +21,8 @@ users_db = {
         "password_hash": hashlib.sha256("SuperAdmin123!".encode()).hexdigest(),
         "name": "Super Admin",
         "role": "super_admin",
-        "companyid": 0,
+        "companyid": 0,  # Platform owner company
+        "user_type": "platform_owner",
         "activitystatus": True,
         "access_expires_at": None,
         "created_by": None
@@ -24,7 +33,8 @@ users_db = {
         "password_hash": hashlib.sha256("Admin123!".encode()).hexdigest(),
         "name": "Admin One",
         "role": "admin",
-        "companyid": 1,
+        "companyid": 1,  # First tenant company
+        "user_type": "tenant_user",  # Created by platform owner for this company
         "activitystatus": True,
         "access_expires_at": None,
         "created_by": "superadmin"
@@ -35,10 +45,23 @@ users_db = {
         "password_hash": hashlib.sha256("User123!".encode()).hexdigest(),
         "name": "User One",
         "role": "user",
-        "companyid": 1,
+        "companyid": 1,  # First tenant company
+        "user_type": "tenant_employee",  # Employee of tenant company
         "activitystatus": True,
         "access_expires_at": None,
         "created_by": "admin1"
+    },
+    "employee1": {
+        "username": "employee1",
+        "email": "employee1@platform.com",
+        "password_hash": hashlib.sha256("Employee123!".encode()).hexdigest(),
+        "name": "Platform Employee",
+        "role": "admin",
+        "companyid": 0,  # Platform owner company
+        "user_type": "self_company_employee",  # Employee of platform owner
+        "activitystatus": True,
+        "access_expires_at": None,
+        "created_by": "superadmin"
     }
 }
 
@@ -577,11 +600,11 @@ deleted_roles = set()
 otp_storage = {}
 
 # Mock databases (resets on server restart)
-channels_db = {}
-campaigns_db = {}
-leads_db = {}
-analytics_db = {}
-scheduler_db = {}
+channels_db = []
+campaigns_db = []
+leads_db = []
+analytics_db = []
+scheduler_db = []
 user_settings_db = {}
 
 # JWT Configuration
@@ -606,4 +629,4 @@ COLLECTIONS = {
 }
 
 # Development mode
-DEV_MODE = False  # Set to True for mock data, False for MongoDB
+DEV_MODE = True  # Set to True for mock data, False for MongoDB

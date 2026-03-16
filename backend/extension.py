@@ -304,7 +304,7 @@ async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(secur
             }
         })
         
-        # Return user info with role-based permissions
+        # Return user info with role-based permissions and user type
         return {
             "message": "Token verified successfully",
             "valid": True,
@@ -315,6 +315,7 @@ async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(secur
                 "username": current_user.get("username", ""),
                 "email": current_user.get("email", ""),
                 "activitystatus": current_user.get("activitystatus", True),
+                "user_type": current_user.get("user_type", "platform_owner"),
                 "roleId": user_permissions["roleId"],
                 "roleName": user_permissions["roleName"],
                 "permissions": user_permissions["permissions"]
@@ -426,7 +427,7 @@ async def get_profile(credentials: HTTPAuthorizationCredentials = Depends(securi
         }
     })
     
-    # Return user profile data with permissions
+    # Return user profile data with permissions and user type
     return {
         "username": user["username"],
         "email": user["email"],
@@ -436,6 +437,7 @@ async def get_profile(credentials: HTTPAuthorizationCredentials = Depends(securi
         "activitystatus": user["activitystatus"],
         "access_expires_at": user.get("access_expires_at"),
         "created_by": user.get("created_by"),
+        "user_type": user.get("user_type", "platform_owner"),
         "roleId": user_permissions["roleId"],
         "roleName": user_permissions["roleName"],
         "permissions": user_permissions["permissions"]
@@ -544,62 +546,245 @@ async def get_settings_endpoint(credentials: HTTPAuthorizationCredentials = Depe
     app_logger.info("Settings retrieved successfully")
     return result
 
-# Role-based management endpoints
-@app.post("/api/v1/admin/users")
-async def create_user_endpoint(request: CreateUserRequest, credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """Create a new user (super_admin and admin only)"""
-    app_logger.info(f"User creation request by admin: {request.username}")
-    result = create_user(request, credentials.credentials)
+# Role-based management endpoints with company filtering
+@app.post("/api/v1/admin/roles/{company_id}")
+async def create_role_endpoint(company_id: int, request: RoleRequest, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Create a new role for a specific company (super_admin only)"""
+    app_logger.info(f"Role creation request for company {company_id}: {request.role_name}")
+    current_user = get_user_from_token(credentials.credentials)
+    require_super_admin(current_user)
+    
+    # Add company_id to role data
+    role_data = {
+        "roleId": request.role_key,
+        "roleName": request.role_name,
+        "permissions": request.permissions,
+        "companyid": company_id
+    }
+    
+    # Create role in MongoDB
+    from services.mongo_db import mongo_db
+    success = mongo_db.create_role(role_data)
+    if not success:
+        raise HTTPException(status_code=400, detail=f"Role {request.role_key} already exists or failed to create")
+    
+    return {
+        "message": f"Role {request.role_name} created successfully for company {company_id}",
+        "role": {
+            "roleId": request.role_key,
+            "roleName": request.role_name,
+            "permissions": request.permissions,
+            "companyid": company_id
+        }
+    }
+
+@app.get("/api/v1/admin/roles/{company_id}")
+async def get_roles_endpoint(company_id: int, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get roles for a specific company (super_admin only)"""
+    app_logger.info(f"Roles requested for company {company_id}")
+    current_user = get_user_from_token(credentials.credentials)
+    require_super_admin(current_user)
+    
+    # Get roles from MongoDB for specific company
+    from services.mongo_db import mongo_db
+    all_roles = mongo_db.get_roles()
+    
+    # Filter roles by company_id
+    company_roles = {}
+    for role_key, role_data in all_roles.items():
+        if role_data.get("companyid") == company_id:
+            company_roles[role_key] = role_data
+    
+    return {
+        "message": f"Roles retrieved successfully for company {company_id}",
+        "roles": company_roles
+    }
+
+@app.put("/api/v1/admin/roles/{company_id}/{role_key}")
+async def update_role_endpoint(company_id: int, role_key: str, request: RoleRequest, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Update an existing role for a specific company (super_admin only)"""
+    app_logger.info(f"Role update request for company {company_id}: {role_key}")
+    current_user = get_user_from_token(credentials.credentials)
+    require_super_admin(current_user)
+    
+    # Update role in MongoDB
+    from services.mongo_db import mongo_db
+    updates = {
+        "roleName": request.role_name,
+        "permissions": request.permissions
+    }
+    
+    success = mongo_db.update_role(role_key, updates)
+    if not success:
+        raise HTTPException(status_code=404, detail=f"Role {role_key} not found or failed to update")
+    
+    return {
+        "message": f"Role {request.role_name} updated successfully for company {company_id}",
+        "role": {
+            "roleId": role_key,
+            "roleName": request.role_name,
+            "permissions": request.permissions,
+            "companyid": company_id
+        }
+    }
+
+@app.put("/api/v1/admin/roles/{company_id}/{role_key}/deactivate")
+async def deactivate_role_endpoint(company_id: int, role_key: str, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Deactivate a role for a specific company (soft delete)"""
+    app_logger.info(f"Role deactivation request for company {company_id}: {role_key}")
+    current_user = get_user_from_token(credentials.credentials)
+    require_super_admin(current_user)
+    
+    # Soft delete role in MongoDB (set status to inactive)
+    from services.mongo_db import mongo_db
+    updates = {"status": "inactive"}
+    
+    success = mongo_db.update_role(role_key, updates)
+    if not success:
+        raise HTTPException(status_code=404, detail=f"Role {role_key} not found or failed to deactivate")
+    
+    return {
+        "message": f"Role {role_key} deactivated successfully for company {company_id}"
+    }
+
+@app.put("/api/v1/admin/roles/{company_id}/{role_key}/activate")
+async def activate_role_endpoint(company_id: int, role_key: str, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Activate a role for a specific company"""
+    app_logger.info(f"Role activation request for company {company_id}: {role_key}")
+    current_user = get_user_from_token(credentials.credentials)
+    require_super_admin(current_user)
+    
+    # Activate role in MongoDB (set status to active)
+    from services.mongo_db import mongo_db
+    updates = {"status": "active"}
+    
+    success = mongo_db.update_role(role_key, updates)
+    if not success:
+        raise HTTPException(status_code=404, detail=f"Role {role_key} not found or failed to activate")
+    
+    return {
+        "message": f"Role {role_key} activated successfully for company {company_id}"
+    }
+
+@app.put("/api/v1/admin/users/{company_id}/{user_id}")
+async def update_user_endpoint(company_id: int, user_id: str, request: CreateUserRequest, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Update an existing user in a specific company (super_admin and admin only)"""
+    app_logger.info(f"User update request for company {company_id}: {user_id}")
+    current_user = get_user_from_token(credentials.credentials)
+    require_minimum_admin(current_user)
+    
+    # Check if user exists and belongs to the specified company
+    from constants import DEV_MODE, users_db
+    from services.mongo_db import mongo_db
+    target_user = mongo_db.get_user_by_username(user_id) if not DEV_MODE else users_db.get(user_id)
+    
+    if not target_user or target_user.get("companyid") != company_id:
+        raise HTTPException(status_code=404, detail="User not found in this company")
+    
+    # For now, we'll implement a basic update
+    return {
+        "message": f"User {user_id} updated successfully in company {company_id}",
+        "user": {
+            "username": request.username,
+            "email": request.email,
+            "name": request.name,
+            "role": request.role,
+            "companyid": company_id
+        }
+    }
+
+@app.get("/api/v1/admin/users/{company_id}")
+async def get_users_endpoint(company_id: int, role_filter: Optional[str] = None, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get users for a specific company (super_admin and admin only)"""
+    app_logger.info(f"Users list requested for company {company_id} with filter: {role_filter}")
+    current_user = get_user_from_token(credentials.credentials)
+    require_minimum_admin(current_user)
+    
+    # Check if we should use MongoDB or mock data
+    from constants import DEV_MODE, users_db
+    from services.mongo_db import mongo_db
+    
+    if DEV_MODE:
+        # Mock implementation
+        if current_user["role"] == "super_admin":
+            # Super admin can see all users in the company
+            users_list = [u for u in users_db.values() if u.get("companyid") == company_id]
+        else:
+            # Admin can only see users they created in their company
+            users_list = [u for u in users_db.values() 
+                         if u.get("created_by") == current_user["username"] and u.get("companyid") == company_id]
+    else:
+        # MongoDB implementation
+        if current_user["role"] == "super_admin":
+            # Super admin can see all users in the company
+            all_users = mongo_db.get_users()
+            users_list = [u for u in all_users if u.get("companyid") == company_id]
+        else:
+            # Admin can only see users they created in their company
+            all_users = mongo_db.get_users()
+            users_list = [u for u in all_users 
+                         if u.get("created_by") == current_user["username"] and u.get("companyid") == company_id]
+    
+    if role_filter:
+        users_list = [u for u in users_list if u.get("role") == role_filter]
+    
+    # Remove sensitive data
+    safe_users = []
+    for user in users_list:
+        safe_user = {
+            "username": user["username"],
+            "email": user["email"],
+            "name": user["name"],
+            "role": user["role"],
+            "companyid": user["companyid"],
+            "user_type": user.get("user_type", "platform_owner"),
+            "activitystatus": user["activitystatus"],
+            "access_expires_at": user.get("access_expires_at"),
+            "created_by": user.get("created_by")
+        }
+        safe_users.append(safe_user)
+    
+    return {
+        "message": f"Users retrieved successfully for company {company_id}",
+        "users": safe_users
+    }
+
+@app.post("/api/v1/admin/users/{company_id}")
+async def create_user_endpoint(company_id: int, request: CreateUserRequest, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Create a new user for a specific company (super_admin and admin only)"""
+    app_logger.info(f"User creation request for company {company_id}: {request.username}")
+    current_user = get_user_from_token(credentials.credentials)
+    require_minimum_admin(current_user)
+    
+    # Override companyid with the one from URL
+    user_data = request.dict()
+    user_data["companyid"] = company_id
+    
+    # Create a new CreateUserRequest with the updated companyid
+    from services.routes import CreateUserRequest
+    updated_request = CreateUserRequest(**user_data)
+    
+    result = create_user(updated_request, credentials.credentials)
     app_logger.info(f"User creation result: {result['message']}")
     return result
 
-@app.put("/api/v1/admin/users/{user_id}")
-async def update_user_endpoint(user_id: str, request: CreateUserRequest, credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """Update an existing user (super_admin and admin only)"""
-    app_logger.info(f"User update request for: {user_id}")
-    # For now, we'll implement a basic update
-    # In a real implementation, you'd have a separate update function
-    try:
-        # Get current user to verify permissions
-        current_user = get_user_from_token(credentials.credentials)
-        require_minimum_admin(current_user)
-        
-        # For mock implementation, just return success
-        return {
-            "message": f"User {user_id} updated successfully",
-            "user": {
-                "username": request.username,
-                "email": request.email,
-                "name": request.name,
-                "role": request.role,
-                "companyid": request.companyid
-            }
-        }
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-@app.get("/api/v1/admin/users")
-async def get_users_endpoint(role_filter: Optional[str] = None, credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """Get users created by current user (super_admin and admin only)"""
-    app_logger.info(f"Users list requested with filter: {role_filter}")
-    result = get_users(credentials.credentials, role_filter)
-    app_logger.info(f"Returned {len(result['users'])} users")
-    return result
-
-@app.post("/api/v1/admin/users/extend-access")
-async def extend_user_access_endpoint(request: ExtendAccessRequest, credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """Extend user access (super_admin only)"""
-    app_logger.info(f"Access extension request for user ID: {request.user_id}")
-    result = extend_user_access(request, credentials.credentials)
-    app_logger.info(f"Access extension result: {result['message']}")
-    return result
-
-@app.delete("/api/v1/admin/users/{user_id}")
-async def deactivate_user_endpoint(user_id, credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """Delete a user completely (super_admin only)"""
-    app_logger.info(f"User deletion request for: {user_id}")
-    result = delete_user(user_id, credentials.credentials)
-    app_logger.info(f"User deletion result: {result['message']}")
+@app.delete("/api/v1/admin/users/{company_id}/{user_id}")
+async def deactivate_user_endpoint(company_id: int, user_id: str, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Deactivate a user in a specific company (super_admin only)"""
+    app_logger.info(f"User deactivation request for company {company_id}: {user_id}")
+    current_user = get_user_from_token(credentials.credentials)
+    require_super_admin(current_user)
+    
+    # Check if user exists and belongs to the specified company
+    from constants import DEV_MODE, users_db
+    from services.mongo_db import mongo_db
+    target_user = mongo_db.get_user_by_username(user_id) if not DEV_MODE else users_db.get(user_id)
+    
+    if not target_user or target_user.get("companyid") != company_id:
+        raise HTTPException(status_code=404, detail="User not found in this company")
+    
+    result = deactivate_user(user_id, credentials.credentials)
+    app_logger.info(f"User deactivation result: {result['message']}")
     return result
 
 # Campaign CRUD endpoints
@@ -1067,23 +1252,163 @@ def start_expiring_users_scheduler():
     scheduler_thread.start()
     app_logger.info("Expiring users scheduler started (checks every hour)")
 
+# Company Management Endpoints
+@app.get("/api/v1/admin/companies")
+async def get_companies_endpoint(status: Optional[str] = None, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get all companies (super_admin only)"""
+    app_logger.info(f"Companies list requested with status filter: {status}")
+    current_user = get_user_from_token(credentials.credentials)
+    require_super_admin(current_user)
+    
+    # Check if we should use MongoDB or mock data
+    from constants import DEV_MODE
+    from services.mongo_db import mongo_db
+    
+    if DEV_MODE:
+        # Mock implementation - return mock companies
+        companies = [
+            {
+                "id": 0,
+                "companyId": 0,
+                "name": "Platform Owner Company",
+                "adminUsername": "superadmin",
+                "subscription": "enterprise",
+                "status": "active",
+                "createdDate": "2026-01-01",
+                "userCount": 2
+            },
+            {
+                "id": 1,
+                "companyId": 1,
+                "name": "Client Company A",
+                "adminUsername": "admin1",
+                "subscription": "professional",
+                "status": "active",
+                "createdDate": "2026-02-01",
+                "userCount": 3
+            }
+        ]
+    else:
+        # MongoDB implementation
+        companies = mongo_db.get_companies()
+    
+    # Filter by status if provided
+    if status:
+        companies = [c for c in companies if c.get("status") == status]
+    
+    return {
+        "message": "Companies retrieved successfully",
+        "companies": companies
+    }
+
+@app.post("/api/v1/admin/companies")
+async def create_company_endpoint(request: dict, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Create a new company + admin user (super_admin only)"""
+    app_logger.info(f"Company creation request: {request.get('name')}")
+    current_user = get_user_from_token(credentials.credentials)
+    require_super_admin(current_user)
+    
+    # Create company in MongoDB
+    from services.mongo_db import mongo_db
+    
+    company_data = {
+        "name": request.get("name"),
+        "companyId": request.get("companyId"),
+        "adminUsername": request.get("adminUsername"),
+        "adminEmail": request.get("adminEmail"),
+        "subscription": request.get("subscription", "professional"),
+        "status": "active",
+        "createdDate": datetime.now().isoformat(),
+        "startDate": request.get("startDate"),
+        "endDate": request.get("endDate")
+    }
+    
+    success = mongo_db.create_company(company_data)
+    if not success:
+        raise HTTPException(status_code=400, detail="Company creation failed or company ID already exists")
+    
+    # Create admin user for the company
+    admin_user_data = {
+        "username": request.get("adminUsername"),
+        "email": request.get("adminEmail"),
+        "password": request.get("adminPassword", "TempPassword123!"),
+        "name": request.get("adminName", f"Admin of {request.get('name')}"),
+        "role": "admin",
+        "companyid": request.get("companyId"),
+        "user_type": "tenant_user",
+        "created_by": current_user["username"]
+    }
+    
+    # Create the admin user
+    from services.routes import create_user_service
+    admin_user = create_user_service(
+        admin_user_data["username"], admin_user_data["email"], admin_user_data["password"],
+        admin_user_data["name"], admin_user_data["role"], admin_user_data["companyid"],
+        admin_user_data["created_by"], None, admin_user_data["user_type"]
+    )
+    
+    return {
+        "message": f"Company {request.get('name')} created successfully",
+        "company": {
+            "id": company_data.get("id"),
+            "companyId": company_data["companyId"],
+            "name": company_data["name"],
+            "adminUsername": company_data["adminUsername"],
+            "subscription": company_data["subscription"],
+            "status": company_data["status"],
+            "createdDate": company_data["createdDate"]
+        },
+        "admin_user": {
+            "username": admin_user["username"],
+            "email": admin_user["email"],
+            "name": admin_user["name"],
+            "role": admin_user["role"],
+            "companyid": admin_user["companyid"]
+        }
+    }
+
+@app.delete("/api/v1/admin/companies/{company_id}")
+async def delete_company_endpoint(company_id: int, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Delete a company + all related users (super_admin only)"""
+    app_logger.info(f"Company deletion request for company ID: {company_id}")
+    current_user = get_user_from_token(credentials.credentials)
+    require_super_admin(current_user)
+    
+    # Delete company in MongoDB
+    from services.mongo_db import mongo_db
+    success = mongo_db.delete_company(company_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Company not found or deletion failed")
+    
+    # Cascade delete users from the company
+    users_deleted = mongo_db.delete_users_by_company(company_id)
+    
+    return {
+        "message": f"Company {company_id} and {users_deleted} related users deleted successfully"
+    }
+
 @app.on_event("startup")
 async def startup_event():
     """Initialize MongoDB roles and data on startup"""
     try:
-        app_logger.info("Initializing MongoDB roles collection...")
-        success = mongo_db.initialize_default_roles()
-        if success:
-            app_logger.info("MongoDB roles initialization completed successfully")
-        else:
-            app_logger.error("Failed to initialize MongoDB roles")
+        from constants import DEV_MODE
         
-        app_logger.info("Initializing MongoDB default data...")
-        success = mongo_db.initialize_default_data()
-        if success:
-            app_logger.info("MongoDB default data initialization completed successfully")
+        if not DEV_MODE:
+            app_logger.info("Initializing MongoDB roles collection...")
+            success = mongo_db.initialize_default_roles()
+            if success:
+                app_logger.info("MongoDB roles initialization completed successfully")
+            else:
+                app_logger.error("Failed to initialize MongoDB roles")
+            
+            app_logger.info("Initializing MongoDB default data...")
+            success = mongo_db.initialize_default_data()
+            if success:
+                app_logger.info("MongoDB default data initialization completed successfully")
+            else:
+                app_logger.error("Failed to initialize MongoDB default data")
         else:
-            app_logger.error("Failed to initialize MongoDB default data")
+            app_logger.info("Running in DEV_MODE - skipping MongoDB initialization")
         
         # Start the expiring users scheduler
         start_expiring_users_scheduler()
