@@ -1,0 +1,18 @@
+2026-03-18 00:09:13,886 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-18 00:09:13,895 - social_connect - INFO - Completed expiring users check
+2026-03-18 01:12:34,845 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-18 01:12:34,849 - social_connect - INFO - Completed expiring users check
+2026-03-18 02:12:35,120 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-18 02:12:35,122 - social_connect - INFO - Completed expiring users check
+2026-03-18 03:12:35,146 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-18 03:12:35,148 - social_connect - INFO - Completed expiring users check
+2026-03-18 04:12:35,175 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-18 04:12:35,178 - social_connect - INFO - Completed expiring users check
+2026-03-18 05:17:41,607 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-18 05:17:41,608 - social_connect - INFO - Completed expiring users check
+2026-03-18 21:11:46,406 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-18 21:11:46,410 - social_connect - INFO - Completed expiring users check
+2026-03-18 22:11:46,433 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-18 22:11:46,436 - social_connect - INFO - Completed expiring users check
+2026-03-18 23:12:11,804 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-18 23:12:11,805 - social_connect - INFO - Completed expiring users check

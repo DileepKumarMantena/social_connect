@@ -1,0 +1,192 @@
+2026-03-17 00:23:57,114 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-17 00:23:57,119 - social_connect - ERROR - Error during startup initialization: 'roleId'
+2026-03-17 00:24:00,376 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-17 00:24:15,344 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-17 00:24:15,650 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-17 00:24:15,652 - social_connect - ERROR - Error during startup initialization: 'roleId'
+2026-03-17 00:24:28,135 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-17 00:24:28,137 - social_connect - ERROR - Error during startup initialization: 'roleId'
+2026-03-17 00:24:35,793 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-17 00:24:36,096 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-17 00:24:36,099 - social_connect - ERROR - Error during startup initialization: 'roleId'
+2026-03-17 00:24:42,925 - social_connect - INFO - Running in DEV_MODE - skipping MongoDB initialization
+2026-03-17 00:24:42,925 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-17 00:24:42,925 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-17 00:24:42,925 - social_connect - INFO - Completed expiring users check
+2026-03-17 00:24:51,963 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-17 00:24:52,251 - social_connect - INFO - Running in DEV_MODE - skipping MongoDB initialization
+2026-03-17 00:24:52,251 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-17 00:24:52,251 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-17 00:24:52,251 - social_connect - INFO - Completed expiring users check
+2026-03-17 00:24:59,812 - social_connect - INFO - Health check requested
+2026-03-17 00:25:05,847 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-17 00:25:05,847 - social_connect - INFO - Using mock data for login
+2026-03-17 00:25:05,847 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 1949 (development mode)
+2026-03-17 00:25:07,968 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-17 00:25:07,968 - social_connect - INFO - Login OTP sent for user: superadmin
+2026-03-17 00:25:07,968 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-17 00:25:10,871 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-17 00:25:10,871 - social_connect - INFO - Using mock data for login
+2026-03-17 00:25:10,873 - social_connect - INFO - Login with OTP successful for user: superadmin
+2026-03-17 00:25:10,873 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-17 00:25:26,104 - social_connect - INFO - Companies list requested with status filter: None
+2026-03-17 00:25:30,197 - social_connect - INFO - Company creation request: Test Company B
+2026-03-17 00:25:30,240 - social_connect - INFO - User admin2 created with role admin and user_type tenant_user
+2026-03-17 00:25:33,618 - social_connect - INFO - Users list requested for company 1 with filter: None
+2026-03-17 00:25:49,048 - social_connect - INFO - Running in DEV_MODE - skipping MongoDB initialization
+2026-03-17 00:25:49,048 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-17 00:25:49,049 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-17 00:25:49,049 - social_connect - INFO - Completed expiring users check
+2026-03-17 00:26:01,709 - social_connect - INFO - Running in DEV_MODE - skipping MongoDB initialization
+2026-03-17 00:26:01,709 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-17 00:26:01,709 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-17 00:26:01,709 - social_connect - INFO - Completed expiring users check
+2026-03-17 00:26:08,119 - social_connect - INFO - Running in DEV_MODE - skipping MongoDB initialization
+2026-03-17 00:26:08,120 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-17 00:26:08,120 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-17 00:26:08,120 - social_connect - INFO - Completed expiring users check
+2026-03-17 00:26:16,795 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-17 00:26:17,091 - social_connect - INFO - Running in DEV_MODE - skipping MongoDB initialization
+2026-03-17 00:26:17,091 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-17 00:26:17,092 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-17 00:26:17,092 - social_connect - INFO - Completed expiring users check
+2026-03-17 00:26:22,046 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-17 00:26:22,046 - social_connect - INFO - Using mock data for login
+2026-03-17 00:26:22,046 - social_connect - ERROR - Login error: 
+2026-03-17 00:26:25,307 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-17 00:26:25,307 - social_connect - INFO - Using mock data for login
+2026-03-17 00:26:25,307 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 2345 (development mode)
+2026-03-17 00:26:26,788 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-17 00:26:26,792 - social_connect - INFO - Login OTP sent for user: superadmin
+2026-03-17 00:26:26,792 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-17 00:26:30,183 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-17 00:26:30,183 - social_connect - INFO - Using mock data for login
+2026-03-17 00:26:30,185 - social_connect - INFO - Login with OTP successful for user: superadmin
+2026-03-17 00:26:30,185 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-17 00:26:35,499 - social_connect - INFO - Users list requested for company 1 with filter: None
+2026-03-17 00:26:43,676 - social_connect - INFO - Running in DEV_MODE - skipping MongoDB initialization
+2026-03-17 00:26:43,676 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-17 00:26:43,676 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-17 00:26:43,676 - social_connect - INFO - Completed expiring users check
+2026-03-17 00:26:53,100 - social_connect - INFO - Running in DEV_MODE - skipping MongoDB initialization
+2026-03-17 00:26:53,100 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-17 00:26:53,100 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-17 00:26:53,100 - social_connect - INFO - Completed expiring users check
+2026-03-17 00:26:57,356 - social_connect - INFO - User creation request for company 1: newuser1
+2026-03-17 00:26:57,358 - social_connect - INFO - User newuser1 created with role user and user_type tenant_employee
+2026-03-17 00:26:58,875 - social_connect - INFO - Email 'user_created' sent successfully to newuser1@company.com via Brevo
+2026-03-17 00:26:58,876 - social_connect - INFO - Welcome email sent to new user: newuser1
+2026-03-17 00:26:58,876 - social_connect - INFO - User creation result: User created successfully
+2026-03-17 00:27:01,757 - social_connect - INFO - Roles requested for company 1
+2026-03-17 00:27:05,210 - social_connect - INFO - Role creation request for company 1: Marketing Coordinator
+2026-03-17 00:27:07,993 - social_connect - INFO - Password reset request for email: admin1@company.com
+2026-03-17 00:27:07,993 - social_connect - INFO - Using mock data for forgot password
+2026-03-17 00:27:07,993 - social_connect - INFO - OTP for admin1@company.com: 8925 (development mode)
+2026-03-17 00:27:07,993 - social_connect - INFO - Password reset result: OTP sent successfully
+2026-03-17 00:27:12,114 - social_connect - INFO - Password reset confirmation for email: admin1@company.com
+2026-03-17 00:27:12,115 - social_connect - INFO - Using mock data for password reset
+2026-03-17 00:27:12,116 - social_connect - INFO - Password reset result: Password reset successfully
+2026-03-17 00:27:15,344 - social_connect - INFO - Channels data requested
+2026-03-17 00:27:15,344 - social_connect - INFO - Using mock data for channels
+2026-03-17 00:27:19,931 - social_connect - INFO - Campaigns data requested
+2026-03-17 00:27:19,931 - social_connect - INFO - Using mock data for campaigns
+2026-03-17 00:27:38,632 - social_connect - INFO - Running in DEV_MODE - skipping MongoDB initialization
+2026-03-17 00:27:38,632 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-17 00:27:38,632 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-17 00:27:38,632 - social_connect - INFO - Completed expiring users check
+2026-03-17 00:27:41,430 - social_connect - INFO - Running in DEV_MODE - skipping MongoDB initialization
+2026-03-17 00:27:41,430 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-17 00:27:41,430 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-17 00:27:41,430 - social_connect - INFO - Completed expiring users check
+2026-03-17 00:27:52,061 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-17 00:27:52,373 - social_connect - INFO - Running in DEV_MODE - skipping MongoDB initialization
+2026-03-17 00:27:52,373 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-17 00:27:52,374 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-17 00:27:52,374 - social_connect - INFO - Completed expiring users check
+2026-03-17 00:27:59,296 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-17 00:27:59,296 - social_connect - INFO - Using mock data for login
+2026-03-17 00:27:59,297 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 3390 (development mode)
+2026-03-17 00:28:00,823 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-17 00:28:00,824 - social_connect - INFO - Login OTP sent for user: superadmin
+2026-03-17 00:28:00,824 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-17 00:28:07,043 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-17 00:28:07,043 - social_connect - INFO - Using mock data for login
+2026-03-17 00:28:07,045 - social_connect - INFO - Login with OTP successful for user: superadmin
+2026-03-17 00:28:07,045 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-17 00:28:17,434 - social_connect - INFO - Channels data requested
+2026-03-17 00:28:17,436 - social_connect - INFO - Using mock data for channels
+2026-03-17 00:28:17,436 - social_connect - INFO - Returned 0 channels
+2026-03-17 00:28:18,190 - social_connect - INFO - Campaigns data requested
+2026-03-17 00:28:18,191 - social_connect - INFO - Using mock data for campaigns
+2026-03-17 00:28:18,191 - social_connect - INFO - Returned 0 campaigns
+2026-03-17 00:28:18,543 - social_connect - INFO - Leads data requested
+2026-03-17 00:28:18,543 - social_connect - INFO - Using mock data for leads
+2026-03-17 00:28:18,543 - social_connect - INFO - Returned 0 leads
+2026-03-17 00:28:18,753 - social_connect - INFO - Analytics data requested
+2026-03-17 00:28:18,758 - social_connect - INFO - Using MongoDB for analytics - found 3 records
+2026-03-17 00:28:18,758 - social_connect - INFO - Returned 3 analytics
+2026-03-17 00:28:18,899 - social_connect - INFO - Scheduler data requested
+2026-03-17 00:28:18,900 - social_connect - INFO - Using MongoDB for scheduler - found 3 records
+2026-03-17 00:28:18,900 - social_connect - INFO - Returned 3 schedules
+2026-03-17 00:28:19,036 - social_connect - INFO - Settings data requested
+2026-03-17 00:28:19,037 - social_connect - INFO - Using mock data for settings
+2026-03-17 00:28:19,037 - social_connect - INFO - Settings retrieved successfully
+2026-03-17 00:28:27,365 - social_connect - INFO - Channels data requested
+2026-03-17 00:28:27,365 - social_connect - INFO - Using mock data for channels
+2026-03-17 00:28:27,366 - social_connect - INFO - Returned 0 channels
+2026-03-17 00:28:32,449 - social_connect - INFO - Campaigns data requested
+2026-03-17 00:28:32,450 - social_connect - INFO - Using mock data for campaigns
+2026-03-17 00:28:32,450 - social_connect - INFO - Returned 0 campaigns
+2026-03-17 00:28:36,570 - social_connect - INFO - Leads data requested
+2026-03-17 00:28:36,570 - social_connect - INFO - Using mock data for leads
+2026-03-17 00:28:36,570 - social_connect - INFO - Returned 0 leads
+2026-03-17 00:28:43,756 - social_connect - INFO - Analytics data requested
+2026-03-17 00:28:43,758 - social_connect - INFO - Using MongoDB for analytics - found 3 records
+2026-03-17 00:28:43,758 - social_connect - INFO - Returned 3 analytics
+2026-03-17 00:28:55,325 - social_connect - INFO - Scheduler data requested
+2026-03-17 00:28:55,326 - social_connect - INFO - Using MongoDB for scheduler - found 3 records
+2026-03-17 00:28:55,327 - social_connect - INFO - Returned 3 schedules
+2026-03-17 00:29:01,515 - social_connect - INFO - Role deactivation request for company 1: marketing_coordinator
+2026-03-17 00:29:05,146 - social_connect - INFO - Role activation request for company 1: marketing_coordinator
+2026-03-17 00:29:08,220 - social_connect - INFO - User deactivation request for company 1: newuser1
+2026-03-17 00:29:13,166 - social_connect - INFO - Users list requested for company 1 with filter: None
+2026-03-17 00:29:16,492 - social_connect - INFO - User deactivation request for company 1: user1
+2026-03-17 00:29:16,493 - social_connect - INFO - User deactivation result: User user1 deactivated successfully
+2026-03-17 00:29:21,533 - social_connect - INFO - Company deletion request for company ID: 2
+2026-03-17 00:29:24,811 - social_connect - INFO - Companies list requested with status filter: None
+2026-03-17 00:29:32,058 - social_connect - INFO - User logged out
+2026-03-17 00:29:35,220 - social_connect - INFO - Profile request for user: superadmin
+2026-03-17 00:29:40,093 - social_connect - INFO - Login attempt for user: admin1 from IP: 127.0.0.1
+2026-03-17 00:29:40,094 - social_connect - INFO - Using mock data for login
+2026-03-17 00:29:40,094 - social_connect - INFO - Login OTP for admin1@company.com: 7984 (development mode)
+2026-03-17 00:29:41,996 - social_connect - INFO - Email 'login_otp' sent successfully to admin1@company.com via Brevo
+2026-03-17 00:29:41,997 - social_connect - INFO - Login OTP sent for user: admin1
+2026-03-17 00:29:41,997 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-17 00:29:42,268 - social_connect - INFO - Login attempt for user: admin1 from IP: 127.0.0.1
+2026-03-17 00:29:42,268 - social_connect - INFO - Using mock data for login
+2026-03-17 00:29:42,268 - social_connect - INFO - Login with OTP successful for user: admin1
+2026-03-17 00:29:42,268 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-17 00:29:48,252 - social_connect - INFO - Login attempt for user: user1 from IP: 127.0.0.1
+2026-03-17 00:29:48,252 - social_connect - INFO - Using mock data for login
+2026-03-17 00:29:48,252 - social_connect - INFO - Login OTP for user1@company.com: 4289 (development mode)
+2026-03-17 00:29:49,571 - social_connect - INFO - Email 'login_otp' sent successfully to user1@company.com via Brevo
+2026-03-17 00:29:49,572 - social_connect - INFO - Login OTP sent for user: user1
+2026-03-17 00:29:49,572 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-17 00:29:49,799 - social_connect - INFO - Login attempt for user: user1 from IP: 127.0.0.1
+2026-03-17 00:29:49,799 - social_connect - INFO - Using mock data for login
+2026-03-17 00:29:49,799 - social_connect - INFO - Login with OTP successful for user: user1
+2026-03-17 00:29:49,799 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-17 01:27:52,619 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-17 01:27:52,620 - social_connect - INFO - Completed expiring users check
+2026-03-17 02:27:52,932 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-17 02:27:52,934 - social_connect - INFO - Completed expiring users check
+2026-03-17 03:27:52,802 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-17 03:27:52,803 - social_connect - INFO - Completed expiring users check
+2026-03-17 04:27:52,676 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-17 04:27:52,677 - social_connect - INFO - Completed expiring users check
+2026-03-17 20:15:58,591 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-17 20:15:58,592 - social_connect - INFO - Completed expiring users check
+2026-03-17 22:09:14,077 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-17 22:09:14,078 - social_connect - INFO - Completed expiring users check
+2026-03-17 23:09:13,981 - social_connect - ERROR - Error in expiring users check: name 'users_db' is not defined
+2026-03-17 23:09:13,983 - social_connect - INFO - Completed expiring users check

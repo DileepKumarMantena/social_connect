@@ -58,11 +58,21 @@ def create_user_service(username, email, password, name, role, companyid, create
         if access_hours and role != 'super_admin':  # Super admins don't expire
             access_expires_at = datetime.utcnow() + timedelta(hours=access_hours)
         
-        # Determine user_type if not provided
-        if user_type is None:
-            if role == "super_admin":
-                user_type = "platform_owner"
-            elif companyid == 0:
+        # Always determine user_type dynamically based on role, companyid, and created_by
+        if role == "super_admin":
+            user_type = "platform_owner"
+        elif companyid == 0:
+            user_type = "self_company_employee"
+        elif created_by and created_by != "superadmin":
+            user_type = "tenant_employee"
+        else:
+            user_type = "tenant_user"
+        
+        # For custom roles (not in predefined types), treat as tenant_user by default
+        predefined_roles = ["super_admin", "admin", "user"]
+        if role not in predefined_roles:
+            # Custom role - determine based on company context
+            if companyid == 0:
                 user_type = "self_company_employee"
             elif created_by and created_by != "superadmin":
                 user_type = "tenant_employee"
@@ -197,15 +207,24 @@ def login_user(request: APIRequest) -> Union[OTPResponse, LoginResponse]:
         cleanup_otp(otp_storage, user["email"])
         
         # Generate JWT token with complete user data including user_type
-        user_data = user.copy()
+        user_data = user.copy() if isinstance(user, dict) else dict(user)
         user_data["sub"] = user["username"]
         
-        # Ensure user_type is included (for mock data compatibility)
-        if "user_type" not in user_data:
-            # Determine user_type based on role and companyid if not present
-            if user.get("role") == "super_admin":
-                user_data["user_type"] = "platform_owner"
-            elif user.get("companyid") == 0:
+        # Always determine user_type dynamically based on role, companyid, and created_by
+        if user.get("role") == "super_admin":
+            user_data["user_type"] = "platform_owner"
+        elif user.get("companyid") == 0:
+            user_data["user_type"] = "self_company_employee"
+        elif user.get("created_by") and user.get("created_by") != "superadmin":
+            user_data["user_type"] = "tenant_employee"
+        else:
+            user_data["user_type"] = "tenant_user"
+        
+        # For custom roles (not in predefined types), treat as tenant_user by default
+        predefined_roles = ["super_admin", "admin", "user"]
+        if user.get("role") not in predefined_roles:
+            # Custom role - determine based on company context
+            if user.get("companyid") == 0:
                 user_data["user_type"] = "self_company_employee"
             elif user.get("created_by") and user.get("created_by") != "superadmin":
                 user_data["user_type"] = "tenant_employee"
