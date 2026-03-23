@@ -1,4 +1,5 @@
 import logging
+import hashlib
 from pymongo import MongoClient
 from pymongo.errors import PyMongoError
 from typing import List, Dict, Any
@@ -359,6 +360,8 @@ class MongoDB:
         try:
             collection = self.get_collection("companies")
             companies = list(collection.find({}))
+            app_logger.info(f"Found {len(companies)} companies in MongoDB")
+            
             # Convert ObjectId to string for consistency
             for company in companies:
                 if "_id" in company:
@@ -372,10 +375,15 @@ class MongoDB:
         """Create a new company"""
         try:
             collection = self.get_collection("companies")
-            # Check if company already exists
-            existing_company = collection.find_one({"companyId": company_data["companyId"]})
+            # Check if company already exists by name or companyId
+            existing_company = None
+            if company_data.get("companyId"):
+                existing_company = collection.find_one({"companyId": company_data["companyId"]})
+            else:
+                existing_company = collection.find_one({"name": company_data["name"]})
+                
             if existing_company:
-                app_logger.warning(f"Company {company_data['companyId']} already exists")
+                app_logger.warning(f"Company {company_data['name']} already exists")
                 return False
             
             # Get next ID by finding the maximum existing ID
@@ -392,6 +400,22 @@ class MongoDB:
             return success
         except PyMongoError as e:
             app_logger.error(f"Error creating company: {e}")
+            return False
+    
+    def update_company(self, company_id: int, update_data: Dict[str, Any]) -> bool:
+        """Update a company by ID"""
+        try:
+            collection = self.get_collection("companies")
+            result = collection.update_one(
+                {"id": company_id},
+                {"$set": update_data}
+            )
+            success = result.modified_count > 0
+            if success:
+                app_logger.info(f"Company {company_id} updated successfully")
+            return success
+        except PyMongoError as e:
+            app_logger.error(f"Error updating company {company_id}: {e}")
             return False
     
     def delete_company(self, company_id: int) -> bool:
@@ -608,8 +632,10 @@ class MongoDB:
             
             collection = self.get_collection("roles")
             existing_roles = set()
-            for role in collection.find({}, {"roleId": 1}):
-                existing_roles.add(role["roleId"])
+            for role in collection.find({}, {"roleId": 1, "roleName": 1}):
+                # Handle both roleId and roleName fields
+                role_id = role.get("roleId") or role.get("roleName", "").lower().replace(" ", "_")
+                existing_roles.add(role_id)
             
             roles_created = 0
             for role_key, role_data in default_roles.items():
@@ -631,6 +657,63 @@ class MongoDB:
     def initialize_default_data(self) -> bool:
         """Initialize default collections data if they don't exist"""
         try:
+            # Initialize users
+            users_collection = self.get_collection("users")
+            if users_collection.count_documents({}) == 0:
+                from constants import users_db
+                default_users = [
+                    {
+                        "username": "superadmin",
+                        "email": "deelipkumar261997@gmail.com",
+                        "password_hash": hashlib.sha256("SuperAdmin123!".encode()).hexdigest(),
+                        "name": "Super Admin",
+                        "role": "super_admin",
+                        "companyid": 0,
+                        "user_type": "platform_owner",
+                        "activitystatus": True,
+                        "access_expires_at": None,
+                        "created_by": None
+                    },
+                    {
+                        "username": "admin1",
+                        "email": "admin1@company.com",
+                        "password_hash": hashlib.sha256("Admin123!".encode()).hexdigest(),
+                        "name": "Admin One",
+                        "role": "admin",
+                        "companyid": 1,
+                        "user_type": "tenant_user",
+                        "activitystatus": True,
+                        "access_expires_at": None,
+                        "created_by": "superadmin"
+                    },
+                    {
+                        "username": "user1",
+                        "email": "user1@company.com",
+                        "password_hash": hashlib.sha256("User123!".encode()).hexdigest(),
+                        "name": "User One",
+                        "role": "user",
+                        "companyid": 1,
+                        "user_type": "tenant_employee",
+                        "activitystatus": True,
+                        "access_expires_at": None,
+                        "created_by": "admin1"
+                    },
+                    {
+                        "username": "employee1",
+                        "email": "employee1@platform.com",
+                        "password_hash": hashlib.sha256("Employee123!".encode()).hexdigest(),
+                        "name": "Platform Employee",
+                        "role": "admin",
+                        "companyid": 0,
+                        "user_type": "self_company_employee",
+                        "activitystatus": True,
+                        "access_expires_at": None,
+                        "created_by": "superadmin"
+                    }
+                ]
+                users_collection.insert_many(default_users)
+                app_logger.info("Initialized default users in MongoDB")
+            
             # Initialize channels
             channels_collection = self.get_collection("channels")
             if channels_collection.count_documents({}) == 0:

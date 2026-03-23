@@ -629,4 +629,4 @@ COLLECTIONS = {
 }
 
 # Development mode
-DEV_MODE = True  # Set to True for mock data, False for MongoDB
+DEV_MODE = False  # Set to True for mock data, False for MongoDB

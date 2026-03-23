@@ -18,11 +18,11 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
+  TextField,
   Alert,
   Snackbar,
   Tabs,
@@ -53,21 +53,23 @@ const AdminPanel = () => {
   const [editingUser, setEditingUser] = useState(null);
   const [availableRoles, setAvailableRoles] = useState([]);
   const [rolesLoading, setRolesLoading] = useState(true);
-  const [companies, setCompanies] = useState([
-    { id: 0, name: 'Hippo Cloud' },
-    { id: 1, name: 'Company 1' },
-    { id: 2, name: 'Company 2' }
-  ]);
+  const [companies, setCompanies] = useState([]);
   const [activeTab, setActiveTab] = useState(0);
+  const [selectedCompanyId, setSelectedCompanyId] = useState(1); // Default to Company 1
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     password: '',
     name: '',
     role: '', // Will be set when roles are loaded
-    companyid: 1,
+    companyid: selectedCompanyId,
     access_hours: 24
   });
+  
+  // Update company ID when selection changes
+  useEffect(() => {
+    setFormData(prev => ({ ...prev, companyid: selectedCompanyId }));
+  }, [selectedCompanyId]);
   
   // Update company ID when user changes
   useEffect(() => {
@@ -113,11 +115,32 @@ const AdminPanel = () => {
     }
   }, [getAuthHeaders, formData.role]);
 
+  // Fetch companies from API
+  const fetchCompanies = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_LINKS}/api/v1/admin/companies`,
+        { headers: getAuthHeaders() }
+      );
+      console.log('Companies response:', response.data);
+      const companiesData = response.data?.companies || [];
+      setCompanies(companiesData);
+    } catch (error) {
+      console.error('Error fetching companies:', error);
+      // Fallback to hardcoded companies if API fails
+      setCompanies([
+        { id: 0, name: 'Hippo Cloud' },
+        { id: 1, name: 'Company 1' },
+        { id: 2, name: 'Company 2' }
+      ]);
+    }
+  }, [getAuthHeaders]);
+
   // Fetch users
   const fetchUsers = useCallback(async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_API_LINKS}/api/v1/admin/users`,
+        `${process.env.REACT_APP_API_LINKS}/api/v1/admin/users/${selectedCompanyId}`,
         { headers: getAuthHeaders() }
       );
       console.log('Users response:', response.data);
@@ -129,7 +152,7 @@ const AdminPanel = () => {
     } finally {
       setLoading(false);
     }
-  }, [getAuthHeaders]);
+  }, [getAuthHeaders, selectedCompanyId]);
 
   // Setup refresh listener
   useEffect(() => {
@@ -148,8 +171,9 @@ const AdminPanel = () => {
     if (hasRole('admin') || hasRole('super_admin')) {
       fetchUsers();
       fetchRoles();
+      fetchCompanies();
     }
-  }, [hasRole, fetchUsers, fetchRoles]);
+  }, [hasRole, fetchUsers, fetchRoles, fetchCompanies]);
 
   // Handle form submission
   const handleSubmit = async (e) => {
@@ -172,7 +196,7 @@ const AdminPanel = () => {
       } else {
         // Create new user
         const response = await axios.post(
-          `${process.env.REACT_APP_API_LINKS}/api/v1/admin/users`,
+          `${process.env.REACT_APP_API_LINKS}/api/v1/admin/users/${formData.companyid}`,
           payload,
           { headers: getAuthHeaders() }
         );
@@ -277,7 +301,7 @@ const AdminPanel = () => {
     if (result.isConfirmed) {
       try {
         const response = await axios.delete(
-          `${process.env.REACT_APP_API_LINKS}/api/v1/admin/users/${userId}`,
+          `${process.env.REACT_APP_API_LINKS}/api/v1/admin/users/1/${userId}`,
           { headers: getAuthHeaders() }
         );
         setSnackbar({ open: true, message: 'User deactivated successfully', severity: 'success' });
@@ -460,6 +484,24 @@ const AdminPanel = () => {
                 </Button>
               )}
             </Box>
+          </Box>
+
+          {/* Company Selector */}
+          <Box sx={{ mb: 2 }}>
+            <FormControl size="small" sx={{ minWidth: 200 }}>
+              <InputLabel>Company</InputLabel>
+              <Select
+                value={selectedCompanyId}
+                label="Company"
+                onChange={(e) => setSelectedCompanyId(e.target.value)}
+              >
+                {companies.map((company) => (
+                  <MenuItem key={company.id} value={company.id}>
+                    {company.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Box>
 
           <Card>

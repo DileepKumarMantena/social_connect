@@ -310,6 +310,14 @@ class RoleMiddleware:
     def require_role(required_role: str):
         """Decorator to require specific role"""
         def role_checker(current_user: dict):
+            if current_user is None:
+                app_logger.warning("Access denied: No user provided")
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Authentication required",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+            
             user_role = current_user.get("role", "user").strip().lower()
             required_role_clean = required_role.strip().lower()
             
@@ -334,6 +342,14 @@ class RoleMiddleware:
         }
         
         def role_checker(current_user: dict):
+            if current_user is None:
+                app_logger.warning("Access denied: No user provided")
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Authentication required",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+            
             user_role = current_user.get("role", "user").strip().lower()
             minimum_role_clean = minimum_role.strip().lower()
             

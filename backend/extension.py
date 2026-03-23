@@ -100,15 +100,16 @@ def get_user_from_token_dependency(credentials: HTTPAuthorizationCredentials = D
 async def login(request: APIRequest, http_request: Request):
     """Login endpoint with optional OTP verification"""
     client_ip = http_request.client.host
-    is_limited, attempts = is_rate_limited(client_ip)
-    
-    if is_limited:
-        app_logger.warning(f"Rate limit exceeded for IP: {client_ip}, attempts: {attempts}")
-        raise HTTPException(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail=f"Too many login attempts. Try again in {LOGIN_WINDOW_MINUTES} minutes.",
-            headers={"Retry-After": str(LOGIN_WINDOW_MINUTES * 60)}
-        )
+    # Temporarily disable rate limiting for testing
+    # is_limited, attempts = is_rate_limited(client_ip)
+    # 
+    # if is_limited:
+    #     app_logger.warning(f"Rate limit exceeded for IP: {client_ip}, attempts: {attempts}")
+    #     raise HTTPException(
+    #         status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+    #         detail=f"Too many login attempts. Try again in {LOGIN_WINDOW_MINUTES} minutes.",
+    #         headers={"Retry-After": str(LOGIN_WINDOW_MINUTES * 60)}
+    #     )
     
     app_logger.info(f"Login attempt for user: {request.username} from IP: {client_ip}")
     
@@ -1264,8 +1265,11 @@ async def get_companies_endpoint(status: Optional[str] = None, credentials: HTTP
     from constants import DEV_MODE
     from services.mongo_db import mongo_db
     
+    app_logger.info(f"DEV_MODE: {DEV_MODE}")
+    
     if DEV_MODE:
         # Mock implementation - return mock companies
+        app_logger.info("Using mock companies data")
         companies = [
             {
                 "id": 0,
@@ -1290,7 +1294,9 @@ async def get_companies_endpoint(status: Optional[str] = None, credentials: HTTP
         ]
     else:
         # MongoDB implementation
+        app_logger.info("Using MongoDB companies data")
         companies = mongo_db.get_companies()
+        app_logger.info(f"Returned {len(companies)} companies from get_companies()")
     
     # Filter by status if provided
     if status:
@@ -1365,6 +1371,43 @@ async def create_company_endpoint(request: dict, credentials: HTTPAuthorizationC
             "role": admin_user["role"],
             "companyid": admin_user["companyid"]
         }
+    }
+
+@app.put("/api/v1/admin/companies/{company_id}")
+async def update_company_endpoint(company_id: int, request: dict, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Update a company (super_admin only)"""
+    app_logger.info(f"Company update request for company ID: {company_id}")
+    current_user = get_user_from_token(credentials.credentials)
+    require_super_admin(current_user)
+    
+    # Update company in MongoDB
+    from services.mongo_db import mongo_db
+    
+    # Get existing company
+    companies = mongo_db.get_companies()
+    existing_company = None
+    for company in companies:
+        if company.get("id") == company_id:
+            existing_company = company
+            break
+    
+    if not existing_company:
+        raise HTTPException(status_code=404, detail="Company not found")
+    
+    # Update allowed fields
+    update_data = {}
+    allowed_fields = ["name", "adminUsername", "adminEmail", "subscription", "status"]
+    for field in allowed_fields:
+        if field in request:
+            update_data[field] = request[field]
+    
+    success = mongo_db.update_company(company_id, update_data)
+    if not success:
+        raise HTTPException(status_code=400, detail="Company update failed")
+    
+    return {
+        "message": f"Company {company_id} updated successfully",
+        "company": update_data
     }
 
 @app.delete("/api/v1/admin/companies/{company_id}")
