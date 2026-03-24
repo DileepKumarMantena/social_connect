@@ -573,9 +573,9 @@ def get_roles_service(token: str) -> dict:
     }
 
 def create_user(request: CreateUserRequest, token: str) -> dict:
-    """Create a new user (super_admin only)"""
+    """Create a new user (admin and super_admin only)"""
     current_user = RoleMiddleware.get_current_user(token)
-    require_super_admin(current_user)
+    require_minimum_admin(current_user)
     
     # Create mock user with user_type
     new_user = create_user_service(
@@ -854,8 +854,18 @@ def deactivate_user(user_id: str, token: str) -> dict:
         else:
             success = False
     else:
-        # MongoDB implementation
+        # MongoDB implementation - use username to find user
         success = mongo_db.update_user_activity(user_id, False)
+        if not success:
+            # Try to find user by checking if they exist
+            user = mongo_db.get_user_by_username(user_id)
+            if user:
+                # User exists but update failed, try again
+                success = mongo_db.update_user_activity(user_id, False)
+            else:
+                # User not found
+                app_logger.error(f"User {user_id} not found in MongoDB")
+                return {"message": f"User {user_id} not found"}
     
     if success:
         return {

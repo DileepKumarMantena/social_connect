@@ -77,7 +77,7 @@ app.add_middleware(
 # Dependency to get current user
 def get_user_from_token_dependency(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Dependency to validate JWT token and get current user"""
-    if not credentials:
+    if not credentials or not hasattr(credentials, 'credentials'):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
@@ -172,11 +172,11 @@ async def refresh_token(http_request: Request):
         )
     
     # Validate current token
-    current_user = RoleMiddleware.get_current_user(token)
+    current_user = get_user_from_token_dependency(credentials)
     if not current_user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid refresh token"
+            detail="No token provided"
         )
     
     # Generate new token
@@ -701,45 +701,44 @@ async def get_users_endpoint(company_id: int, role_filter: Optional[str] = None,
     current_user = get_user_from_token(credentials.credentials)
     require_minimum_admin(current_user)
     
-    # Check if we should use MongoDB or mock data
-    from constants import DEV_MODE, users_db
     from services.mongo_db import mongo_db
     
-    if DEV_MODE:
-        # Mock implementation
-        if current_user["role"] == "super_admin":
-            # Super admin can see all users in the company
-            users_list = [u for u in users_db.values() if u.get("companyid") == company_id]
-        else:
-            # Admin can only see users they created in their company
-            users_list = [u for u in users_db.values() 
-                         if u.get("created_by") == current_user["username"] and u.get("companyid") == company_id]
-    else:
-        # MongoDB implementation
-        if current_user["role"] == "super_admin":
-            # Super admin can see all users in the company
-            all_users = mongo_db.get_users()
-            users_list = [u for u in all_users if u.get("companyid") == company_id]
-        else:
-            # Admin can only see users they created in their company
-            all_users = mongo_db.get_users()
-            users_list = [u for u in all_users 
-                         if u.get("created_by") == current_user["username"] and u.get("companyid") == company_id]
+    # Get all users from database
+    all_users = mongo_db.get_users()
+    app_logger.info(f"Total users in database: {len(all_users)}")
     
+    # Filter users based on company and role
+    if current_user["role"] == "super_admin":
+        # Super admin can see all users in the specified company
+        if company_id == 0:
+            # Company 0 means show all users
+            users_list = all_users
+        else:
+            # Show users for specific company
+            users_list = [u for u in all_users if u.get("companyid") == company_id]
+    else:
+        # Admin can only see users they created in their company
+        users_list = [u for u in all_users 
+                     if u.get("created_by") == current_user["username"] and u.get("companyid") == company_id]
+    
+    app_logger.info(f"Filtered users for company {company_id}: {len(users_list)}")
+    
+    # Apply role filter if provided
     if role_filter:
         users_list = [u for u in users_list if u.get("role") == role_filter]
+        app_logger.info(f"Users after role filter '{role_filter}': {len(users_list)}")
     
-    # Remove sensitive data
+    # Remove sensitive information
     safe_users = []
     for user in users_list:
         safe_user = {
-            "username": user["username"],
-            "email": user["email"],
-            "name": user["name"],
-            "role": user["role"],
-            "companyid": user["companyid"],
+            "username": user.get("username"),
+            "email": user.get("email"),
+            "name": user.get("name"),
+            "role": user.get("role"),
+            "companyid": user.get("companyid"),
             "user_type": user.get("user_type", "platform_owner"),
-            "activitystatus": user["activitystatus"],
+            "activitystatus": user.get("activitystatus"),
             "access_expires_at": user.get("access_expires_at"),
             "created_by": user.get("created_by")
         }
@@ -747,7 +746,8 @@ async def get_users_endpoint(company_id: int, role_filter: Optional[str] = None,
     
     return {
         "message": f"Users retrieved successfully for company {company_id}",
-        "users": safe_users
+        "users": safe_users,
+        "total": len(safe_users)
     }
 
 @app.post("/api/v1/admin/users/{company_id}")
@@ -1254,53 +1254,16 @@ def start_expiring_users_scheduler():
     app_logger.info("Expiring users scheduler started (checks every hour)")
 
 # Company Management Endpoints
+# Company endpoints will be implemented fresh
+
 @app.get("/api/v1/admin/companies")
-async def get_companies_endpoint(status: Optional[str] = None, credentials: HTTPAuthorizationCredentials = Depends(security)):
+async def get_companies_endpoint(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Get all companies (super_admin only)"""
-    app_logger.info(f"Companies list requested with status filter: {status}")
     current_user = get_user_from_token(credentials.credentials)
     require_super_admin(current_user)
     
-    # Check if we should use MongoDB or mock data
-    from constants import DEV_MODE
     from services.mongo_db import mongo_db
-    
-    app_logger.info(f"DEV_MODE: {DEV_MODE}")
-    
-    if DEV_MODE:
-        # Mock implementation - return mock companies
-        app_logger.info("Using mock companies data")
-        companies = [
-            {
-                "id": 0,
-                "companyId": 0,
-                "name": "Platform Owner Company",
-                "adminUsername": "superadmin",
-                "subscription": "enterprise",
-                "status": "active",
-                "createdDate": "2026-01-01",
-                "userCount": 2
-            },
-            {
-                "id": 1,
-                "companyId": 1,
-                "name": "Client Company A",
-                "adminUsername": "admin1",
-                "subscription": "professional",
-                "status": "active",
-                "createdDate": "2026-02-01",
-                "userCount": 3
-            }
-        ]
-    else:
-        # MongoDB implementation
-        app_logger.info("Using MongoDB companies data")
-        companies = mongo_db.get_companies()
-        app_logger.info(f"Returned {len(companies)} companies from get_companies()")
-    
-    # Filter by status if provided
-    if status:
-        companies = [c for c in companies if c.get("status") == status]
+    companies = mongo_db.get_companies()
     
     return {
         "message": "Companies retrieved successfully",
@@ -1310,66 +1273,81 @@ async def get_companies_endpoint(status: Optional[str] = None, credentials: HTTP
 @app.post("/api/v1/admin/companies")
 async def create_company_endpoint(request: dict, credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Create a new company + admin user (super_admin only)"""
-    app_logger.info(f"Company creation request: {request.get('name')}")
     current_user = get_user_from_token(credentials.credentials)
     require_super_admin(current_user)
     
-    # Create company in MongoDB
-    from services.mongo_db import mongo_db
+    # Validate required fields
+    required_fields = ["name", "adminUsername", "adminEmail"]
+    for field in required_fields:
+        if not request.get(field):
+            raise HTTPException(status_code=400, detail=f"Missing required field: {field}")
     
+    # Prepare company data
     company_data = {
-        "name": request.get("name"),
+        "name": request["name"].strip(),
         "companyId": request.get("companyId"),
-        "adminUsername": request.get("adminUsername"),
-        "adminEmail": request.get("adminEmail"),
-        "subscription": request.get("subscription", "professional"),
-        "status": "active",
-        "createdDate": datetime.now().isoformat(),
+        "adminUsername": request["adminUsername"].strip(),
+        "adminEmail": request["adminEmail"].strip().lower(),
+        "subscription": request.get("subscription", "basic"),
         "startDate": request.get("startDate"),
         "endDate": request.get("endDate")
     }
     
-    success = mongo_db.create_company(company_data)
-    if not success:
-        raise HTTPException(status_code=400, detail="Company creation failed or company ID already exists")
+    # Create company
+    from services.mongo_db import mongo_db
+    try:
+        created_company = mongo_db.create_company(company_data)
+        app_logger.info(f"✅ Company created: {created_company['name']} with ID {created_company['id']}")
+    except Exception as e:
+        app_logger.error(f"❌ Company creation failed: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
     
-    # Create admin user for the company
+    # Create admin user with correct company ID
     admin_user_data = {
-        "username": request.get("adminUsername"),
-        "email": request.get("adminEmail"),
+        "username": request["adminUsername"].strip(),
+        "email": request["adminEmail"].strip().lower(),
         "password": request.get("adminPassword", "TempPassword123!"),
-        "name": request.get("adminName", f"Admin of {request.get('name')}"),
+        "name": request.get("adminName", f"Admin of {request['name']}").strip(),
         "role": "admin",
-        "companyid": request.get("companyId"),
+        "companyid": created_company["id"],  # Use the generated company ID
         "user_type": "tenant_user",
         "created_by": current_user["username"]
     }
     
-    # Create the admin user
+    app_logger.info(f"🔄 Creating admin user with company ID {created_company['id']}")
+    
     from services.routes import create_user_service
     admin_user = create_user_service(
-        admin_user_data["username"], admin_user_data["email"], admin_user_data["password"],
-        admin_user_data["name"], admin_user_data["role"], admin_user_data["companyid"],
-        admin_user_data["created_by"], None, admin_user_data["user_type"]
+        admin_user_data["username"], 
+        admin_user_data["email"], 
+        admin_user_data["password"],
+        admin_user_data["name"], 
+        admin_user_data["role"], 
+        admin_user_data["companyid"],
+        admin_user_data["created_by"], 
+        None, 
+        admin_user_data["user_type"]
     )
     
+    if not admin_user:
+        raise HTTPException(status_code=500, detail="Failed to create admin user")
+    
+    app_logger.info(f"✅ Admin user created: {admin_user['username']} for company {created_company['id']}")
+    
     return {
-        "message": f"Company {request.get('name')} created successfully",
-        "company": {
-            "id": company_data.get("id"),
-            "companyId": company_data["companyId"],
-            "name": company_data["name"],
-            "adminUsername": company_data["adminUsername"],
-            "subscription": company_data["subscription"],
-            "status": company_data["status"],
-            "createdDate": company_data["createdDate"]
-        },
-        "admin_user": {
-            "username": admin_user["username"],
-            "email": admin_user["email"],
-            "name": admin_user["name"],
-            "role": admin_user["role"],
-            "companyid": admin_user["companyid"]
+        "message": f"Company {created_company['name']} created successfully",
+        "success": True,
+        "data": {
+            "company": created_company,
+            "admin_user": {
+                "username": admin_user["username"],
+                "email": admin_user["email"],
+                "name": admin_user["name"],
+                "role": admin_user["role"],
+                "companyid": admin_user["companyid"],
+                "user_type": admin_user["user_type"],
+                "created_by": admin_user["created_by"]
+            }
         }
     }
 

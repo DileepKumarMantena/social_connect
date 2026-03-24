@@ -1,5 +1,6 @@
 import logging
 import hashlib
+from datetime import datetime
 from pymongo import MongoClient
 from pymongo.errors import PyMongoError
 from typing import List, Dict, Any
@@ -355,52 +356,77 @@ class MongoDB:
             app_logger.error(f"Error deleting user {user_id}: {e}")
             return False
     
+    # Company methods will be implemented fresh
+    
+    def create_company(self, company_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Create a new company and return the created company data"""
+        try:
+            collection = self.get_collection("companies")
+            
+            # Check if company already exists
+            existing = collection.find_one({"name": company_data["name"]})
+            if existing:
+                raise Exception(f"Company '{company_data['name']}' already exists")
+            
+            # Get next ID
+            last_company = collection.find_one({}, sort=[("id", -1)])
+            next_id = (last_company["id"] + 1) if last_company else 1
+            
+            # Prepare company document
+            company_doc = {
+                "id": next_id,
+                "name": company_data["name"],
+                "companyId": company_data.get("companyId"),
+                "adminUsername": company_data.get("adminUsername"),
+                "adminEmail": company_data.get("adminEmail"),
+                "subscription": company_data.get("subscription", "basic"),
+                "status": "active",
+                "createdDate": datetime.now().isoformat(),
+                "startDate": company_data.get("startDate"),
+                "endDate": company_data.get("endDate")
+            }
+            
+            # Remove None values
+            company_doc = {k: v for k, v in company_doc.items() if v is not None}
+            
+            # Insert company
+            result = collection.insert_one(company_doc)
+            
+            if result.acknowledged:
+                # Return the created company without MongoDB _id
+                company_doc.pop("_id", None)
+                app_logger.info(f"✅ Company created and saved: {company_doc['name']} with ID {company_doc['id']}")
+                
+                # Verify it was saved
+                verify = collection.find_one({"id": next_id})
+                if verify:
+                    app_logger.info(f"✅ Company verified in database: {verify['name']}")
+                else:
+                    app_logger.error(f"❌ Company NOT found in database after insertion")
+                
+                return company_doc
+            else:
+                raise Exception("Failed to insert company")
+                
+        except Exception as e:
+            app_logger.error(f"❌ Error creating company: {e}")
+            raise e
+    
     def get_companies(self) -> List[Dict[str, Any]]:
         """Get all companies"""
         try:
             collection = self.get_collection("companies")
             companies = list(collection.find({}))
-            app_logger.info(f"Found {len(companies)} companies in MongoDB")
             
-            # Convert ObjectId to string for consistency
+            # Convert ObjectId to string and remove it from response
             for company in companies:
                 if "_id" in company:
                     company["_id"] = str(company["_id"])
+            
             return companies
-        except PyMongoError as e:
+        except Exception as e:
             app_logger.error(f"Error getting companies: {e}")
             return []
-    
-    def create_company(self, company_data: Dict[str, Any]) -> bool:
-        """Create a new company"""
-        try:
-            collection = self.get_collection("companies")
-            # Check if company already exists by name or companyId
-            existing_company = None
-            if company_data.get("companyId"):
-                existing_company = collection.find_one({"companyId": company_data["companyId"]})
-            else:
-                existing_company = collection.find_one({"name": company_data["name"]})
-                
-            if existing_company:
-                app_logger.warning(f"Company {company_data['name']} already exists")
-                return False
-            
-            # Get next ID by finding the maximum existing ID
-            existing_companies = list(collection.find({}, {"id": 1}).sort("id", -1).limit(1))
-            next_id = (existing_companies[0]["id"] + 1) if existing_companies else 1
-            
-            # Add generated ID
-            company_data["id"] = next_id
-            
-            result = collection.insert_one(company_data)
-            success = result.acknowledged
-            if success:
-                app_logger.info(f"Company {company_data['name']} created successfully with ID {next_id}")
-            return success
-        except PyMongoError as e:
-            app_logger.error(f"Error creating company: {e}")
-            return False
     
     def update_company(self, company_id: int, update_data: Dict[str, Any]) -> bool:
         """Update a company by ID"""

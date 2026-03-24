@@ -118,8 +118,11 @@ const AdminPanel = () => {
   // Fetch companies from API
   const fetchCompanies = useCallback(async () => {
     try {
+      // Add cache-busting to force fresh data
+      const timestamp = new Date().getTime();
+      const random = Math.random().toString(36).substring(7);
       const response = await axios.get(
-        `${process.env.REACT_APP_API_LINKS}/api/v1/admin/companies`,
+        `${process.env.REACT_APP_API_LINKS}/api/v1/admin/companies?t=${timestamp}&r=${random}`,
         { headers: getAuthHeaders() }
       );
       console.log('Companies response:', response.data);
@@ -127,12 +130,8 @@ const AdminPanel = () => {
       setCompanies(companiesData);
     } catch (error) {
       console.error('Error fetching companies:', error);
-      // Fallback to hardcoded companies if API fails
-      setCompanies([
-        { id: 0, name: 'Hippo Cloud' },
-        { id: 1, name: 'Company 1' },
-        { id: 2, name: 'Company 2' }
-      ]);
+      // Don't use fallback - empty array if API fails
+      setCompanies([]);
     }
   }, [getAuthHeaders]);
 
@@ -165,7 +164,7 @@ const AdminPanel = () => {
       console.log('Auto refresh triggered');
       fetchUsers(); // Refresh user list
     });
-  }, []);
+  }, [hasRole, fetchUsers, fetchRoles, fetchCompanies]);
 
   useEffect(() => {
     if (hasRole('admin') || hasRole('super_admin')) {
@@ -365,14 +364,31 @@ const AdminPanel = () => {
     });
 
     if (companyName && companyName.trim() !== '') {
-      // Get the highest current ID and add 1
-      const newCompanyId = companies.length > 0 ? Math.max(...companies.map(c => c.id)) + 1 : 1;
-      const newCompany = {
-        id: newCompanyId,
-        name: companyName.trim()
-      };
-      setCompanies([...companies, newCompany]);
-      setSnackbar({ open: true, message: 'Company added successfully', severity: 'success' });
+      try {
+        // Call backend API to create company
+        const response = await axios.post(
+          `${process.env.REACT_APP_API_LINKS}/api/v1/admin/companies`,
+          {
+            name: companyName.trim(),
+            adminUsername: `admin_${companyName.trim().toLowerCase().replace(/\s+/g, '_')}`,
+            adminEmail: `admin_${companyName.trim().toLowerCase().replace(/\s+/g, '_')}@company.com`,
+            adminPassword: 'TempPassword123!',
+            adminName: `Admin of ${companyName.trim()}`
+          },
+          { headers: getAuthHeaders() }
+        );
+        
+        if (response.data.success) {
+          // Refresh companies list from backend
+          await fetchCompanies();
+          setSnackbar({ open: true, message: 'Company created successfully', severity: 'success' });
+        } else {
+          setSnackbar({ open: true, message: 'Failed to create company', severity: 'error' });
+        }
+      } catch (error) {
+        console.error('Error creating company:', error);
+        setSnackbar({ open: true, message: 'Error creating company', severity: 'error' });
+      }
     }
   };
 
