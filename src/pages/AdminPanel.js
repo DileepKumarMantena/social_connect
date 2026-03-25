@@ -171,8 +171,20 @@ const AdminPanel = () => {
       fetchUsers();
       fetchRoles();
       fetchCompanies();
+    } else if (user?.role === 'user') {
+      // Show access denied popup for users
+      Swal.fire({
+        icon: 'error',
+        title: 'Access Denied',
+        text: "You don't have enough access rights to access the Admin Panel",
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'OK'
+      }).then(() => {
+        // Redirect to dashboard
+        window.location.hash = '/';
+      });
     }
-  }, [hasRole, fetchUsers, fetchRoles, fetchCompanies]);
+  }, [hasRole, fetchUsers, fetchRoles, fetchCompanies, user?.role]);
 
   // Handle form submission
   const handleSubmit = async (e) => {
@@ -378,12 +390,14 @@ const AdminPanel = () => {
           { headers: getAuthHeaders() }
         );
         
-        if (response.data.success) {
+        if (response.data.success || response.data.message) {
           // Refresh companies list from backend
           await fetchCompanies();
           setSnackbar({ open: true, message: 'Company created successfully', severity: 'success' });
         } else {
-          setSnackbar({ open: true, message: 'Failed to create company', severity: 'error' });
+          // Handle error case
+          const errorMessage = response.data?.detail || response.data?.message || 'Failed to create company';
+          setSnackbar({ open: true, message: errorMessage, severity: 'error' });
         }
       } catch (error) {
         console.error('Error creating company:', error);

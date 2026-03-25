@@ -37,9 +37,10 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const LeadsPage = () => {
-    const { getAuthHeaders } = useAuth();
+    const { getAuthHeaders, user } = useAuth();
     const [leads, setLeads] = useState([]);
     const [campaigns, setCampaigns] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -47,6 +48,21 @@ const LeadsPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [openDialog, setOpenDialog] = useState(false);
     const [editingLead, setEditingLead] = useState(null);
+
+    // Check if user has permission to perform action
+    const checkPermission = (action) => {
+        if (user?.role === 'user') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Access Denied',
+                text: "You don't have enough access rights for this action",
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+            return false;
+        }
+        return true;
+    };
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -108,6 +124,7 @@ const LeadsPage = () => {
     };
 
     const handleCreateLead = () => {
+        if (!checkPermission('create')) return;
         setOpenDialog(true);
     };
 
@@ -155,18 +172,20 @@ const LeadsPage = () => {
     };
 
     const handleEditLead = (lead) => {
+        if (!checkPermission('edit')) return;
         setEditingLead(lead);
         setFormData({
             name: lead.name,
             email: lead.email,
             phone: lead.phone,
-            campaign_id: lead.campaign_id || '',
+            campaign_id: lead.campaign_id,
             status: lead.status
         });
         setOpenDialog(true);
     };
 
     const handleDeleteLead = async (lead) => {
+        if (!checkPermission('delete')) return;
         if (window.confirm(`Are you sure you want to delete "${lead.name}"?`)) {
             try {
                 await axios.delete(

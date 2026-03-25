@@ -15,7 +15,8 @@ from services.routes import (
     login_user, send_forgot_password_otp, verify_otp, reset_password,
     create_access_token, APIRequest, CreateUserRequest, ExtendAccessRequest, RoleRequest, PermissionUpdateRequest,
     get_dashboard_stats, get_roles_service, get_users, create_user, extend_user_access, deactivate_user, delete_user, clear_all_data,
-    create_role_service, update_role_service, delete_role_service, update_permissions_service, health_check
+    create_role_service, update_role_service, delete_role_service, update_permissions_service, health_check,
+    get_user_profile_service, update_user_profile_service
 )
 from services.util import (
     verify_password, hash_password, generate_otp, store_otp, 
@@ -353,96 +354,19 @@ async def reset_password_endpoint(request: APIRequest):
     app_logger.info(f"Password reset result: {result.message}")
     return result
 
-@app.get("/api/v1/profile")
-async def get_profile(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """Get current user profile (protected endpoint)"""
-    if not credentials:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
-    from services.routes import get_user_from_token
-    user = get_user_from_token(credentials.credentials)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
-    app_logger.info(f"Profile request for user: {user.get('username', 'unknown')}")
-    
-    # Get user's role and permissions
-    user_role = user.get("role", "")
-    
-    # Mock role-based permissions (in production, this would come from database)
-    role_permissions = {
-        "super_admin": {
-            "roleId": "super_admin",
-            "roleName": "Super Admin",
-            "permissions": {
-                "role_management": {"Create": True, "Read": True, "Update": True, "Delete": True},
-                "campaigns": {"Create": True, "Read": True, "Update": True, "Delete": True},
-                "analytics": {"Create": True, "Read": True, "Update": True, "Delete": True},
-                "leads": {"Create": True, "Read": True, "Update": True, "Delete": True},
-                "channels": {"Create": True, "Read": True, "Update": True, "Delete": True},
-                "scheduler": {"Create": True, "Read": True, "Update": True, "Delete": True}
-            }
-        },
-        "admin": {
-            "roleId": "admin",
-            "roleName": "Admin",
-            "permissions": {
-                "campaigns": {"Create": True, "Read": True, "Update": True, "Delete": True},
-                "analytics": {"Create": False, "Read": True, "Update": False, "Delete": False},
-                "leads": {"Create": True, "Read": True, "Update": True, "Delete": True},
-                "channels": {"Create": True, "Read": True, "Update": True, "Delete": True},
-                "scheduler": {"Create": True, "Read": True, "Update": True, "Delete": True}
-            }
-        },
-        "marketing_manager": {
-            "roleId": "marketing_manager",
-            "roleName": "Marketing Manager",
-            "permissions": {
-                "campaigns": {"Create": True, "Read": True, "Update": False, "Delete": False},
-                "analytics": {"Create": False, "Read": True, "Update": False, "Delete": False},
-                "leads": {"Create": True, "Read": True, "Update": True, "Delete": False},
-                "channels": {"Create": False, "Read": True, "Update": False, "Delete": False},
-                "scheduler": {"Create": True, "Read": True, "Update": False, "Delete": False}
-            }
-        }
-    }
-    
-    # Get permissions for current user's role
-    user_permissions = role_permissions.get(user_role, {
-        "roleId": user_role,
-        "roleName": user_role.replace("_", " ").title(),
-        "permissions": {
-            "campaigns": {"Create": False, "Read": False, "Update": False, "Delete": False},
-            "analytics": {"Create": False, "Read": False, "Update": False, "Delete": False},
-            "leads": {"Create": False, "Read": False, "Update": False, "Delete": False},
-            "channels": {"Create": False, "Read": False, "Update": False, "Delete": False},
-            "scheduler": {"Create": False, "Read": False, "Update": False, "Delete": False}
-        }
-    })
-    
-    # Return user profile data with permissions and user type
-    return {
-        "username": user["username"],
-        "email": user["email"],
-        "name": user["name"],
-        "role": user["role"],
-        "companyid": user["companyid"],
-        "activitystatus": user["activitystatus"],
-        "access_expires_at": user.get("access_expires_at"),
-        "created_by": user.get("created_by"),
-        "user_type": user.get("user_type", "platform_owner"),
-        "roleId": user_permissions["roleId"],
-        "roleName": user_permissions["roleName"],
-        "permissions": user_permissions["permissions"]
-    }
+@app.get("/api/v1/dashboard/stats")
+async def get_dashboard_stats_endpoint():
+    """Get dashboard statistics"""
+    app_logger.info("Dashboard stats requested")
+    result = get_dashboard_stats()
+    app_logger.info(f"Dashboard stats: {result.stats}")
+    return result
+
+@app.get("/api/v1/health")
+async def health_endpoint():
+    """Health check endpoint"""
+    app_logger.info("Health check requested")
+    return {"message": "Social Connect API is running"}
 
 @app.get("/")
 async def root():
@@ -862,7 +786,10 @@ async def delete_campaign_endpoint(campaign_id: int, credentials: HTTPAuthorizat
     success = mongo_db.delete_campaign(campaign_id)
     
     if success:
-        return {"message": "Campaign deleted successfully"}
+        return {
+            "message": "Campaign deleted successfully",
+            "success": True
+        }
     else:
         raise HTTPException(status_code=404, detail="Campaign not found")
 
@@ -889,10 +816,14 @@ async def update_lead_endpoint(lead_id: int, request: dict, credentials: HTTPAut
         if updated_lead:
             return {
                 "message": "Lead updated successfully",
+                "success": True,
                 "lead": updated_lead
             }
         else:
-            return {"message": "Lead updated successfully"}
+            return {
+                "message": "Lead updated successfully",
+                "success": True
+            }
     else:
         raise HTTPException(status_code=404, detail="Lead not found")
 
@@ -907,7 +838,10 @@ async def delete_lead_endpoint(lead_id: int, credentials: HTTPAuthorizationCrede
     success = mongo_db.delete_lead(lead_id)
     
     if success:
-        return {"message": "Lead deleted successfully"}
+        return {
+            "message": "Lead deleted successfully",
+            "success": True
+        }
     else:
         raise HTTPException(status_code=404, detail="Lead not found")
 
@@ -938,6 +872,7 @@ async def create_channel_endpoint(request: dict, credentials: HTTPAuthorizationC
         
         return {
             "message": "Channel created successfully",
+            "success": True,
             "channel": channel_response
         }
     else:
@@ -1120,6 +1055,14 @@ async def get_user_profile_endpoint(credentials: HTTPAuthorizationCredentials = 
     app_logger.info("User profile requested")
     result = get_user_profile_service(credentials.credentials)
     app_logger.info(f"User profile result: {result['message']}")
+    return result
+
+@app.put("/api/v1/user/profile")
+async def update_user_profile_endpoint(request: dict, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Update current user profile"""
+    app_logger.info("User profile update requested")
+    result = update_user_profile_service(request, credentials.credentials)
+    app_logger.info(f"User profile update result: {result['message']}")
     return result
 
 @app.get("/api/v1/health")

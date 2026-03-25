@@ -30,17 +30,20 @@ export const AuthProvider = ({ children }) => {
   const validateToken = async (token) => {
     try {
       console.log('validateToken called with token:', token ? 'token exists' : 'no token');
-      console.log('Making profile request to:', `${process.env.REACT_APP_API_LINKS}/api/v1/profile`);
-      const response = await axios.get(`${process.env.REACT_APP_API_LINKS}/api/v1/profile`, {
+      console.log('Making profile request to:', `${process.env.REACT_APP_API_LINKS}/api/v1/user/profile`);
+      const response = await axios.get(`${process.env.REACT_APP_API_LINKS}/api/v1/user/profile`, {
         withCredentials: true,
         headers: { Authorization: `Bearer ${token}` }
       });
       
       if (response.data) {
-        setUser(response.data);
+        // Backend returns user data at root level or in user field
+        const userData = response.data.user || response.data;
+        setUser(userData);
         setToken(token);
       }
     } catch (error) {
+      console.error('Token validation error:', error);
       // Token invalid, clear it
       localStorage.removeItem('token');
       setUser(null);
@@ -74,6 +77,7 @@ export const AuthProvider = ({ children }) => {
         // Token is now set as httpOnly cookie by backend
         // Update user state
         const userData = response.data.user;
+        console.log('Login successful, setting user data:', userData);
         setUser(userData);
         setToken(response.data.access_token); // Keep for immediate use
         

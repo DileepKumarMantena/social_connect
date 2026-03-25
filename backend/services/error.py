@@ -29,6 +29,22 @@ class APIError:
         )
     
     @staticmethod
+    def forbidden(message: str = "Forbidden") -> HTTPException:
+        """403 Forbidden error"""
+        return HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=message
+        )
+    
+    @staticmethod
+    def internal_server_error(message: str = "Internal Server Error") -> HTTPException:
+        """500 Internal Server Error"""
+        return HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=message
+        )
+    
+    @staticmethod
     def validation_error(field: str, message: str) -> Dict[str, Any]:
         """422 Validation error response"""
         return {

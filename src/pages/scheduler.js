@@ -39,6 +39,7 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const SchedulerPage = () => {
     const { getAuthHeaders, user } = useAuth();
@@ -47,6 +48,21 @@ const SchedulerPage = () => {
     const [error, setError] = useState('');
     const [openDialog, setOpenDialog] = useState(false);
     const [editingSchedule, setEditingSchedule] = useState(null);
+
+    // Check if user has permission to perform action
+    const checkPermission = (action) => {
+        if (user?.role === 'user') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Access Denied',
+                text: "You don't have enough access rights for this action",
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+            return false;
+        }
+        return true;
+    };
     const [formData, setFormData] = useState({
         task_name: '',
         campaign_id: '',
@@ -116,6 +132,7 @@ const SchedulerPage = () => {
     };
 
     const handleCreateSchedule = () => {
+        if (!checkPermission('create')) return;
         setEditingSchedule(null);
         setFormData({
             task_name: '',
@@ -128,6 +145,7 @@ const SchedulerPage = () => {
     };
 
     const handleEditSchedule = (schedule) => {
+        if (!checkPermission('edit')) return;
         setEditingSchedule(schedule);
         setFormData({
             task_name: schedule.task_name,
@@ -140,6 +158,7 @@ const SchedulerPage = () => {
     };
 
     const handleDeleteSchedule = async (schedule) => {
+        if (!checkPermission('delete')) return;
         if (window.confirm(`Are you sure you want to delete "${schedule.task_name}"?`)) {
             try {
                 await axios.delete(

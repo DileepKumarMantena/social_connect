@@ -85,10 +85,27 @@ export default function AppLayout({ onLogout, children }) {
 
     // Helper function to check read permissions
     const hasReadPermission = (module) => {
-        if (!user || !user.permissions || !user.permissions[module]) {
-            return false;
+        // Super admin can see everything
+        if (!user || user.role === 'super_admin') {
+            return true;
         }
-        return user.permissions[module].Read || false;
+        
+        // If user has permissions object, check it
+        if (user.permissions && user.permissions[user.role] && user.permissions[user.role][module]) {
+            return user.permissions[user.role][module].Read || false;
+        }
+        
+        // Default permissions for regular users if no permissions are set
+        const defaultPermissions = {
+            'admin': ['role_management', 'campaigns', 'analytics', 'leads', 'channels', 'scheduler'],
+            'user': ['campaigns', 'analytics', 'leads', 'channels', 'scheduler']
+        };
+        
+        if (defaultPermissions[user.role] && defaultPermissions[user.role].includes(module)) {
+            return true;
+        }
+        
+        return false;
     };
 
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));

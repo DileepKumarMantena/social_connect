@@ -37,6 +37,7 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const ChannelsPage = () => {
     const { getAuthHeaders, user } = useAuth();
@@ -45,6 +46,21 @@ const ChannelsPage = () => {
     const [error, setError] = useState('');
     const [openDialog, setOpenDialog] = useState(false);
     const [editingChannel, setEditingChannel] = useState(null);
+
+    // Check if user has permission to perform action
+    const checkPermission = (action) => {
+        if (user?.role === 'user') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Access Denied',
+                text: "You don't have enough access rights for this action",
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+            return false;
+        }
+        return true;
+    };
     const [formData, setFormData] = useState({
         name: '',
         connected: false,
@@ -103,6 +119,7 @@ const ChannelsPage = () => {
     };
 
     const handleConfigureChannel = (channel) => {
+        if (!checkPermission('edit')) return;
         setEditingChannel(channel);
         setFormData({
             name: channel.name,
@@ -114,6 +131,7 @@ const ChannelsPage = () => {
     };
 
     const handleCreateChannel = () => {
+        if (!checkPermission('create')) return;
         setOpenDialog(true);
     };
 
@@ -150,6 +168,7 @@ const ChannelsPage = () => {
     };
 
     const handleDeleteChannel = async (channel) => {
+        if (!checkPermission('delete')) return;
         if (window.confirm(`Are you sure you want to delete "${channel.name}"?`)) {
             try {
                 await axios.delete(

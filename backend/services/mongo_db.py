@@ -493,10 +493,30 @@ class MongoDB:
             )
             success = result.modified_count > 0
             if success:
-                app_logger.info(f"Password updated successfully for user: {username}")
+                app_logger.info(f"Password updated successfully for user {username}")
+            else:
+                app_logger.error(f"Failed to update password for user {username}")
             return success
         except PyMongoError as e:
             app_logger.error(f"Error updating password for user {username}: {e}")
+            return False
+    
+    def update_user(self, username: str, updates: Dict[str, Any]) -> bool:
+        """Update user by username"""
+        try:
+            collection = self.get_collection("users")
+            result = collection.update_one(
+                {"username": username},
+                {"$set": updates}
+            )
+            success = result.modified_count > 0
+            if success:
+                app_logger.info(f"User {username} updated successfully")
+            else:
+                app_logger.error(f"Failed to update user {username}")
+            return success
+        except PyMongoError as e:
+            app_logger.error(f"Error updating user {username}: {e}")
             return False
     
     # Role Management Methods

@@ -123,9 +123,20 @@ def get_user_profile_service(token: str) -> dict:
     if not current_user:
         raise APIError.unauthorized("Invalid token")
     
-    user = users_db.get(current_user["username"])
-    if not user:
-        raise APIError.not_found("User not found")
+    # Check if we should use MongoDB or mock data
+    from constants import DEV_MODE
+    from services.mongo_db import mongo_db
+    
+    if DEV_MODE:
+        # Mock implementation
+        user = users_db.get(current_user["username"])
+        if not user:
+            raise APIError.not_found("User not found")
+    else:
+        # MongoDB implementation
+        user = mongo_db.get_user_by_username(current_user["username"])
+        if not user:
+            raise APIError.not_found("User not found")
         
     # Remove sensitive data
     profile_data = {
@@ -137,6 +148,74 @@ def get_user_profile_service(token: str) -> dict:
         "activitystatus": user["activitystatus"],
         "access_expires_at": user["access_expires_at"],
         "created_by": user["created_by"]
+    }
+    
+    return {
+        "message": "Profile retrieved successfully",
+        "user": profile_data
+    }
+
+def update_user_profile_service(request: dict, token: str) -> dict:
+    """Update current user profile"""
+    current_user = RoleMiddleware.get_current_user(token)
+    if not current_user:
+        raise APIError.unauthorized("Authentication required")
+    
+    # Check if user is trying to change their role or company (not allowed)
+    if "role" in request and request["role"] != current_user["role"]:
+        raise APIError.forbidden("You cannot change your own role")
+    if "companyid" in request and request["companyid"] != current_user["companyid"]:
+        raise APIError.forbidden("You cannot change your own company")
+    
+    # Prepare update data (only allow certain fields)
+    allowed_fields = ["name", "email"]
+    update_data = {}
+    for field in allowed_fields:
+        if field in request:
+            update_data[field] = request[field]
+    
+    if not update_data:
+        raise APIError.bad_request("No valid fields to update")
+    
+    # Check if we should use MongoDB or mock data
+    from constants import DEV_MODE
+    from services.mongo_db import mongo_db
+    
+    if DEV_MODE:
+        # Mock implementation
+        user = users_db.get(current_user["username"])
+        if not user:
+            raise APIError.not_found("User not found")
+        
+        # Update user in mock database
+        for field, value in update_data.items():
+            user[field] = value
+        users_db[current_user["username"]] = user
+        updated_user = user
+    else:
+        # MongoDB implementation
+        success = mongo_db.update_user(current_user["username"], update_data)
+        if not success:
+            raise APIError.internal_server_error("Failed to update profile")
+        
+        updated_user = mongo_db.get_user_by_username(current_user["username"])
+    
+    # Remove sensitive data
+    profile_data = {
+        "username": updated_user["username"],
+        "email": updated_user["email"],
+        "name": updated_user["name"],
+        "role": updated_user["role"],
+        "companyid": updated_user["companyid"],
+        "activitystatus": updated_user["activitystatus"],
+        "access_expires_at": updated_user["access_expires_at"],
+        "created_by": updated_user["created_by"]
+    }
+    
+    return {
+        "message": "Profile updated successfully",
+        "success": True,
+        "user": profile_data
     }
     app_logger.info(f"Profile requested for user: {current_user['username']}")
     return profile_data
@@ -198,13 +277,10 @@ def login_user(request: APIRequest) -> Union[OTPResponse, LoginResponse]:
     except HTTPException as e:
         raise APIError.unauthorized("Access has expired. Please contact administrator.")
     
-    # If OTP is provided, verify it and return JWT token
-    if otp:
-        # Verify OTP
-        if not verify_stored_otp(otp_storage, user["email"], otp):
-            raise APIError.unauthorized("Invalid or expired OTP")
-        
-        cleanup_otp(otp_storage, user["email"])
+    # Bypass OTP for user role, require OTP for other roles
+    if user.get("role") == "user":
+        # Skip OTP verification for user role - direct login
+        app_logger.info(f"Bypassing OTP for user role: {username}")
         
         # Generate JWT token with complete user data including user_type
         user_data = user.copy() if isinstance(user, dict) else dict(user)
@@ -220,23 +296,12 @@ def login_user(request: APIRequest) -> Union[OTPResponse, LoginResponse]:
         else:
             user_data["user_type"] = "tenant_user"
         
-        # For custom roles (not in predefined types), treat as tenant_user by default
-        predefined_roles = ["super_admin", "admin", "user"]
-        if user.get("role") not in predefined_roles:
-            # Custom role - determine based on company context
-            if user.get("companyid") == 0:
-                user_data["user_type"] = "self_company_employee"
-            elif user.get("created_by") and user.get("created_by") != "superadmin":
-                user_data["user_type"] = "tenant_employee"
-            else:
-                user_data["user_type"] = "tenant_user"
-        
         token = create_access_token(user_data)
         
-        app_logger.info(f"Login with OTP successful for user: {username}")
+        app_logger.info(f"Login successful for user: {username}")
         
         return LoginResponse(
-            message="Login successful with OTP",
+            message="Login successful",
             success=True,
             access_token=token,
             token_type="bearer",
@@ -254,25 +319,68 @@ def login_user(request: APIRequest) -> Union[OTPResponse, LoginResponse]:
             is_user=user["role"] == "user"
         )
     else:
-        # No OTP provided, generate and send OTP
-        otp_code = generate_otp()
-        store_otp(otp_storage, user["email"], otp_code)
-        
-        # In development, log OTP (in production, send email)
-        app_logger.info(f"Login OTP for {user['email']}: {otp_code} (development mode)")
-        
-        try:
-            send_otp_email(user["email"], otp_code)
-        except Exception as e:
-            app_logger.error(f"Failed to send login OTP email: {e}")
-        
-        app_logger.info(f"Login OTP sent for user: {username}")
-        
-        return OTPResponse(
-            message="Password verified. OTP sent for login verification",
-            success=True,
-            otp=otp_code  # Only in development
-        )
+        # Require OTP for other roles (admin, super_admin)
+        if not otp:
+            # No OTP provided, generate and send OTP
+            otp_code = generate_otp()
+            store_otp(otp_storage, user["email"], otp_code)
+            
+            # In development, log OTP (in production, send email)
+            app_logger.info(f"Login OTP for {user['email']}: {otp_code} (development mode)")
+            
+            try:
+                send_otp_email(user["email"], otp_code)
+            except Exception as e:
+                app_logger.error(f"Failed to send login OTP email: {e}")
+            
+            return OTPResponse(
+                message="Password verified. OTP sent for login verification",
+                success=True,
+                otp=otp_code
+            )
+        else:
+            # OTP provided, verify it and return JWT token
+            if not verify_stored_otp(otp_storage, user["email"], otp):
+                raise APIError.unauthorized("Invalid or expired OTP")
+            
+            cleanup_otp(otp_storage, user["email"])
+            
+            # Generate JWT token with complete user data including user_type
+            user_data = user.copy() if isinstance(user, dict) else dict(user)
+            user_data["sub"] = user["username"]
+            
+            # Always determine user_type dynamically based on role, companyid, and created_by
+            if user.get("role") == "super_admin":
+                user_data["user_type"] = "platform_owner"
+            elif user.get("companyid") == 0:
+                user_data["user_type"] = "self_company_employee"
+            elif user.get("created_by") and user.get("created_by") != "superadmin":
+                user_data["user_type"] = "tenant_employee"
+            else:
+                user_data["user_type"] = "tenant_user"
+            
+            token = create_access_token(user_data)
+            
+            app_logger.info(f"Login with OTP successful for user: {username}")
+            
+            return LoginResponse(
+                message="Login successful with OTP",
+                success=True,
+                access_token=token,
+                token_type="bearer",
+                user={
+                    "username": user["username"],
+                    "email": user["email"],
+                    "name": user["name"],
+                    "role": user["role"],
+                    "companyid": user["companyid"],
+                    "activitystatus": user["activitystatus"]
+                },
+                # Original superadmin email gets true, others get role-based flags
+                is_super_admin=user["email"] == "deelipkumar261997@gmail.com",
+                is_admin=user["role"] == "admin",
+                is_user=user["role"] == "user"
+            )
 
 def send_forgot_password_otp(request: APIRequest) -> OTPResponse:
     """Send OTP for password reset"""
