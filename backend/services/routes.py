@@ -790,9 +790,9 @@ def extend_user_access(request: ExtendAccessRequest, token: str) -> dict:
     return {"message": "User access extended successfully"}
 
 def deactivate_user(user_id, token: str) -> dict:
-    """Deactivate a user (super_admin only)"""
+    """Deactivate a user (super_admin and admin only)"""
     current_user = RoleMiddleware.get_current_user(token)
-    require_super_admin(current_user)
+    require_minimum_admin(current_user)
     
     # Mock implementation
     user_found = False
@@ -946,9 +946,9 @@ def delete_user(user_id: str, token: str) -> dict:
         }
 
 def deactivate_user(user_id: str, token: str) -> dict:
-    """Deactivate a user (super_admin only)"""
+    """Deactivate a user (super_admin and admin only)"""
     current_user = RoleMiddleware.get_current_user(token)
-    require_super_admin(current_user)
+    require_minimum_admin(current_user)
     
     # Check if we should use MongoDB or mock data
     from constants import DEV_MODE

@@ -28,7 +28,9 @@ import {
   Tabs,
   Tab,
   Checkbox,
-  ListItemText
+  ListItemText,
+  FormControlLabel,
+  Switch
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -38,7 +40,8 @@ import {
   Refresh as RefreshIcon,
   Edit as EditIcon,
   Visibility as VisibilityIcon,
-  VisibilityOff as VisibilityOffIcon
+  VisibilityOff as VisibilityOffIcon,
+  Restore as RestoreIcon
 } from '@mui/icons-material';
 import refreshService from '../services/refreshService';
 import { useAuth } from '../contexts/AuthContext';
@@ -55,14 +58,15 @@ const AdminPanel = () => {
   const [rolesLoading, setRolesLoading] = useState(true);
   const [companies, setCompanies] = useState([]);
   const [activeTab, setActiveTab] = useState(0);
-  const [selectedCompanyId, setSelectedCompanyId] = useState(1); // Default to Company 1
+  const [showInactiveUsers, setShowInactiveUsers] = useState(false);
+  const [selectedCompanyId, setSelectedCompanyId] = useState(user?.companyid || 1); // Default to user's company
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     password: '',
     name: '',
     role: '', // Will be set when roles are loaded
-    companyid: selectedCompanyId,
+    companyid: user?.companyid || 1,
     access_hours: 24
   });
   
@@ -122,7 +126,7 @@ const AdminPanel = () => {
       const timestamp = new Date().getTime();
       const random = Math.random().toString(36).substring(7);
       const response = await axios.get(
-        `${process.env.REACT_APP_API_LINKS}/api/v1/admin/companies?t=${timestamp}&r=${random}`,
+        `${process.env.REACT_APP_API_LINKS}/api/v1/admin/companies/accessible?t=${timestamp}&r=${random}`,
         { headers: getAuthHeaders() }
       );
       console.log('Companies response:', response.data);
@@ -138,8 +142,9 @@ const AdminPanel = () => {
   // Fetch users
   const fetchUsers = useCallback(async () => {
     try {
+      const includeInactive = showInactiveUsers ? '&include_inactive=true' : '';
       const response = await axios.get(
-        `${process.env.REACT_APP_API_LINKS}/api/v1/admin/users/${selectedCompanyId}`,
+        `${process.env.REACT_APP_API_LINKS}/api/v1/admin/users/${selectedCompanyId}?${includeInactive}`,
         { headers: getAuthHeaders() }
       );
       console.log('Users response:', response.data);
@@ -151,7 +156,7 @@ const AdminPanel = () => {
     } finally {
       setLoading(false);
     }
-  }, [getAuthHeaders, selectedCompanyId]);
+  }, [getAuthHeaders, selectedCompanyId, showInactiveUsers]);
 
   // Setup refresh listener
   useEffect(() => {
@@ -199,7 +204,7 @@ const AdminPanel = () => {
       if (editingUser) {
         // Update user (if needed in future)
         const response = await axios.put(
-          `${process.env.REACT_APP_API_LINKS}/api/v1/admin/users/${editingUser.id}`,
+          `${process.env.REACT_APP_API_LINKS}/api/v1/admin/users/${editingUser.companyid}/${editingUser.username}`,
           payload,
           { headers: getAuthHeaders() }
         );
@@ -312,7 +317,7 @@ const AdminPanel = () => {
     if (result.isConfirmed) {
       try {
         const response = await axios.delete(
-          `${process.env.REACT_APP_API_LINKS}/api/v1/admin/users/1/${userId}`,
+          `${process.env.REACT_APP_API_LINKS}/api/v1/admin/users/${selectedCompanyId}/${userId}`,
           { headers: getAuthHeaders() }
         );
         setSnackbar({ open: true, message: 'User deactivated successfully', severity: 'success' });
@@ -334,6 +339,72 @@ const AdminPanel = () => {
         }
         
         setSnackbar({ open: true, message: errorMessage, severity: 'error' });
+      }
+    }
+  };
+
+  // Reactivate user
+  const handleReactivateUser = async (userId, username) => {
+    const result = await Swal.fire({
+      title: 'Reactivate User?',
+      text: `Are you sure you want to reactivate ${username}?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#28a745',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Reactivate',
+      cancelButtonText: 'Cancel'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const headers = getAuthHeaders();
+        console.log('Reactivate user - Headers:', headers);
+        console.log('Reactivate user - URL:', `${process.env.REACT_APP_API_LINKS}/api/v1/admin/users/${selectedCompanyId}/${userId}/reactivate`);
+        
+        const response = await axios.post(
+          `${process.env.REACT_APP_API_LINKS}/api/v1/admin/users/${selectedCompanyId}/${userId}/reactivate`,
+          {},
+          { headers }
+        );
+        setSnackbar({ open: true, message: 'User reactivated successfully', severity: 'success' });
+        fetchUsers();
+      } catch (error) {
+        console.error('Error reactivating user:', error);
+        console.error('Error response:', error.response);
+        console.error('Error status:', error.response?.status);
+        console.error('Error data:', error.response?.data);
+        
+        let errorMessage = 'Failed to reactivate user';
+        
+        if (error.response?.data?.detail) {
+          const errorDetail = error.response.data.detail;
+          console.log('Error detail:', errorDetail);
+          
+          if (errorDetail.includes('already active') || errorDetail.includes('Failed to reactivate')) {
+            errorMessage = 'User is already active';
+          } else if (errorDetail.includes('Not authenticated') || errorDetail.includes('Unauthorized') || errorDetail.includes('invalid token')) {
+            errorMessage = 'Authentication failed. Please log in again.';
+          } else if (errorDetail.includes('Access denied') || errorDetail.includes('forbidden')) {
+            errorMessage = 'Access denied. You do not have permission for this action.';
+          } else {
+            errorMessage = typeof errorDetail === 'string' 
+              ? errorDetail 
+              : JSON.stringify(errorDetail);
+          }
+        } else if (error.response?.data?.message) {
+          errorMessage = typeof error.response.data.message === 'string' 
+            ? error.response.data.message 
+            : JSON.stringify(error.response.data.message);
+        } else if (error.response?.status === 401) {
+          errorMessage = 'Authentication failed. Please log in again.';
+        } else if (error.response?.status === 403) {
+          errorMessage = 'Access denied. You do not have permission for this action.';
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        
+        setSnackbar({ open: true, message: errorMessage, severity: 'warning' });
       }
     }
   };
@@ -513,6 +584,17 @@ const AdminPanel = () => {
                   Create User
                 </Button>
               )}
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={showInactiveUsers}
+                    onChange={(e) => setShowInactiveUsers(e.target.checked)}
+                    color="primary"
+                  />
+                }
+                label="Show Inactive Users"
+                sx={{ ml: 2 }}
+              />
             </Box>
           </Box>
 
@@ -616,6 +698,16 @@ const AdminPanel = () => {
                                 >
                                   <DeleteIcon />
                                 </IconButton>
+                                {!user.activitystatus && (
+                                  <IconButton
+                                    size="small"
+                                    onClick={() => handleReactivateUser(user.id || user.username, user.username)}
+                                    title="Reactivate User"
+                                    color="success"
+                                  >
+                                    <RestoreIcon />
+                                  </IconButton>
+                                )}
                               </>
                             )}
                           </TableCell>

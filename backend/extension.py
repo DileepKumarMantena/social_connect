@@ -606,6 +606,10 @@ async def update_user_endpoint(company_id: int, user_id: str, request: CreateUse
     if not target_user or target_user.get("companyid") != company_id:
         raise HTTPException(status_code=404, detail="User not found in this company")
     
+    # Additional check: admin can only update users from their own company
+    if current_user["role"] == "admin" and current_user["companyid"] != company_id:
+        raise HTTPException(status_code=403, detail="Admin can only update users from their own company")
+    
     # For now, we'll implement a basic update
     return {
         "message": f"User {user_id} updated successfully in company {company_id}",
@@ -619,9 +623,9 @@ async def update_user_endpoint(company_id: int, user_id: str, request: CreateUse
     }
 
 @app.get("/api/v1/admin/users/{company_id}")
-async def get_users_endpoint(company_id: int, role_filter: Optional[str] = None, credentials: HTTPAuthorizationCredentials = Depends(security)):
+async def get_users_endpoint(company_id: int, role_filter: Optional[str] = None, include_inactive: Optional[bool] = False, credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Get users for a specific company (super_admin and admin only)"""
-    app_logger.info(f"Users list requested for company {company_id} with filter: {role_filter}")
+    app_logger.info(f"Users list requested for company {company_id} with filter: {role_filter}, include_inactive: {include_inactive}")
     current_user = get_user_from_token(credentials.credentials)
     require_minimum_admin(current_user)
     
@@ -651,6 +655,13 @@ async def get_users_endpoint(company_id: int, role_filter: Optional[str] = None,
     if role_filter:
         users_list = [u for u in users_list if u.get("role") == role_filter]
         app_logger.info(f"Users after role filter '{role_filter}': {len(users_list)}")
+    
+    # Filter out inactive users only if include_inactive is False
+    if not include_inactive:
+        users_list = [u for u in users_list if u.get("activitystatus", True) != False]
+        app_logger.info(f"Users after filtering inactive users: {len(users_list)}")
+    else:
+        app_logger.info(f"Including inactive users in results: {len(users_list)}")
     
     # Remove sensitive information
     safe_users = []
@@ -695,10 +706,10 @@ async def create_user_endpoint(company_id: int, request: CreateUserRequest, cred
 
 @app.delete("/api/v1/admin/users/{company_id}/{user_id}")
 async def deactivate_user_endpoint(company_id: int, user_id: str, credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """Deactivate a user in a specific company (super_admin only)"""
+    """Deactivate a user in a specific company (super_admin and admin only)"""
     app_logger.info(f"User deactivation request for company {company_id}: {user_id}")
     current_user = get_user_from_token(credentials.credentials)
-    require_super_admin(current_user)
+    require_minimum_admin(current_user)
     
     # Check if user exists and belongs to the specified company
     from constants import DEV_MODE, users_db
@@ -708,9 +719,56 @@ async def deactivate_user_endpoint(company_id: int, user_id: str, credentials: H
     if not target_user or target_user.get("companyid") != company_id:
         raise HTTPException(status_code=404, detail="User not found in this company")
     
+    # Additional check: admin can only delete users from their own company
+    if current_user["role"] == "admin" and current_user["companyid"] != company_id:
+        raise HTTPException(status_code=403, detail="Admin can only delete users from their own company")
+    
     result = deactivate_user(user_id, credentials.credentials)
     app_logger.info(f"User deactivation result: {result['message']}")
     return result
+
+@app.post("/api/v1/admin/users/{company_id}/{user_id}/reactivate")
+async def reactivate_user_endpoint(company_id: int, user_id: str, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Reactivate a user in a specific company (super_admin and admin only)"""
+    app_logger.info(f"User reactivation request for company {company_id}: {user_id}")
+    current_user = get_user_from_token(credentials.credentials)
+    require_minimum_admin(current_user)
+    
+    # Check if user exists and belongs to the specified company
+    from constants import DEV_MODE, users_db
+    from services.mongo_db import mongo_db
+    target_user = mongo_db.get_user_by_username(user_id) if not DEV_MODE else users_db.get(user_id)
+    
+    if not target_user or target_user.get("companyid") != company_id:
+        raise HTTPException(status_code=404, detail="User not found in this company")
+    
+    # Additional check: admin can only reactivate users from their own company
+    if current_user["role"] == "admin" and current_user["companyid"] != company_id:
+        raise HTTPException(status_code=403, detail="Admin can only reactivate users from their own company")
+    
+    # Reactivate user by setting activitystatus to True
+    if DEV_MODE:
+        # Mock implementation - set activitystatus to True
+        if user_id in users_db:
+            if users_db[user_id].get("activitystatus", True) == True:
+                raise HTTPException(status_code=400, detail="User is already active")
+            users_db[user_id]["activitystatus"] = True
+            success = True
+        else:
+            success = False
+    else:
+        # MongoDB implementation - use username to find user
+        # Check if user is already active first
+        current_user_data = mongo_db.get_user_by_username(user_id)
+        if current_user_data and current_user_data.get("activitystatus", True) == True:
+            raise HTTPException(status_code=400, detail="User is already active")
+        
+        success = mongo_db.update_user_activity(user_id, True)
+        if not success:
+            raise HTTPException(status_code=500, detail="Failed to reactivate user")
+    
+    app_logger.info(f"User {user_id} reactivated successfully")
+    return {"message": f"User {user_id} reactivated successfully"}
 
 # Campaign CRUD endpoints
 @app.post("/api/v1/campaigns")
@@ -1212,6 +1270,32 @@ async def get_companies_endpoint(credentials: HTTPAuthorizationCredentials = Dep
         "message": "Companies retrieved successfully",
         "companies": companies
     }
+
+@app.get("/api/v1/admin/companies/accessible")
+async def get_accessible_companies_endpoint(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get companies accessible to current user (admin and super_admin)"""
+    current_user = get_user_from_token(credentials.credentials)
+    require_minimum_admin(current_user)
+    
+    from services.mongo_db import mongo_db
+    companies = mongo_db.get_companies()
+    
+    if current_user["role"] == "super_admin":
+        # Super admin can see all companies
+        return {
+            "message": "Companies retrieved successfully",
+            "companies": companies
+        }
+    elif current_user["role"] == "admin":
+        # Admin can see their own company and potentially others
+        # For now, return all companies but this can be restricted as needed
+        return {
+            "message": "Companies retrieved successfully",
+            "companies": companies
+        }
+    else:
+        # Other roles shouldn't access this endpoint
+        raise HTTPException(status_code=403, detail="Access denied")
 
 @app.post("/api/v1/admin/companies")
 async def create_company_endpoint(request: dict, credentials: HTTPAuthorizationCredentials = Depends(security)):
