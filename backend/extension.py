@@ -808,7 +808,22 @@ async def create_campaign_endpoint(request: dict, credentials: HTTPAuthorization
     campaign_data = {
         "name": request.get("name"),
         "status": request.get("status", "draft"),
-        "created_by": current_user["username"]
+        "created_by": current_user["username"],
+        "type": request.get("type", "sale"),
+        "target_audience": request.get("target_audience", "all_customers"),
+        "duration_days": request.get("duration_days", 14),
+        "budget_range": request.get("budget_range", "$500-1000"),
+        "platforms": request.get("platforms", ["facebook", "instagram"]),
+        "goal": request.get("goal", "sales"),
+        "special_offers": request.get("special_offers", ""),
+        "visual_theme": request.get("visual_theme", "blue_ocean"),
+        "call_to_action": request.get("call_to_action", "Learn More"),
+        "poster_url": request.get("poster_url", "/posters/default_campaign.png"),
+        "suggested_hashtags": request.get("suggested_hashtags", []),
+        "optimal_posting_times": request.get("optimal_posting_times", ["9:00 AM", "6:00 PM"]),
+        "ad_copy_variations": request.get("ad_copy_variations", []),
+        "platform_strategies": request.get("platform_strategies", {}),
+        "content_focus": request.get("content_focus", "general promotion")
     }
     
     app_logger.info(f"Creating campaign with data: {campaign_data}")
@@ -828,6 +843,28 @@ async def create_campaign_endpoint(request: dict, credentials: HTTPAuthorization
     else:
         app_logger.error("Failed to create campaign")
         raise HTTPException(status_code=500, detail="Failed to create campaign")
+
+@app.post("/api/v1/campaigns/chatbot-create")
+async def create_campaign_chatbot_endpoint(request: dict, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Create a campaign via chatbot (admin and super_admin only)"""
+    current_user = get_user_from_token(credentials.credentials)
+    require_minimum_admin(current_user)
+    
+    # Use chatbot service to create campaign
+    from services.campaign_chatbot import campaign_chatbot
+    
+    app_logger.info(f"Creating campaign via chatbot with data: {request}")
+    
+    result = campaign_chatbot.create_campaign_from_chat(request, credentials.credentials)
+    
+    if result['success']:
+        return {
+            "message": result['message'],
+            "campaign": result['campaign']
+        }
+    else:
+        app_logger.error(f"Chatbot campaign creation failed: {result['error']}")
+        raise HTTPException(status_code=500, detail=result['message'])
 
 @app.put("/api/v1/campaigns/{campaign_id}")
 async def update_campaign_endpoint(campaign_id: int, request: dict, credentials: HTTPAuthorizationCredentials = Depends(security)):

@@ -25,17 +25,23 @@ import {
     FormControl,
     InputLabel,
     Select,
-    MenuItem
+    MenuItem,
+    ButtonGroup
 } from '@mui/material';
 import {
     Add as AddIcon,
     Edit as EditIcon,
     Delete as DeleteIcon,
-    Visibility as VisibilityIcon
+    Visibility as VisibilityIcon,
+    SmartToy as BotIcon,
+    Download as DownloadIcon,
+    Image as ImageIcon,
+    Close as CloseIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import CampaignChatBot from '../components/ChatBot/CampaignChatBot';
 
 const CampaignsPage = () => {
     const { getAuthHeaders, user } = useAuth();
@@ -44,6 +50,9 @@ const CampaignsPage = () => {
     const [error, setError] = useState('');
     const [openDialog, setOpenDialog] = useState(false);
     const [editingCampaign, setEditingCampaign] = useState(null);
+    const [chatBotOpen, setChatBotOpen] = useState(false);
+    const [posterDialogOpen, setPosterDialogOpen] = useState(false);
+    const [selectedCampaign, setSelectedCampaign] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
         status: 'draft'
@@ -75,7 +84,9 @@ const CampaignsPage = () => {
                 `${process.env.REACT_APP_API_LINKS}/api/v1/campaigns`,
                 { headers: getAuthHeaders() }
             );
-            setCampaigns(response.data.campaigns || []);
+            
+            const campaignsData = response.data.campaigns || [];
+            setCampaigns(campaignsData);
             setError('');
         } catch (error) {
             console.error('Error fetching campaigns:', error);
@@ -101,6 +112,39 @@ const CampaignsPage = () => {
     const handleCreateCampaign = () => {
         if (!checkPermission('create')) return;
         setOpenDialog(true);
+    };
+
+    const handleCreateWithChatBot = () => {
+        if (!checkPermission('create')) return;
+        setChatBotOpen(true);
+    };
+
+    const handleViewPoster = (campaign) => {
+        setSelectedCampaign(campaign);
+        setPosterDialogOpen(true);
+    };
+
+    const handleDownloadPoster = (campaign) => {
+        const posterUrl = campaign.poster_url || '/posters/default_campaign.png';
+        const link = document.createElement('a');
+        link.href = posterUrl;
+        link.download = `${campaign.name.replace(/\s+/g, '_')}_poster.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    const handleCampaignCreated = (newCampaign) => {
+        // Add the new campaign to the campaigns list
+        setCampaigns(prev => [...prev, newCampaign]);
+        setChatBotOpen(false);
+        Swal.fire({
+            icon: 'success',
+            title: 'Campaign Created!',
+            text: 'Your campaign has been created successfully with AI assistance.',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Great!'
+        });
     };
 
     const handleSaveCampaign = async () => {
@@ -176,13 +220,21 @@ const CampaignsPage = () => {
                 <Typography variant="h4" component="h1">
                     Campaigns
                 </Typography>
-                <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={handleCreateCampaign}
-                >
-                    Create Campaign
-                </Button>
+                <ButtonGroup variant="contained" size="medium">
+                    <Button
+                        startIcon={<AddIcon />}
+                        onClick={handleCreateCampaign}
+                    >
+                        Create Campaign
+                    </Button>
+                    <Button
+                        startIcon={<BotIcon />}
+                        onClick={handleCreateWithChatBot}
+                        color="secondary"
+                    >
+                        AI Assistant
+                    </Button>
+                </ButtonGroup>
             </Box>
 
             {error && (
@@ -204,6 +256,7 @@ const CampaignsPage = () => {
                                         <TableRow>
                                             <TableCell>Campaign Name</TableCell>
                                             <TableCell>Status</TableCell>
+                                            <TableCell>Poster</TableCell>
                                             <TableCell>Leads</TableCell>
                                             <TableCell>Conversion Rate</TableCell>
                                             <TableCell>Created By</TableCell>
@@ -221,19 +274,62 @@ const CampaignsPage = () => {
                                                         size="small"
                                                     />
                                                 </TableCell>
-                                                <TableCell>{campaign.leads}</TableCell>
-                                                <TableCell>{campaign.conversion_rate}%</TableCell>
-                                                <TableCell>{campaign.created_by || 'Unknown'}</TableCell>
+                                                <TableCell>
+                                                    <Box
+                                                        component="img"
+                                                        src={campaign.poster_url || '/posters/default_campaign.png'}
+                                                        alt={`${campaign.name} poster`}
+                                                        sx={{
+                                                            width: 60,
+                                                            height: 60,
+                                                            objectFit: 'cover',
+                                                            borderRadius: 1,
+                                                            cursor: 'pointer',
+                                                            border: '1px solid #e0e0e0',
+                                                            '&:hover': {
+                                                                borderColor: 'primary.main',
+                                                                transform: 'scale(1.05)'
+                                                            },
+                                                            transition: 'all 0.2s ease-in-out'
+                                                        }}
+                                                        onClick={() => handleViewPoster(campaign)}
+                                                        onError={(e) => {
+                                                            e.target.src = '/posters/default_campaign.png';
+                                                        }}
+                                                    />
+                                                </TableCell>
+                                                <TableCell>{campaign.leads || 0}</TableCell>
+                                                <TableCell>{campaign.conversion_rate || 0}%</TableCell>
+                                                <TableCell>{campaign.created_by || 'System'}</TableCell>
                                                 <TableCell>
                                                     <IconButton
                                                         size="small"
                                                         onClick={() => handleEditCampaign(campaign)}
+                                                        title="Edit Campaign"
                                                     >
                                                         <EditIcon />
                                                     </IconButton>
                                                     <IconButton
                                                         size="small"
+                                                        onClick={() => handleViewPoster(campaign)}
+                                                        title="View Poster"
+                                                        color="primary"
+                                                    >
+                                                        <ImageIcon />
+                                                    </IconButton>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleDownloadPoster(campaign)}
+                                                        title="Download Poster"
+                                                        color="success"
+                                                    >
+                                                        <DownloadIcon />
+                                                    </IconButton>
+                                                    <IconButton
+                                                        size="small"
                                                         onClick={() => handleDeleteCampaign(campaign)}
+                                                        title="Delete Campaign"
+                                                        color="error"
                                                     >
                                                         <DeleteIcon />
                                                     </IconButton>
@@ -318,6 +414,123 @@ const CampaignsPage = () => {
                         </Button>
                     </DialogActions>
                 </form>
+            </Dialog>
+
+            {/* AI ChatBot Dialog */}
+            <CampaignChatBot
+                open={chatBotOpen}
+                onClose={() => setChatBotOpen(false)}
+                onCampaignCreated={handleCampaignCreated}
+            />
+
+            {/* Poster Preview Dialog */}
+            <Dialog 
+                open={posterDialogOpen} 
+                onClose={() => setPosterDialogOpen(false)} 
+                maxWidth="md" 
+                fullWidth
+            >
+                <DialogTitle>
+                    <Box display="flex" alignItems="center" justifyContent="space-between">
+                        <Typography variant="h6">
+                            Campaign Poster: {selectedCampaign?.name}
+                        </Typography>
+                        <IconButton onClick={() => setPosterDialogOpen(false)}>
+                            <CloseIcon />
+                        </IconButton>
+                    </Box>
+                </DialogTitle>
+                <DialogContent>
+                    {selectedCampaign && (
+                        <Box textAlign="center" py={2}>
+                            <Typography variant="body2" color="textSecondary" gutterBottom>
+                                Poster Preview
+                            </Typography>
+                            <Paper 
+                                elevation={4} 
+                                sx={{ 
+                                    p: 2, 
+                                    mb: 2, 
+                                    display: 'inline-block',
+                                    maxWidth: '100%'
+                                }}
+                            >
+                                <img
+                                    src={selectedCampaign.poster_url || '/posters/default_campaign.png'}
+                                    alt={`${selectedCampaign.name} poster`}
+                                    style={{
+                                        maxWidth: '100%',
+                                        height: 'auto',
+                                        maxHeight: '500px',
+                                        borderRadius: '8px'
+                                    }}
+                                    onError={(e) => {
+                                        e.target.src = '/posters/default_campaign.png';
+                                    }}
+                                />
+                            </Paper>
+                            <Box display="flex" gap={2} justifyContent="center" mt={2}>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<DownloadIcon />}
+                                    onClick={() => handleDownloadPoster(selectedCampaign)}
+                                    color="success"
+                                >
+                                    Download Poster
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    onClick={() => setPosterDialogOpen(false)}
+                                >
+                                    Close
+                                </Button>
+                            </Box>
+                            
+                            {/* Campaign Details */}
+                            <Box mt={3} p={2} bgcolor="grey.50" borderRadius={2}>
+                                <Typography variant="subtitle2" gutterBottom>
+                                    Campaign Details
+                                </Typography>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={6}>
+                                        <Typography variant="body2" color="textSecondary">
+                                            Type: {selectedCampaign.type || 'N/A'}
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <Typography variant="body2" color="textSecondary">
+                                            Status: {selectedCampaign.status}
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <Typography variant="body2" color="textSecondary">
+                                            Duration: {selectedCampaign.duration_days || 'N/A'} days
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <Typography variant="body2" color="textSecondary">
+                                            Budget: {selectedCampaign.budget_range || 'N/A'}
+                                        </Typography>
+                                    </Grid>
+                                    {selectedCampaign.special_offers && (
+                                        <Grid item xs={12}>
+                                            <Typography variant="body2" color="textSecondary">
+                                                Special Offers: {selectedCampaign.special_offers}
+                                            </Typography>
+                                        </Grid>
+                                    )}
+                                    {selectedCampaign.call_to_action && (
+                                        <Grid item xs={12}>
+                                            <Typography variant="body2" color="textSecondary">
+                                                Call to Action: {selectedCampaign.call_to_action}
+                                            </Typography>
+                                        </Grid>
+                                    )}
+                                </Grid>
+                            </Box>
+                        </Box>
+                    )}
+                </DialogContent>
             </Dialog>
         </Box>
     );

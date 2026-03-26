@@ -546,7 +546,24 @@ def get_campaigns(token: str) -> CampaignResponse:
     try:
         app_logger.info("Attempting to get campaigns from social media service")
         all_campaigns = social_data_service.get_campaigns()
+        
+        # Check if user can see any of these campaigns
+        visible_campaigns = []
+        if current_user["role"] == "super_admin":
+            visible_campaigns = all_campaigns
+        elif current_user["role"] == "admin":
+            visible_campaigns = [campaign for campaign in all_campaigns 
+                               if campaign.get("created_by") == current_user["username"]]
+        else:
+            visible_campaigns = all_campaigns
+        
+        # If no visible campaigns from social media, fallback to database
+        if not visible_campaigns:
+            app_logger.info("No visible campaigns from social media service, falling back to database")
+            raise Exception("No visible campaigns from social media service")
+            
         data_source = "social_media"
+        all_campaigns = visible_campaigns
     except Exception as e:
         app_logger.error(f"Social media service failed: {e}, falling back to existing system")
         
@@ -559,17 +576,46 @@ def get_campaigns(token: str) -> CampaignResponse:
             all_campaigns = mongo_db.get_campaigns()
         data_source = "mock_data" if DEV_MODE else "mongodb"
     
+    # Normalize campaign data to ensure all required fields exist
+    normalized_campaigns = []
+    for campaign in all_campaigns:
+        normalized_campaign = campaign.copy()
+        
+        # Ensure created_by field exists
+        if not normalized_campaign.get("created_by"):
+            normalized_campaign["created_by"] = "system"
+        
+        # Ensure all default fields exist for compatibility
+        normalized_campaign.setdefault("type", "sale")
+        normalized_campaign.setdefault("target_audience", "all_customers")
+        normalized_campaign.setdefault("duration_days", 14)
+        normalized_campaign.setdefault("budget_range", "$500-1000")
+        normalized_campaign.setdefault("platforms", ["facebook", "instagram"])
+        normalized_campaign.setdefault("goal", "sales")
+        normalized_campaign.setdefault("special_offers", "")
+        normalized_campaign.setdefault("visual_theme", "blue_ocean")
+        normalized_campaign.setdefault("call_to_action", "Learn More")
+        normalized_campaign.setdefault("poster_url", "/posters/default_campaign.png")
+        normalized_campaign.setdefault("suggested_hashtags", [])
+        normalized_campaign.setdefault("optimal_posting_times", ["9:00 AM", "6:00 PM"])
+        normalized_campaign.setdefault("ad_copy_variations", [])
+        normalized_campaign.setdefault("platform_strategies", {})
+        normalized_campaign.setdefault("content_focus", "general promotion")
+        
+        normalized_campaigns.append(normalized_campaign)
+    
     # Filter campaigns based on user role
     if current_user["role"] == "super_admin":
         # Super admin sees all campaigns
-        filtered_campaigns = all_campaigns
+        filtered_campaigns = normalized_campaigns
     elif current_user["role"] == "admin":
-        # Admin sees only campaigns they created
-        filtered_campaigns = [campaign for campaign in all_campaigns 
-                            if campaign.get("created_by") == current_user["username"]]
+        # Admin sees only campaigns they created OR system campaigns
+        filtered_campaigns = [campaign for campaign in normalized_campaigns 
+                            if campaign.get("created_by") == current_user["username"] or 
+                               campaign.get("created_by") == "system"]
     else:
         # Other roles see campaigns based on permissions
-        filtered_campaigns = all_campaigns  # For now, show all - can be enhanced with permissions
+        filtered_campaigns = normalized_campaigns  # For now, show all - can be enhanced with permissions
     
     return CampaignResponse(
         message=f"Campaigns retrieved successfully ({data_source})",
