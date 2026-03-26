@@ -1,14 +1,21 @@
-from fastapi import FastAPI, Depends, HTTPException, status, Request
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi import FastAPI, HTTPException, Depends, status, UploadFile, Request, File
+from fastapi.security import HTTPAuthorizationCredentials, OAuth2PasswordBearer, HTTPBearer
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware import Middleware
-from fastapi.responses import JSONResponse, Response
 from typing import Optional
+from datetime import datetime, timedelta
+from services.util import get_user_from_token, verify_token, RoleMiddleware, require_minimum_admin, require_super_admin
+from services.error import APIError
+from services.routes import CampaignResponse
+import os
+import logging
+import json
+from fastapi.responses import JSONResponse, Response
 from collections import defaultdict
 from datetime import datetime, timedelta
 import time
 import asyncio
 import threading
+
 from services.routes import (
     get_campaigns, get_leads, get_channels,
     get_analytics, get_scheduler, get_settings,
@@ -865,6 +872,219 @@ async def create_campaign_chatbot_endpoint(request: dict, credentials: HTTPAutho
     else:
         app_logger.error(f"Chatbot campaign creation failed: {result['error']}")
         raise HTTPException(status_code=500, detail=result['message'])
+
+@app.post("/api/v1/users")
+async def create_user_endpoint(request: dict, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Create a new user (super_admin only)"""
+    current_user = get_user_from_token(credentials.credentials)
+    require_super_admin(current_user)
+    
+    # Create user in MongoDB
+    from services.mongo_db import mongo_db
+    user_data = {
+        "username": request.get("username"),
+        "email": request.get("email"),
+        "password": request.get("password"),
+        "name": request.get("name"),
+        "role": request.get("role", "user"),
+        "companyid": request.get("companyid", current_user.get("companyid")),
+        "activitystatus": "active"
+    }
+    
+    if mongo_db.create_user(user_data):
+        app_logger.info(f"User created successfully: {user_data['username']}")
+        return {
+            "message": "User created successfully",
+            "user": {
+                "username": user_data["username"],
+                "email": user_data["email"],
+                "name": user_data["name"],
+                "role": user_data["role"],
+                "companyid": user_data["companyid"]
+            }
+        }
+    else:
+        app_logger.error(f"Failed to create user: {user_data['username']}")
+        raise HTTPException(status_code=500, detail="Failed to create user")
+
+@app.get("/api/v1/users")
+async def get_users_endpoint(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get all users (super_admin only)"""
+    current_user = get_user_from_token(credentials.credentials)
+    require_super_admin(current_user)
+    
+    # Get users from MongoDB
+    from services.mongo_db import mongo_db
+    users = mongo_db.get_users()
+    
+    # Remove password from response for security
+    safe_users = []
+    for user in users:
+        safe_user = user.copy()
+        safe_user.pop("password", None)
+        safe_users.append(safe_user)
+    
+    return {
+        "message": "Users retrieved successfully",
+        "users": safe_users,
+        "total": len(safe_users)
+    }
+
+@app.get("/api/v1/users/export")
+async def export_users_endpoint(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Export all users to CSV (super_admin only)"""
+    current_user = get_user_from_token(credentials.credentials)
+    require_super_admin(current_user)
+    
+    # Get users from MongoDB
+    from services.mongo_db import mongo_db
+    users = mongo_db.get_users()
+    
+    # Create CSV content
+    import csv
+    import io
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    # Write header
+    writer.writerow(["username", "email", "name", "role", "companyid", "activitystatus", "created_at"])
+    
+    # Write user data
+    for user in users:
+        writer.writerow([
+            user.get("username", ""),
+            user.get("email", ""),
+            user.get("name", ""),
+            user.get("role", ""),
+            user.get("companyid", ""),
+            user.get("activitystatus", ""),
+            user.get("created_at", "")
+        ])
+    
+    # Create CSV response
+    csv_content = output.getvalue()
+    
+    from fastapi.responses import Response
+    return Response(
+        content=csv_content,
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=users_export.csv"}
+    )
+
+@app.post("/api/v1/companies")
+async def create_company_endpoint(request: dict, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Create a new company (super_admin only)"""
+    current_user = get_user_from_token(credentials.credentials)
+    require_super_admin(current_user)
+    
+    # Handle logo upload
+    company_logo = request.get("logo_url", "")
+    
+    # Create company in MongoDB
+    from services.mongo_db import mongo_db
+    company_data = {
+        "name": request.get("name"),
+        "description": request.get("description", ""),
+        "logo_url": company_logo,
+        "created_by": current_user["username"],
+        "created_at": datetime.utcnow().isoformat()
+    }
+    
+    if mongo_db.create_company(company_data):
+        app_logger.info(f"Company created successfully: {company_data['name']}")
+        return {
+            "message": "Company created successfully",
+            "company": company_data
+        }
+    else:
+        app_logger.error(f"Failed to create company: {company_data['name']}")
+        raise HTTPException(status_code=500, detail="Failed to create company")
+
+@app.get("/api/v1/companies")
+async def get_companies_endpoint(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get all companies (super_admin only)"""
+    current_user = get_user_from_token(credentials.credentials)
+    require_super_admin(current_user)
+    
+    # Get companies from MongoDB
+    from services.mongo_db import mongo_db
+    companies = mongo_db.get_companies()
+    
+    return {
+        "message": "Companies retrieved successfully",
+        "companies": companies,
+        "total": len(companies)
+    }
+
+@app.put("/api/v1/users/{user_id}")
+async def update_user_endpoint(user_id: int, request: dict, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Update an existing user (super_admin only)"""
+    current_user = get_user_from_token(credentials.credentials)
+    require_super_admin(current_user)
+    
+    # Update user in MongoDB
+    from services.mongo_db import mongo_db
+    success = mongo_db.update_user(user_id, request)
+    
+    if success:
+        app_logger.info(f"User updated successfully: {user_id}")
+        return {"message": "User updated successfully"}
+    else:
+        app_logger.error(f"Failed to update user: {user_id}")
+        raise HTTPException(status_code=500, detail="Failed to update user")
+
+@app.delete("/api/v1/users/{user_id}")
+async def delete_user_endpoint(user_id: int, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Delete a user (super_admin only)"""
+    current_user = get_user_from_token(credentials.credentials)
+    require_super_admin(current_user)
+    
+    # Delete user from MongoDB
+    from services.mongo_db import mongo_db
+    success = mongo_db.delete_user(user_id)
+    
+    if success:
+        app_logger.info(f"User deleted successfully: {user_id}")
+        return {"message": "User deleted successfully"}
+    else:
+        app_logger.error(f"Failed to delete user: {user_id}")
+        raise HTTPException(status_code=500, detail="Failed to delete user")
+
+@app.post("/api/v1/upload/logo")
+async def upload_logo_endpoint(file: UploadFile = File(...), credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Upload company logo (super_admin only)"""
+    current_user = get_user_from_token(credentials.credentials)
+    require_super_admin(current_user)
+    
+    # Validate file type
+    if not file.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="Only image files are allowed")
+    
+    # Save uploaded file
+    import os
+    import uuid
+    
+    # Create uploads directory if it doesn't exist
+    upload_dir = "../public/logos"
+    os.makedirs(upload_dir, exist_ok=True)
+    
+    # Generate unique filename
+    file_extension = file.filename.split('.')[-1]
+    unique_filename = f"{uuid.uuid4()}.{file_extension}"
+    file_path = os.path.join(upload_dir, unique_filename)
+    
+    # Save file
+    with open(file_path, "wb") as buffer:
+        buffer.write(file.file.read())
+    
+    logo_url = f"/logos/{unique_filename}"
+    app_logger.info(f"Logo uploaded successfully: {logo_url}")
+    
+    return {
+        "message": "Logo uploaded successfully",
+        "logo_url": logo_url
+    }
 
 @app.put("/api/v1/campaigns/{campaign_id}")
 async def update_campaign_endpoint(campaign_id: int, request: dict, credentials: HTTPAuthorizationCredentials = Depends(security)):

@@ -1,13 +1,13 @@
 import './App.css';
 import Login from './AuthPages/login';
 import ForgotPasswordPage from './AuthPages/forgotpassword';
-import { Routes } from 'react-router-dom';
-import { HashRouter, Route } from 'react-router-dom';
-import AppLayout from './layout/layout';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, HashRouter } from 'react-router-dom';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Dashboard from './pages/dashboard';
 import AdminPanel from './pages/AdminPanel';
-import { useEffect, useState } from 'react';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
 import RoleManagementPage from './pages/rolemanagement';
 import CampaignsPage from './pages/campaigns';
 import LeadsPage from './pages/leads';
@@ -16,6 +16,9 @@ import AnalyticsPage from './pages/analytics';
 import SchedulerPage from './pages/scheduler';
 import SettingsPage from './pages/settings';
 import TokenVerifier from './components/TokenVerifier';
+import UsersPage from './pages/users';
+import CompaniesPage from './pages/companies';
+import AppLayout from './components/AppLayout';
 
 
 
@@ -73,6 +76,12 @@ function ProtectedRoutes() {
       } />
       <Route path='/settings' element={
         <AppLayout onLogout={handleLogout}> <SettingsPage /></AppLayout>
+      } />
+      <Route path='/users' element={
+        <AppLayout onLogout={handleLogout}> <UsersPage /></AppLayout>
+      } />
+      <Route path='/companies' element={
+        <AppLayout onLogout={handleLogout}> <CompaniesPage /></AppLayout>
       } />
       <Route path='/verify-token' element={
         <AppLayout onLogout={handleLogout}> <TokenVerifier /></AppLayout>

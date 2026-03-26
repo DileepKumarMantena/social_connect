@@ -151,6 +151,12 @@ export default function AppLayout({ onLogout, children }) {
         ...(hasReadPermission('scheduler') ? [
             { label: "Scheduler", icon: <ScheduleIcon />, path: "/scheduler", tooltip: "Schedule", module: "scheduler" }
         ] : []),
+        ...(hasReadPermission('users') ? [
+            { label: "Users", icon: <GroupIcon />, path: "/users", tooltip: "User Management", module: "users" }
+        ] : []),
+        ...(hasReadPermission('companies') ? [
+            { label: "Companies", icon: <BusinessIcon />, path: "/companies", tooltip: "Company Management", module: "companies" }
+        ] : []),
         { label: "Settings", icon: <SettingsIcon />, path: "/settings", tooltip: "Settings", module: null }, // Always visible
     ];
 

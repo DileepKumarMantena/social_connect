@@ -227,6 +227,102 @@ class MongoDB:
             app_logger.error(f"Error getting leads: {e}")
             return []
     
+    def get_users(self) -> List[Dict[str, Any]]:
+        """Get all users"""
+        try:
+            collection = self.get_collection("users")
+            return list(collection.find({}, {"_id": 0}))
+        except PyMongoError as e:
+            app_logger.error(f"Error getting users: {e}")
+            return []
+    
+    def create_user(self, user_data: Dict[str, Any]) -> bool:
+        """Create a new user"""
+        try:
+            collection = self.get_collection("users")
+            # Hash password
+            from services.util import verify_token
+            user_data['password'] = verify_token(user_data['password'])
+            
+            # Add created_at timestamp
+            user_data['created_at'] = datetime.utcnow().isoformat()
+            
+            # Get next ID
+            last_user = collection.find_one(sort=[("id", -1)])
+            next_id = (last_user.get("id", 0) + 1) if last_user else 1
+            user_data['id'] = next_id
+            
+            result = collection.insert_one(user_data)
+            success = result.inserted_id is not None
+            if success:
+                app_logger.info(f"User created successfully: {user_data['username']}")
+            return success
+        except PyMongoError as e:
+            app_logger.error(f"Error creating user: {e}")
+            return False
+    
+    def update_user(self, user_id: int, user_data: Dict[str, Any]) -> bool:
+        """Update an existing user"""
+        try:
+            collection = self.get_collection("users")
+            # Hash password if provided
+            if 'password' in user_data:
+                from services.util import verify_token
+                user_data['password'] = verify_token(user_data['password'])
+            
+            # Add updated timestamp
+            user_data['updated_at'] = datetime.utcnow().isoformat()
+            
+            result = collection.update_one({"id": user_id}, {"$set": user_data})
+            success = result.modified_count > 0
+            if success:
+                app_logger.info(f"User updated successfully: {user_id}")
+            return success
+        except PyMongoError as e:
+            app_logger.error(f"Error updating user {user_id}: {e}")
+            return False
+    
+    def delete_user(self, user_id: int) -> bool:
+        """Delete a user by ID"""
+        try:
+            collection = self.get_collection("users")
+            result = collection.delete_one({"id": user_id})
+            success = result.deleted_count > 0
+            if success:
+                app_logger.info(f"User {user_id} deleted successfully")
+            return success
+        except PyMongoError as e:
+            app_logger.error(f"Error deleting user {user_id}: {e}")
+            return False
+    
+    def get_companies(self) -> List[Dict[str, Any]]:
+        """Get all companies"""
+        try:
+            collection = self.get_collection("companies")
+            return list(collection.find({}, {"_id": 0}))
+        except PyMongoError as e:
+            app_logger.error(f"Error getting companies: {e}")
+            return []
+    
+    def create_company(self, company_data: Dict[str, Any]) -> bool:
+        """Create a new company"""
+        try:
+            collection = self.get_collection("companies")
+            
+            # Get next ID
+            last_company = collection.find_one(sort=[("id", -1)])
+            next_id = (last_company.get("id", 0) + 1) if last_company else 1
+            company_data['id'] = next_id
+            
+            result = collection.insert_one(company_data)
+            success = result.inserted_id is not None
+            if success:
+                app_logger.info(f"Company created successfully: {company_data['name']}")
+            return success
+        except PyMongoError as e:
+            app_logger.error(f"Error creating company: {e}")
+            return False
+    
     def create_lead(self, lead_data: Dict[str, Any]) -> bool:
         """Create a new lead"""
         try:
