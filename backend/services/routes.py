@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import hashlib
 from constants import (
     DEV_MODE, users_db, channels_db, campaigns_db, leads_db,
-    analytics_db, scheduler_db, user_settings_db
+    analytics_db, scheduler_db, user_settings_db, otp_storage
 )
 from social_media.social_data_service import social_data_service
 from social_media.connection_manager import initialize_connections, shutdown_connections
@@ -259,100 +259,44 @@ def health_check() -> dict:
 # Authentication Functions
 def login_user(request: APIRequest) -> Union[OTPResponse, LoginResponse]:
     """Authenticate user with optional OTP verification"""
-    username = request.username
-    password = request.password
-    otp = request.otp
-    
-    if not username or not password:
-        raise APIError.bad_request("Username and password are required")
-    
-    if DEV_MODE:
-        app_logger.info("Using mock data for login")
-        user = users_db.get(username)
-    else:
-        app_logger.info("Using MongoDB for login")
-        user = mongo_db.get_user_by_username(username)
-    
-    if not user or not verify_password(password, user["password_hash"]):
-        raise APIError.unauthorized("Invalid username or password")
-    
-    # Check if user access has expired BEFORE allowing login
     try:
-        RoleMiddleware.check_access_expiration(user)
-    except HTTPException as e:
-        raise APIError.unauthorized("Access has expired. Please contact administrator.")
-    
-    # Bypass OTP for user role, require OTP for other roles
-    if user.get("role") == "user":
-        # Skip OTP verification for user role - direct login
-        app_logger.info(f"Bypassing OTP for user role: {username}")
+        username = request.username
+        password = request.password
+        otp = request.otp
         
-        # Generate JWT token with complete user data including user_type
-        user_data = user.copy() if isinstance(user, dict) else dict(user)
-        user_data["sub"] = user["username"]
+        if not username or not password:
+            raise APIError.bad_request("Username and password are required")
         
-        # Always determine user_type dynamically based on role, companyid, and created_by
-        if user.get("role") == "super_admin":
-            user_data["user_type"] = "platform_owner"
-        elif user.get("companyid") == 0:
-            user_data["user_type"] = "self_company_employee"
-        elif user.get("created_by") and user.get("created_by") != "superadmin":
-            user_data["user_type"] = "tenant_employee"
+        if DEV_MODE:
+            app_logger.info("Using mock data for login")
+            user = users_db.get(username)
         else:
-            user_data["user_type"] = "tenant_user"
+            app_logger.info("Using MongoDB for login")
+            user = mongo_db.get_user_by_username(username)
         
-        token = create_access_token(user_data)
+        if not user or not verify_password(password, user["password_hash"]):
+            raise APIError.unauthorized("Invalid username or password")
         
-        app_logger.info(f"Login successful for user: {username}")
+        # Check if user access has expired BEFORE allowing login
+        try:
+            RoleMiddleware.check_access_expiration(user)
+        except HTTPException as e:
+            raise APIError.unauthorized("Access has expired. Please contact administrator.")
         
-        return LoginResponse(
-            message="Login successful",
-            success=True,
-            access_token=token,
-            token_type="bearer",
-            user={
-                "username": user["username"],
-                "email": user["email"],
-                "name": user["name"],
-                "role": user["role"],
-                "companyid": user["companyid"],
-                "activitystatus": user["activitystatus"]
-            },
-            # Original superadmin email gets true, others get role-based flags
-            is_super_admin=user["email"] == "deelipkumar261997@gmail.com",
-            is_admin=user["role"] == "admin",
-            is_user=user["role"] == "user"
-        )
-    else:
-        # Require OTP for other roles (admin, super_admin)
-        if not otp:
-            # No OTP provided, generate and send OTP
-            otp_code = generate_otp()
-            store_otp(otp_storage, user["email"], otp_code)
-            
-            # In development, log OTP (in production, send email)
-            app_logger.info(f"Login OTP for {user['email']}: {otp_code} (development mode)")
-            
-            try:
-                send_otp_email(user["email"], otp_code)
-            except Exception as e:
-                app_logger.error(f"Failed to send login OTP email: {e}")
-            
-            return OTPResponse(
-                message="Password verified. OTP sent for login verification",
-                success=True,
-                otp=otp_code
-            )
-        else:
-            # OTP provided, verify it and return JWT token
-            if not verify_stored_otp(otp_storage, user["email"], otp):
-                raise APIError.unauthorized("Invalid or expired OTP")
-            
-            cleanup_otp(otp_storage, user["email"])
+        # Bypass OTP for user role, require OTP for other roles
+        if user.get("role") == "user":
+            # Skip OTP verification for user role - direct login
+            app_logger.info(f"Bypassing OTP for user role: {username}")
             
             # Generate JWT token with complete user data including user_type
             user_data = user.copy() if isinstance(user, dict) else dict(user)
             user_data["sub"] = user["username"]
+            
+            # Convert datetime objects to strings for JSON serialization
+            if "created_at" in user_data and user_data["created_at"]:
+                user_data["created_at"] = str(user_data["created_at"])
+            if "access_expires_at" in user_data and user_data["access_expires_at"]:
+                user_data["access_expires_at"] = str(user_data["access_expires_at"])
             
             # Always determine user_type dynamically based on role, companyid, and created_by
             if user.get("role") == "super_admin":
@@ -366,10 +310,10 @@ def login_user(request: APIRequest) -> Union[OTPResponse, LoginResponse]:
             
             token = create_access_token(user_data)
             
-            app_logger.info(f"Login with OTP successful for user: {username}")
+            app_logger.info(f"Login successful for user: {username}")
             
             return LoginResponse(
-                message="Login successful with OTP",
+                message="Login successful",
                 success=True,
                 access_token=token,
                 token_type="bearer",
@@ -386,6 +330,79 @@ def login_user(request: APIRequest) -> Union[OTPResponse, LoginResponse]:
                 is_admin=user["role"] == "admin",
                 is_user=user["role"] == "user"
             )
+        else:
+            # Require OTP for other roles (admin, super_admin)
+            if not otp:
+                # No OTP provided, generate and send OTP
+                otp_code = generate_otp()
+                store_otp(otp_storage, user["email"], otp_code)
+                
+                # In development, log OTP (in production, send email)
+                app_logger.info(f"Login OTP for {user['email']}: {otp_code} (development mode)")
+                
+                try:
+                    send_otp_email(user["email"], otp_code)
+                except Exception as e:
+                    app_logger.error(f"Failed to send login OTP email: {e}")
+                
+                return OTPResponse(
+                    message="Password verified. OTP sent for login verification",
+                    success=True,
+                    otp=otp_code
+                )
+            else:
+                # OTP provided, verify it and return JWT token
+                if not verify_stored_otp(otp_storage, user["email"], otp):
+                    raise APIError.unauthorized("Invalid or expired OTP")
+                
+                cleanup_otp(otp_storage, user["email"])
+                
+                # Generate JWT token with complete user data including user_type
+                user_data = user.copy() if isinstance(user, dict) else dict(user)
+                user_data["sub"] = user["username"]
+                
+                # Convert datetime objects to strings for JSON serialization
+                if "created_at" in user_data and user_data["created_at"]:
+                    user_data["created_at"] = str(user_data["created_at"])
+                if "access_expires_at" in user_data and user_data["access_expires_at"]:
+                    user_data["access_expires_at"] = str(user_data["access_expires_at"])
+                
+                # Always determine user_type dynamically based on role, companyid, and created_by
+                if user.get("role") == "super_admin":
+                    user_data["user_type"] = "platform_owner"
+                elif user.get("companyid") == 0:
+                    user_data["user_type"] = "self_company_employee"
+                elif user.get("created_by") and user.get("created_by") != "superadmin":
+                    user_data["user_type"] = "tenant_employee"
+                else:
+                    user_data["user_type"] = "tenant_user"
+                
+                token = create_access_token(user_data)
+                
+                app_logger.info(f"Login successful for user: {username}")
+                
+                return LoginResponse(
+                    message="Login successful with OTP",
+                    success=True,
+                    access_token=token,
+                    token_type="bearer",
+                    user={
+                        "username": user["username"],
+                        "email": user["email"],
+                        "name": user["name"],
+                        "role": user["role"],
+                        "companyid": user["companyid"],
+                        "activitystatus": user["activitystatus"]
+                    },
+                    # Original superadmin email gets true, others get role-based flags
+                    is_super_admin=user["email"] == "deelipkumar261997@gmail.com",
+                    is_admin=user["role"] == "admin",
+                    is_user=user["role"] == "user"
+                )
+    
+    except Exception as e:
+        app_logger.error(f"Login error: {e}")
+        raise APIError.unauthorized("Invalid credentials")
 
 def send_forgot_password_otp(request: APIRequest) -> OTPResponse:
     """Send OTP for password reset"""

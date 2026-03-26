@@ -18,11 +18,31 @@ from services.routes import (
     create_role_service, update_role_service, delete_role_service, update_permissions_service, health_check,
     get_user_profile_service, update_user_profile_service
 )
-from social_media.connection_manager import initialize_connections, shutdown_connections, connection_manager
-from social_media.social_config import social_integration_manager, SocialPlatform, SOCIAL_INTEGRATION_ENABLED
-from social_media.social_data_service import social_data_service
-from social_media.oauth_manager import social_oauth_manager, get_mock_oauth_flow
-from social_media.twitter_oauth import twitter_oauth
+try:
+    from social_media.connection_manager import initialize_connections, shutdown_connections, connection_manager
+    from social_media.social_config import social_integration_manager, SocialPlatform, SOCIAL_INTEGRATION_ENABLED
+    from social_media.social_data_service import social_data_service
+    from social_media.oauth_manager import social_oauth_manager, get_mock_oauth_flow
+    from social_media.twitter_oauth import twitter_oauth
+    SOCIAL_MEDIA_AVAILABLE = True
+except ImportError as e:
+    print(f"Warning: Social media modules not available - {e}")
+    SOCIAL_MEDIA_AVAILABLE = False
+    # Create placeholder objects
+    class MockSocialIntegrationManager:
+        def get_all_connections(self): return {}
+        def get_platform_status(self, platform): return "disconnected"
+    social_integration_manager = MockSocialIntegrationManager()
+    SocialPlatform = type('SocialPlatform', (), {'TWITTER': 'twitter', 'LINKEDIN': 'linkedin'})()
+    SOCIAL_INTEGRATION_ENABLED = False
+    connection_manager = type('ConnectionManager', (), {
+        'initialize_connections': lambda: None, 
+        'shutdown_connections': lambda: None,
+        'get_connection_summary': lambda: {'platforms': {}, 'total_connected': 0}
+    })()
+    social_data_service = type('SocialDataService', (), {'get_platform_data': lambda x: None})()
+    social_oauth_manager = type('SocialOAuthManager', (), {'get_oauth_url': lambda x: None})()
+    twitter_oauth = type('TwitterOAuth', (), {'get_auth_url': lambda: None})()
 from services.util import (
     verify_password, hash_password, generate_otp, store_otp, 
     verify_stored_otp, find_user_by_email, cleanup_otp, send_otp_email,
