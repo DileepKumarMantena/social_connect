@@ -192,8 +192,14 @@ backend/
 │   ├── __init__.py           # Module exports
 │   ├── social_config.py      # Platform configuration & management
 │   ├── twitter_service.py   # Twitter API integration
+│   ├── twitter_oauth.py     # Real Twitter OAuth 2.0 implementation
 │   ├── connection_manager.py # Health checks & reconnection
-│   └── social_data_service.py # Unified service layer
+│   ├── oauth_manager.py     # OAuth flow management
+│   ├── user_credentials.py  # Per-user credential storage
+│   ├── social_data_service.py # Unified service layer
+│   ├── SOCIAL_MEDIA_INTEGRATION.md # This documentation
+│   ├── REAL_TWITTER_INTEGRATION.md # Real Twitter setup guide
+│   └── ...
 ├── services/
 │   ├── routes.py             # Updated with social media endpoints
 │   └── extension.py          # Updated with social media initialization
@@ -202,7 +208,7 @@ backend/
 └── constants.py              # Updated with MongoDB URL
 ```
 
-## � Adding New Platforms
+## 🔄 Adding New Platforms
 
 The system is designed for easy expansion:
 

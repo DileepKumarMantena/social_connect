@@ -234,6 +234,102 @@ class UserSocialCredentials:
         """Check if a user is connected to a specific platform"""
         credentials = self.get_user_credentials(username, platform)
         return credentials is not None
+    
+    def store_oauth_data(self, username: str, platform: str, oauth_data: Dict[str, Any]) -> bool:
+        """Store temporary OAuth data for authentication flow"""
+        try:
+            oauth_session = {
+                "username": username,
+                "platform": platform.lower(),
+                "oauth_data": oauth_data,
+                "created_at": datetime.now().isoformat(),
+                "expires_at": (datetime.now() + timedelta(minutes=10)).isoformat()
+            }
+            
+            if DEV_MODE:
+                # Store in mock storage
+                if "oauth_sessions" not in self.mock_credentials:
+                    self.mock_credentials["oauth_sessions"] = {}
+                session_key = f"{username}_{platform}"
+                self.mock_credentials["oauth_sessions"][session_key] = oauth_session
+                app_logger.info(f"Stored mock OAuth data for {username} on {platform}")
+                return True
+            else:
+                # Store in MongoDB
+                collection = mongo_db.get_collection("oauth_sessions")
+                
+                # Remove existing sessions for this user and platform
+                collection.delete_many({"username": username, "platform": platform.lower()})
+                
+                # Insert new session
+                result = collection.insert_one(oauth_session)
+                success = result.acknowledged
+                
+                if success:
+                    app_logger.info(f"Stored OAuth data for {username} on {platform}")
+                return success
+                
+        except Exception as e:
+            app_logger.error(f"Error storing OAuth data for {username} on {platform}: {e}")
+            return False
+    
+    def get_oauth_data(self, username: str, platform: str) -> Optional[Dict[str, Any]]:
+        """Get temporary OAuth data for authentication flow"""
+        try:
+            if DEV_MODE:
+                # Get from mock storage
+                if "oauth_sessions" not in self.mock_credentials:
+                    return None
+                session_key = f"{username}_{platform}"
+                session = self.mock_credentials["oauth_sessions"].get(session_key)
+                
+                if session:
+                    return session["oauth_data"]
+                return None
+            else:
+                # Get from MongoDB
+                collection = mongo_db.get_collection("oauth_sessions")
+                session_doc = collection.find_one({
+                    "username": username, 
+                    "platform": platform.lower()
+                })
+                
+                if session_doc:
+                    return session_doc["oauth_data"]
+                return None
+                
+        except Exception as e:
+            app_logger.error(f"Error retrieving OAuth data for {username} on {platform}: {e}")
+            return None
+    
+    def clear_oauth_data(self, username: str, platform: str) -> bool:
+        """Clear temporary OAuth data after authentication"""
+        try:
+            if DEV_MODE:
+                # Remove from mock storage
+                if "oauth_sessions" in self.mock_credentials:
+                    session_key = f"{username}_{platform}"
+                    if session_key in self.mock_credentials["oauth_sessions"]:
+                        del self.mock_credentials["oauth_sessions"][session_key]
+                        app_logger.info(f"Cleared OAuth data for {username} on {platform}")
+                        return True
+                return False
+            else:
+                # Remove from MongoDB
+                collection = mongo_db.get_collection("oauth_sessions")
+                result = collection.delete_many({
+                    "username": username, 
+                    "platform": platform.lower()
+                })
+                success = result.deleted_count > 0
+                
+                if success:
+                    app_logger.info(f"Cleared OAuth data for {username} on {platform}")
+                return success
+                
+        except Exception as e:
+            app_logger.error(f"Error clearing OAuth data for {username} on {platform}: {e}")
+            return False
 
 # Global instance
 user_social_credentials = UserSocialCredentials()

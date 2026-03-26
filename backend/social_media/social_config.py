@@ -36,6 +36,7 @@ class SocialPlatformConfig:
         self.webhook_secret = os.getenv(f"{platform.value.upper()}_WEBHOOK_SECRET")
         self.app_id = os.getenv(f"{platform.value.upper()}_APP_ID")
         self.app_secret = os.getenv(f"{platform.value.upper()}_APP_SECRET")
+        self.redirect_uri = os.getenv(f"{platform.value.upper()}_REDIRECT_URI")
         
     def is_configured(self) -> bool:
         """Check if platform has necessary credentials"""

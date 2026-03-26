@@ -19,9 +19,10 @@ from services.routes import (
     get_user_profile_service, update_user_profile_service
 )
 from social_media.connection_manager import initialize_connections, shutdown_connections, connection_manager
-from social_media.social_config import social_integration_manager, SocialPlatform
+from social_media.social_config import social_integration_manager, SocialPlatform, SOCIAL_INTEGRATION_ENABLED
 from social_media.social_data_service import social_data_service
 from social_media.oauth_manager import social_oauth_manager, get_mock_oauth_flow
+from social_media.twitter_oauth import twitter_oauth
 from services.util import (
     verify_password, hash_password, generate_otp, store_otp, 
     verify_stored_otp, find_user_by_email, cleanup_otp, send_otp_email,
@@ -1694,7 +1695,12 @@ async def get_oauth_url(platform: str, request: dict, credentials: HTTPAuthoriza
         
         app_logger.info(f"Getting OAuth URL for {platform} for user {username}")
         
-        result = social_oauth_manager.get_oauth_url(platform, username, callback_url)
+        if platform == "twitter" and SOCIAL_INTEGRATION_ENABLED:
+            # Use real Twitter OAuth
+            result = twitter_oauth.get_authorization_url(username, callback_url)
+        else:
+            # Use mock OAuth flow
+            result = social_oauth_manager.get_oauth_url(platform, username, callback_url)
         
         return {
             "success": result["success"],
@@ -1705,6 +1711,39 @@ async def get_oauth_url(platform: str, request: dict, credentials: HTTPAuthoriza
         raise
     except Exception as e:
         app_logger.error(f"Error getting OAuth URL: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/v1/social/oauth-callback/{platform}")
+async def handle_oauth_callback(platform: str, request: dict, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Handle OAuth callback from social media platform"""
+    try:
+        current_user = RoleMiddleware.get_current_user(credentials.credentials)
+        if not current_user:
+            raise HTTPException(status_code=401, detail="Invalid or expired token")
+        
+        username = current_user["username"]
+        code = request.get("code")
+        state = request.get("state")
+        callback_url = request.get("callback_url", f"http://localhost:3001/social/{platform}/callback")
+        
+        app_logger.info(f"Handling OAuth callback for {platform} for user {username}")
+        
+        if platform == "twitter" and SOCIAL_INTEGRATION_ENABLED:
+            # Use real Twitter OAuth
+            result = twitter_oauth.exchange_code_for_token(username, code, state, callback_url)
+        else:
+            # Use mock OAuth flow
+            result = social_oauth_manager.handle_oauth_callback(platform, code, state)
+        
+        return {
+            "success": result["success"],
+            "data": result if result["success"] else None,
+            "message": result.get("message", result.get("error", ""))
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        app_logger.error(f"Error handling OAuth callback: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.on_event("shutdown")

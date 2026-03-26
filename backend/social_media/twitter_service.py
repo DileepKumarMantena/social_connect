@@ -132,6 +132,194 @@ class TwitterAPIService:
             social_integration_manager.set_connection_status(self.platform, ConnectionStatus.ERROR, f"Network error: {str(e)}")
             raise TwitterAPIError(f"Network error: {str(e)}")
     
+    def get_user_info(self) -> Dict[str, Any]:
+        """Get current user information from Twitter API v2"""
+        try:
+            if not self._check_rate_limit("users/me"):
+                raise TwitterAPIError("Rate limit exceeded for users/me endpoint")
+            
+            headers = self._get_auth_headers()
+            params = {
+                "user.fields": "created_at,description,location,pinned_tweet_id,profile_image_url,protected,public_metrics,url,username,verified,verified_type"
+            }
+            
+            response = requests.get(
+                f"{self.base_url}/users/me",
+                headers=headers,
+                params=params
+            )
+            
+            self._update_rate_limits("users/me", response.headers)
+            
+            if response.status_code == 200:
+                user_data = response.json()
+                return user_data.get("data", {})
+            elif response.status_code == 401:
+                raise TwitterAPIError("Authentication failed - invalid or expired credentials")
+            elif response.status_code == 429:
+                raise TwitterAPIError("Rate limit exceeded")
+            else:
+                raise TwitterAPIError(f"Twitter API error: {response.status_code}")
+                
+        except requests.exceptions.RequestException as e:
+            app_logger.error(f"Twitter API request failed: {e}")
+            raise TwitterAPIError(f"Network error: {str(e)}")
+        except TwitterAPIError:
+            raise
+        except Exception as e:
+            app_logger.error(f"Error getting Twitter user info: {e}")
+            raise TwitterAPIError(f"Unexpected error: {str(e)}")
+    
+    def post_tweet(self, content: str, media_ids: Optional[List[str]] = None) -> Dict[str, Any]:
+        """Post a tweet with optional media"""
+        try:
+            if not self._check_rate_limit("tweets"):
+                raise TwitterAPIError("Rate limit exceeded for tweets endpoint")
+            
+            headers = self._get_auth_headers()
+            
+            # Prepare tweet data
+            tweet_data = {
+                "text": content
+            }
+            
+            # Add media if provided
+            if media_ids:
+                tweet_data["media"] = {"media_ids": media_ids}
+            
+            response = requests.post(
+                f"{self.base_url}/tweets",
+                headers=headers,
+                json=tweet_data
+            )
+            
+            self._update_rate_limits("tweets", response.headers)
+            
+            if response.status_code == 201:
+                tweet_data = response.json()
+                return {
+                    "success": True,
+                    "tweet_id": tweet_data["data"]["id"],
+                    "text": tweet_data["data"]["text"],
+                    "created_at": tweet_data["data"]["created_at"]
+                }
+            elif response.status_code == 401:
+                raise TwitterAPIError("Authentication failed - invalid or expired credentials")
+            elif response.status_code == 403:
+                raise TwitterAPIError("Access forbidden - check permissions and content policy")
+            elif response.status_code == 429:
+                raise TwitterAPIError("Rate limit exceeded")
+            else:
+                error_detail = response.json() if response.content else {}
+                raise TwitterAPIError(f"Twitter API error: {response.status_code} - {error_detail.get('detail', 'Unknown error')}")
+                
+        except requests.exceptions.RequestException as e:
+            app_logger.error(f"Twitter API request failed: {e}")
+            raise TwitterAPIError(f"Network error: {str(e)}")
+        except TwitterAPIError:
+            raise
+        except Exception as e:
+            app_logger.error(f"Error posting tweet: {e}")
+            raise TwitterAPIError(f"Unexpected error: {str(e)}")
+    
+    def get_user_tweets(self, user_id: Optional[str] = None, max_results: int = 10) -> List[Dict[str, Any]]:
+        """Get tweets for a user (current user if user_id not provided)"""
+        try:
+            if not self._check_rate_limit("tweets/search"):
+                raise TwitterAPIError("Rate limit exceeded for tweets endpoint")
+            
+            headers = self._get_auth_headers()
+            
+            # Use current user ID if not provided
+            if not user_id:
+                user_info = self.get_user_info()
+                user_id = user_info.get("id")
+            
+            params = {
+                "max_results": min(max_results, 100),  # Twitter API limit
+                "tweet.fields": "created_at,public_metrics,context_annotations,entities",
+                "expansions": "attachments.media,author_id"
+            }
+            
+            # Get user's tweets
+            response = requests.get(
+                f"{self.base_url}/users/{user_id}/tweets",
+                headers=headers,
+                params=params
+            )
+            
+            self._update_rate_limits("tweets/search", response.headers)
+            
+            if response.status_code == 200:
+                tweets_data = response.json()
+                return tweets_data.get("data", [])
+            elif response.status_code == 401:
+                raise TwitterAPIError("Authentication failed - invalid or expired credentials")
+            elif response.status_code == 404:
+                raise TwitterAPIError("User not found")
+            elif response.status_code == 429:
+                raise TwitterAPIError("Rate limit exceeded")
+            else:
+                raise TwitterAPIError(f"Twitter API error: {response.status_code}")
+                
+        except requests.exceptions.RequestException as e:
+            app_logger.error(f"Twitter API request failed: {e}")
+            raise TwitterAPIError(f"Network error: {str(e)}")
+        except TwitterAPIError:
+            raise
+        except Exception as e:
+            app_logger.error(f"Error getting user tweets: {e}")
+            raise TwitterAPIError(f"Unexpected error: {str(e)}")
+    
+    def get_tweet_metrics(self, tweet_id: str) -> Dict[str, Any]:
+        """Get detailed metrics for a specific tweet"""
+        try:
+            if not self._check_rate_limit("tweets"):
+                raise TwitterAPIError("Rate limit exceeded for tweets endpoint")
+            
+            headers = self._get_auth_headers()
+            params = {
+                "tweet.fields": "public_metrics,non_public_metrics,organic_metrics, promoted_metrics"
+            }
+            
+            response = requests.get(
+                f"{self.base_url}/tweets/{tweet_id}",
+                headers=headers,
+                params=params
+            )
+            
+            self._update_rate_limits("tweets", response.headers)
+            
+            if response.status_code == 200:
+                tweet_data = response.json()
+                tweet = tweet_data.get("data", {})
+                return {
+                    "likes": tweet.get("public_metrics", {}).get("like_count", 0),
+                    "retweets": tweet.get("public_metrics", {}).get("retweet_count", 0),
+                    "replies": tweet.get("public_metrics", {}).get("reply_count", 0),
+                    "quotes": tweet.get("public_metrics", {}).get("quote_count", 0),
+                    "impressions": tweet.get("public_metrics", {}).get("impression_count", 0),
+                    "url_clicks": tweet.get("public_metrics", {}).get("url_link_clicks", 0),
+                    "user_profile_clicks": tweet.get("public_metrics", {}).get("user_profile_clicks", 0)
+                }
+            elif response.status_code == 401:
+                raise TwitterAPIError("Authentication failed - invalid or expired credentials")
+            elif response.status_code == 404:
+                raise TwitterAPIError("Tweet not found")
+            elif response.status_code == 429:
+                raise TwitterAPIError("Rate limit exceeded")
+            else:
+                raise TwitterAPIError(f"Twitter API error: {response.status_code}")
+                
+        except requests.exceptions.RequestException as e:
+            app_logger.error(f"Twitter API request failed: {e}")
+            raise TwitterAPIError(f"Network error: {str(e)}")
+        except TwitterAPIError:
+            raise
+        except Exception as e:
+            app_logger.error(f"Error getting tweet metrics: {e}")
+            raise TwitterAPIError(f"Unexpected error: {str(e)}")
+    
     def test_connection(self) -> bool:
         """Test Twitter API connection"""
         try:
@@ -141,65 +329,7 @@ class TwitterAPIService:
         except TwitterAPIError as e:
             app_logger.error(f"Twitter connection test failed: {e}")
             return False
-    
-    def get_user_info(self, user_id: Optional[str] = None) -> Dict[str, Any]:
-        """Get current user information or specific user info"""
-        try:
-            if user_id:
-                endpoint = f"users/{user_id}"
-            else:
-                endpoint = "users/me"
             
-            params = {
-                "user.fields": "id,name,username,description,public_metrics,verified,created_at,profile_image_url"
-            }
-            
-            response = self._make_request("GET", endpoint, params=params)
-            return response.get("data", {})
-            
-        except TwitterAPIError as e:
-            app_logger.error(f"Failed to get user info: {e}")
-            return {}
-    
-    def get_user_tweets(self, user_id: Optional[str] = None, max_results: int = 10) -> List[Dict[str, Any]]:
-        """Get tweets from a user"""
-        try:
-            if not user_id:
-                # Get current user ID first
-                user_info = self.get_user_info()
-                user_id = user_info.get("id")
-                if not user_id:
-                    raise TwitterAPIError("Could not determine user ID")
-            
-            params = {
-                "max_results": min(max_results, 100),  # Twitter API limit
-                "tweet.fields": "id,text,created_at,public_metrics,context_annotations,lang"
-            }
-            
-            response = self._make_request("GET", f"users/{user_id}/tweets", params=params)
-            return response.get("data", [])
-            
-        except TwitterAPIError as e:
-            app_logger.error(f"Failed to get user tweets: {e}")
-            return []
-    
-    def post_tweet(self, text: str, media_ids: Optional[List[str]] = None) -> Dict[str, Any]:
-        """Post a tweet"""
-        try:
-            if len(text) > 280:
-                raise TwitterAPIError("Tweet text exceeds 280 characters")
-            
-            data = {"text": text}
-            if media_ids:
-                data["media"] = {"media_ids": media_ids}
-            
-            response = self._make_request("POST", "tweets", data=data)
-            return response.get("data", {})
-            
-        except TwitterAPIError as e:
-            app_logger.error(f"Failed to post tweet: {e}")
-            return {}
-    
     def delete_tweet(self, tweet_id: str) -> bool:
         """Delete a tweet"""
         try:
