@@ -32,31 +32,65 @@ class PosterGenerator:
                 'background': (41, 128, 185),  # Ocean blue
                 'accent': (52, 152, 219),       # Sky blue
                 'text': (255, 255, 255),       # White
-                'gradient': True
+                'secondary': (231, 76, 60),       # Coral
+                'gradient': True,
+                'pattern': 'waves'
             },
             'modern_tech': {
                 'background': (44, 62, 80),    # Dark blue-gray
                 'accent': (52, 152, 219),       # Bright blue
                 'text': (255, 255, 255),       # White
-                'gradient': False
+                'secondary': (142, 68, 173),      # Purple
+                'gradient': False,
+                'pattern': 'grid'
             },
             'festive_red': {
                 'background': (192, 57, 43),    # Festive red
                 'accent': (231, 76, 60),       # Light red
                 'text': (255, 255, 255),       # White
-                'gradient': True
+                'secondary': (255, 193, 7),       # Gold
+                'gradient': True,
+                'pattern': 'confetti'
+            },
+            'nature_green': {
+                'background': (34, 139, 34),    # Forest green
+                'accent': (76, 175, 80),       # Mint green
+                'text': (255, 255, 255),       # White
+                'secondary': (255, 235, 59),      # Sunny yellow
+                'gradient': True,
+                'pattern': 'leaves'
+            },
+            'elegant_purple': {
+                'background': (91, 33, 182),     # Deep purple
+                'accent': (186, 85, 211),      # Light purple
+                'text': (255, 255, 255),       # White
+                'secondary': (255, 184, 108),     # Peach
+                'gradient': True,
+                'pattern': 'geometric'
+            },
+            'sunset_orange': {
+                'background': (255, 94, 77),     # Sunset orange
+                'accent': (255, 154, 0),       # Bright orange
+                'text': (255, 255, 255),       # White
+                'secondary': (255, 206, 84),     # Yellow
+                'gradient': True,
+                'pattern': 'rays'
             },
             'elegant_black': {
                 'background': (33, 33, 33),    # Dark gray
                 'accent': (52, 73, 94),        # Muted blue
                 'text': (255, 255, 255),       # White
-                'gradient': False
+                'secondary': (156, 163, 175),     # Light gray
+                'gradient': False,
+                'pattern': 'minimal'
             },
             'professional_green': {
                 'background': (39, 174, 96),    # Professional green
                 'accent': (46, 204, 113),       # Light green
                 'text': (255, 255, 255),       # White
-                'gradient': True
+                'secondary': (0, 128, 128),         # Teal
+                'gradient': False,
+                'pattern': 'corporate'
             }
         }
 
@@ -181,22 +215,86 @@ class PosterGenerator:
         draw.rectangle([(0, 0), (width, height)], fill=theme['background'])
 
     def _add_geometric_patterns(self, draw: ImageDraw.Draw, theme: Dict, colors: Dict):
-        """Add geometric patterns for visual interest"""
+        """Add sophisticated geometric patterns"""
         width, height = self.poster_dimensions
+        pattern = theme.get('pattern', 'minimal')
         
-        # Add circles in corners
-        circle_positions = [
-            (50, 50), (width - 50, 50),
-            (50, height - 50), (width - 50, height - 50)
-        ]
+        if pattern == 'waves':
+            # Wave pattern for ocean theme
+            for i in range(5):
+                y = height // 4 + i * 40
+                amplitude = 20
+                for x in range(0, width, 5):
+                    wave_y = y + amplitude * 0.1 * (x / 50)
+                    draw.ellipse([x, wave_y, x + 3, wave_y + 3], 
+                               fill=colors['primary'], outline=None)
         
-        for x, y in circle_positions:
-            # Outer circle
-            draw.ellipse([x - 40, y - 40, x + 40, y + 40], 
-                        fill=colors['primary'], outline=theme['text'], width=2)
-            # Inner circle
-            draw.ellipse([x - 20, y - 20, x + 20, y + 20], 
-                        fill=colors['accent'])
+        elif pattern == 'grid':
+            # Grid pattern for tech theme
+            for x in range(0, width, 30):
+                draw.line([(x, 0), (x, height)], 
+                         fill=colors['secondary'], width=1)
+            for y in range(0, height, 30):
+                draw.line([(0, y), (width, y)], 
+                         fill=colors['secondary'], width=1)
+        
+        elif pattern == 'confetti':
+            # Confetti pattern for festive theme
+            import random
+            for _ in range(15):
+                x = random.randint(0, width - 20)
+                y = random.randint(0, height - 20)
+                size = random.randint(10, 25)
+                draw.rectangle([x, y, x + size, y + size], 
+                           fill=colors['accent'], outline=colors['primary'])
+        
+        elif pattern == 'leaves':
+            # Leaf pattern for nature theme
+            for i in range(8):
+                x = 100 + i * 120
+                y = 50 + (i % 2) * 80
+                # Draw leaf shape
+                draw.ellipse([x, y, x + 30, y + 50], 
+                           fill=colors['secondary'], outline=colors['primary'])
+                draw.ellipse([x + 5, y + 10, x + 25, y + 40], 
+                           fill=colors['primary'])
+        
+        elif pattern == 'geometric':
+            # Geometric pattern for elegant theme
+            import math
+            center_x, center_y = width // 2, height // 2
+            for i in range(12):
+                angle = (i * 30) * math.pi / 180
+                x1 = center_x + 150 * math.cos(angle)
+                y1 = center_y + 150 * math.sin(angle)
+                x2 = center_x + 100 * math.cos(angle + math.pi)
+                y2 = center_y + 100 * math.sin(angle + math.pi)
+                draw.line([x1, y1, x2, y2], 
+                         fill=colors['secondary'], width=3)
+        
+        elif pattern == 'rays':
+            # Sun rays pattern for sunset theme
+            center_x, center_y = width // 2, 100
+            for i in range(16):
+                angle = (i * 22.5) * math.pi / 180
+                x = center_x + 200 * math.cos(angle)
+                y = center_y + 200 * math.sin(angle)
+                draw.line([center_x, center_y, x, y], 
+                         fill=colors['secondary'], width=2)
+        
+        elif pattern == 'minimal':
+            # Minimal pattern - just subtle dots
+            for x in range(50, width - 50, 40):
+                for y in range(50, height - 50, 40):
+                    draw.ellipse([x, y, x + 2, y + 2], 
+                               fill=colors['secondary'], outline=None)
+        
+        elif pattern == 'corporate':
+            # Corporate pattern - clean lines
+            for i in range(3):
+                y = height // 4 + i * height // 4
+                draw.line([(50, y), (width - 50, y)], 
+                         fill=colors['secondary'], width=2)
 
     def _add_campaign_text(self, draw: ImageDraw.Draw, campaign_name: str, 
                            call_to_action: str, special_offers: str, theme: Dict):
@@ -206,79 +304,106 @@ class PosterGenerator:
         try:
             # Try to load system fonts with fallback
             try:
-                title_font = ImageFont.truetype("/System/Library/Fonts/Arial.ttf", 60)
-                subtitle_font = ImageFont.truetype("/System/Library/Fonts/Arial.ttf", 40)
+                title_font = ImageFont.truetype("/System/Library/Fonts/Arial.ttf", 72)
+                subtitle_font = ImageFont.truetype("/System/Library/Fonts/Arial.ttf", 42)
                 cta_font = ImageFont.truetype("/System/Library/Fonts/Arial.ttf", 36)
+                offers_font = ImageFont.truetype("/System/Library/Fonts/Arial.ttf", 28)
             except:
                 try:
-                    title_font = ImageFont.truetype("arial.ttf", 60)
-                    subtitle_font = ImageFont.truetype("arial.ttf", 40)
+                    title_font = ImageFont.truetype("arial.ttf", 72)
+                    subtitle_font = ImageFont.truetype("arial.ttf", 42)
                     cta_font = ImageFont.truetype("arial.ttf", 36)
+                    offers_font = ImageFont.truetype("arial.ttf", 28)
                 except:
                     # Use default fonts
                     title_font = ImageFont.load_default()
                     subtitle_font = ImageFont.load_default()
                     cta_font = ImageFont.load_default()
+                    offers_font = ImageFont.load_default()
         except Exception as e:
             app_logger.warning(f"Font loading failed: {e}")
             # Use default fonts
             title_font = ImageFont.load_default()
             subtitle_font = ImageFont.load_default()
             cta_font = ImageFont.load_default()
+            offers_font = ImageFont.load_default()
         
-        # Calculate text positions
-        title_y = height // 4
-        subtitle_y = title_y + 100
-        cta_y = height - 150
+        # Add decorative background text
+        draw.text((width // 2, 50), campaign_name.upper(), 
+                 font=title_font, fill=theme['text'], anchor='mm')
         
+        # Add campaign name with shadow
+        title_bbox = draw.textbbox((0, 0), campaign_name, font=title_font)
+        title_width = title_bbox[2] - title_bbox[0]
+        title_x = (width - title_width) // 2
+        title_y = height // 3
+        
+        # Title shadow
+        draw.text((title_x + 3, title_y + 3), campaign_name, 
+                 font=title_font, fill=(0, 0, 0, 100))
+        # Title
+        draw.text((title_x, title_y), campaign_name, 
+                 font=title_font, fill=theme['text'])
+        
+        # Add special offers with styling
+        if special_offers:
+            offers_y = title_y + 120
+            offers_bbox = draw.textbbox((0, 0), special_offers, font=offers_font)
+            offers_width = offers_bbox[2] - offers_bbox[0]
+            offers_x = (width - offers_width) // 2
+            
+            # Offers background
+            draw.rectangle([offers_x - 20, offers_y - 5, offers_x + offers_width + 20, offers_y + 35], 
+                       fill=theme.get('secondary', theme['accent']), 
+                       outline=theme['text'], width=2)
+            # Offers text
+            draw.text((offers_x, offers_y), special_offers, 
+                     font=offers_font, fill=theme['text'], anchor='mm')
+        
+        # Add call to action button
+        cta_y = height - 120
+        cta_bbox = draw.textbbox((0, 0), call_to_action, font=cta_font)
+        cta_width = cta_bbox[2] - cta_bbox[0] + 60
+        cta_x = (width - cta_width) // 2
+        
+        # CTA button with gradient effect
+        button_height = 50
+        for i in range(button_height):
+            ratio = i / button_height
+            r = int(theme['accent'][0] * (1 - ratio * 0.3) + theme['text'][0] * ratio * 0.3)
+            g = int(theme['accent'][1] * (1 - ratio * 0.3) + theme['text'][1] * ratio * 0.3)
+            b = int(theme['accent'][2] * (1 - ratio * 0.3) + theme['text'][2] * ratio * 0.3)
+            draw.rectangle([cta_x, cta_y + i, cta_x + cta_width, cta_y + i + 1], 
+                       fill=(r, g, b))
+        
+        # CTA button border
+        draw.rectangle([cta_x, cta_y, cta_x + cta_width, cta_y + button_height], 
+                   fill=None, outline=theme['text'], width=2)
+        
+        # CTA text
+        draw.text((cta_x + cta_width // 2, cta_y + button_height // 2), call_to_action, 
+                 font=cta_font, fill=theme['text'], anchor='mm')
+        
+        # Add decorative elements
+        self._add_text_decorations(draw, campaign_name, theme)
+        
+    def _add_text_decorations(self, draw: ImageDraw.Draw, campaign_name: str, theme: Dict):
+        """Add decorative text elements"""
+        width, height = self.poster_dimensions
+        
+        # Add small decorative text in corners
         try:
-            # Add campaign name (title)
-            title_bbox = draw.textbbox((0, 0), campaign_name, font=title_font)
-            title_width = title_bbox[2] - title_bbox[0]
-            title_x = (width - title_width) // 2
-            
-            # Add shadow for title
-            draw.text((title_x + 2, title_y + 2), campaign_name, 
-                     font=title_font, fill=(0, 0, 0, 128))
-            # Add title
-            draw.text((title_x, title_y), campaign_name, 
-                     font=title_font, fill=theme['text'])
-            
-            # Add special offers (subtitle)
-            if special_offers:
-                subtitle_bbox = draw.textbbox((0, 0), special_offers, font=subtitle_font)
-                subtitle_width = subtitle_bbox[2] - subtitle_bbox[0]
-                subtitle_x = (width - subtitle_width) // 2
-                
-                draw.text((subtitle_x, subtitle_y), special_offers, 
-                         font=subtitle_font, fill=theme['text'])
-            
-            # Add call to action button
-            cta_bbox = draw.textbbox((0, 0), call_to_action, font=cta_font)
-            cta_width = cta_bbox[2] - cta_bbox[0] + 40
-            cta_height = 60
-            cta_x = (width - cta_width) // 2
-            cta_y = height - 120
-            
-            # Draw CTA button background
-            draw.rectangle([cta_x, cta_y, cta_x + cta_width, cta_y + cta_height], 
-                          fill=theme['accent'], outline=theme['text'], width=2)
-            
-            # Add CTA text
-            cta_text_bbox = draw.textbbox((0, 0), call_to_action, font=cta_font)
-            cta_text_width = cta_text_bbox[2] - cta_text_bbox[0]
-            cta_text_x = cta_x + (cta_width - cta_text_width) // 2
-            cta_text_y = cta_y + (cta_height - 36) // 2
-            
-            draw.text((cta_text_x, cta_text_y), call_to_action, 
-                     font=cta_font, fill=theme['text'])
-        except Exception as e:
-            app_logger.error(f"Error adding text to poster: {e}")
-            # Add simple text as fallback
-            try:
-                draw.text((50, height // 2), campaign_name, font=title_font, fill=theme['text'])
-            except:
-                pass
+            font = ImageFont.load_default()
+            # Top left corner
+            draw.text((20, 20), "✨", font=font, fill=theme['text'])
+            # Top right corner  
+            draw.text((width - 60, 20), "🚀", font=font, fill=theme['text'])
+            # Bottom left corner
+            draw.text((20, height - 40), "📈", font=font, fill=theme['text'])
+            # Bottom right corner
+            draw.text((width - 60, height - 40), "🎯", font=font, fill=theme['text'])
+        except:
+            pass
 
     def _add_decorative_elements(self, draw: ImageDraw.Draw, theme: Dict, colors: Dict):
         """Add decorative elements to poster"""

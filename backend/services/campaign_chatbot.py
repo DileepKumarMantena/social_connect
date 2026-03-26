@@ -19,14 +19,16 @@ class CampaignChatbot:
         self.conversation_steps = [
             'welcome',
             'campaign_name',
-            'campaign_type', 
+            'campaign_type',
             'target_audience',
             'duration',
             'budget',
             'platforms',
             'goal',
+            'visual_theme',
+            'special_offers',
+            'call_to_action',
             'additional_details',
-            'smart_suggestions',
             'poster_generation',
             'campaign_creation'
         ]
@@ -162,6 +164,35 @@ class CampaignChatbot:
                 goal = self._map_goal(user_input)
                 campaign_data['goal'] = goal
                 return campaign_data
+                
+            elif step == 'visual_theme':
+                theme = user_input.strip().lower()
+                valid_themes = ['blue_ocean', 'modern_tech', 'festive_red', 'nature_green', 
+                               'elegant_purple', 'sunset_orange', 'elegant_black', 'professional_green']
+                
+                if theme in valid_themes:
+                    campaign_data['visual_theme'] = theme
+                    return campaign_data
+                else:
+                    return {
+                        'error': f'Please choose from: {", ".join(valid_themes)}',
+                        'suggestions': valid_themes
+                    }
+                
+            elif step == 'call_to_action':
+                cta = user_input.strip()
+                valid_ctas = ['Shop Now', 'Learn More', 'Sign Up', 'Get Started', 
+                              'Download Now', 'Book Now', 'Register Today', 'Join Us',
+                              'Follow Us', 'Contact Us', 'Visit Website', 'Get Offer']
+                
+                if cta:
+                    campaign_data['call_to_action'] = cta
+                    return campaign_data
+                else:
+                    return {
+                        'error': f'Please provide a clear call to action. Examples: {", ".join(valid_ctas)}',
+                        'suggestions': valid_ctas
+                    }
                 
             elif step == 'additional_details':
                 campaign_data['special_offers'] = user_input.strip()

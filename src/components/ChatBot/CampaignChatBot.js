@@ -215,13 +215,59 @@ const CampaignChatBot = ({ open, onClose, onCampaignCreated }) => {
                 };
                 const goal = goalMap[input.toLowerCase()] || 'sales';
                 setCampaignData(prev => ({ ...prev, goal }));
+                setCurrentStep('visual_theme');
+                askQuestion("What visual theme would you like for your poster?", [
+                    "🌊 Blue Ocean (Professional & Clean)",
+                    "💻 Modern Tech (Bold & Innovative)", 
+                    "🎄 Festive Red (Celebratory & Bright)",
+                    "🌿 Nature Green (Fresh & Organic)",
+                    "👔 Elegant Purple (Sophisticated & Premium)",
+                    "🌅 Sunset Orange (Warm & Energetic)",
+                    "⚫ Elegant Black (Minimal & Professional)",
+                    "📊 Professional Green (Corporate & Trustworthy)"
+                ]);
+                break;
+
+            case 'visual_theme':
+                const themeMap = {
+                    'blue ocean': 'blue_ocean',
+                    'modern tech': 'modern_tech',
+                    'festive red': 'festive_red',
+                    'nature green': 'nature_green',
+                    'elegant purple': 'elegant_purple',
+                    'sunset orange': 'sunset_orange',
+                    'elegant black': 'elegant_black',
+                    'professional green': 'professional_green'
+                };
+                const visualTheme = themeMap[input.toLowerCase()] || 'blue_ocean';
+                setCampaignData(prev => ({ ...prev, visual_theme: visualTheme }));
+                setCurrentStep('call_to_action');
+                askQuestion("What should be the main call to action?", [
+                    "Shop Now",
+                    "Learn More", 
+                    "Sign Up",
+                    "Get Started",
+                    "Download Now",
+                    "Book Now",
+                    "Register Today",
+                    "Join Us",
+                    "Contact Us",
+                    "Visit Website",
+                    "Get Offer"
+                ]);
+                break;
+
+            case 'call_to_action':
+                setCampaignData(prev => ({ ...prev, call_to_action: input }));
                 setCurrentStep('additional_details');
                 addBotMessage("Great! Now tell me more about your campaign. You can describe special offers, visual preferences, or any other details you'd like to include.", [
-                    "20% off all items",
-                    "Free shipping offer",
-                    "Blue and white theme",
-                    "Modern minimalist design"
-                ]);
+                    "20% OFF everything!",
+                    "Buy 1 Get 1 Free",
+                    "Limited Time - Don't Miss Out!",
+                    "Free Shipping on Orders Over $50",
+                    "Early Bird Special - First 50 Get 25% Off",
+                    "Custom Offer"
+                ], true);
                 break;
 
             case 'additional_details':
