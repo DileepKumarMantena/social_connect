@@ -18,6 +18,10 @@ from services.routes import (
     create_role_service, update_role_service, delete_role_service, update_permissions_service, health_check,
     get_user_profile_service, update_user_profile_service
 )
+from social_media.connection_manager import initialize_connections, shutdown_connections, connection_manager
+from social_media.social_config import social_integration_manager, SocialPlatform
+from social_media.social_data_service import social_data_service
+from social_media.oauth_manager import social_oauth_manager, get_mock_oauth_flow
 from services.util import (
     verify_password, hash_password, generate_otp, store_otp, 
     verify_stored_otp, find_user_by_email, cleanup_otp, send_otp_email,
@@ -1458,11 +1462,260 @@ async def startup_event():
         else:
             app_logger.info("Running in DEV_MODE - skipping MongoDB initialization")
         
+        # Initialize social media connections
+        app_logger.info("Initializing social media connections...")
+        initialize_connections()
+        
+        # Test social media connections
+        connection_summary = connection_manager.get_connection_summary()
+        app_logger.info(f"Social media connection summary: {connection_summary}")
+        
         # Start the expiring users scheduler
         start_expiring_users_scheduler()
         
     except Exception as e:
         app_logger.error(f"Error during startup initialization: {e}")
+
+# Social Media Management Endpoints
+
+@app.get("/api/v1/social/status")
+async def get_social_status(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get social media integration status"""
+    try:
+        app_logger.info("Social media status requested")
+        status_summary = connection_manager.get_connection_summary()
+        return {
+            "success": True,
+            "data": status_summary,
+            "message": "Social media status retrieved successfully"
+        }
+    except Exception as e:
+        app_logger.error(f"Error getting social status: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/v1/social/platforms")
+async def get_supported_platforms(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get list of supported social media platforms"""
+    try:
+        app_logger.info("Supported platforms requested")
+        platforms_status = social_integration_manager.get_all_platforms_status()
+        return {
+            "success": True,
+            "data": platforms_status,
+            "message": "Supported platforms retrieved successfully"
+        }
+    except Exception as e:
+        app_logger.error(f"Error getting supported platforms: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/v1/social/test-connection/{platform}")
+async def test_platform_connection(platform: str, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Test connection to a specific social media platform"""
+    try:
+        app_logger.info(f"Testing connection to platform: {platform}")
+        
+        try:
+            social_platform = SocialPlatform(platform.lower())
+        except ValueError:
+            raise HTTPException(status_code=400, detail=f"Unsupported platform: {platform}")
+        
+        success = connection_manager.reconnect_platform(social_platform)
+        
+        return {
+            "success": success,
+            "platform": platform,
+            "message": f"Connection test {'successful' if success else 'failed'}"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        app_logger.error(f"Error testing platform connection: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/v1/social/post")
+async def post_to_social_media(
+    request: dict,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Post content to social media platforms"""
+    try:
+        app_logger.info("Social media post requested")
+        
+        content = request.get("content")
+        platform = request.get("platform")
+        campaign_id = request.get("campaign_id")
+        
+        if not content or not platform:
+            raise HTTPException(status_code=400, detail="Content and platform are required")
+        
+        try:
+            social_platform = SocialPlatform(platform.lower())
+        except ValueError:
+            raise HTTPException(status_code=400, detail=f"Unsupported platform: {platform}")
+        
+        result = social_data_service.post_content(content, social_platform, campaign_id)
+        
+        return {
+            "success": result["success"],
+            "data": result,
+            "message": f"Post {'successful' if result['success'] else 'failed'}"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        app_logger.error(f"Error posting to social media: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/v1/social/data-source")
+async def get_data_source_info(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get information about current data sources"""
+    try:
+        app_logger.info("Data source info requested")
+        data_source_info = social_data_service.get_data_source_info()
+        
+        return {
+            "success": True,
+            "data": data_source_info,
+            "message": "Data source information retrieved successfully"
+        }
+    except Exception as e:
+        app_logger.error(f"Error getting data source info: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# User Social Media Connection Management Endpoints
+
+@app.post("/api/v1/social/connect/{platform}")
+async def connect_social_account(platform: str, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Initiate social media account connection for current user"""
+    try:
+        current_user = RoleMiddleware.get_current_user(credentials.credentials)
+        if not current_user:
+            raise HTTPException(status_code=401, detail="Invalid or expired token")
+        
+        username = current_user["username"]
+        app_logger.info(f"User {username} initiating {platform} connection")
+        
+        # For now, use mock OAuth flow
+        result = get_mock_oauth_flow(platform, username)
+        
+        return {
+            "success": result["success"],
+            "data": result if result["success"] else None,
+            "message": result.get("message", result.get("error", ""))
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        app_logger.error(f"Error connecting {platform} account: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/v1/social/disconnect/{platform}")
+async def disconnect_social_account(platform: str, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Disconnect social media account for current user"""
+    try:
+        current_user = RoleMiddleware.get_current_user(credentials.credentials)
+        if not current_user:
+            raise HTTPException(status_code=401, detail="Invalid or expired token")
+        
+        username = current_user["username"]
+        app_logger.info(f"User {username} disconnecting {platform} account")
+        
+        result = social_oauth_manager.disconnect_user_account(username, platform)
+        
+        return {
+            "success": result["success"],
+            "data": result if result["success"] else None,
+            "message": result.get("message", result.get("error", ""))
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        app_logger.error(f"Error disconnecting {platform} account: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/v1/social/connections")
+async def get_user_connections(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get current user's social media connections"""
+    try:
+        current_user = RoleMiddleware.get_current_user(credentials.credentials)
+        if not current_user:
+            raise HTTPException(status_code=401, detail="Invalid or expired token")
+        
+        username = current_user["username"]
+        app_logger.info(f"Getting connections for user {username}")
+        
+        result = social_oauth_manager.get_user_connections(username)
+        
+        return {
+            "success": result["success"],
+            "data": result if result["success"] else None,
+            "message": result.get("message", result.get("error", ""))
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        app_logger.error(f"Error getting user connections: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/v1/social/test-connection/{platform}")
+async def test_user_connection(platform: str, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Test current user's social media connection"""
+    try:
+        current_user = RoleMiddleware.get_current_user(credentials.credentials)
+        if not current_user:
+            raise HTTPException(status_code=401, detail="Invalid or expired token")
+        
+        username = current_user["username"]
+        app_logger.info(f"Testing {platform} connection for user {username}")
+        
+        result = social_oauth_manager.test_user_connection(username, platform)
+        
+        return {
+            "success": result["success"],
+            "data": result if result["success"] else None,
+            "message": result.get("message", result.get("error", ""))
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        app_logger.error(f"Error testing user connection: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/v1/social/oauth-url/{platform}")
+async def get_oauth_url(platform: str, request: dict, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get OAuth URL for social media platform"""
+    try:
+        current_user = RoleMiddleware.get_current_user(credentials.credentials)
+        if not current_user:
+            raise HTTPException(status_code=401, detail="Invalid or expired token")
+        
+        username = current_user["username"]
+        callback_url = request.get("callback_url", f"http://localhost:3001/social/{platform}/callback")
+        
+        app_logger.info(f"Getting OAuth URL for {platform} for user {username}")
+        
+        result = social_oauth_manager.get_oauth_url(platform, username, callback_url)
+        
+        return {
+            "success": result["success"],
+            "data": result if result["success"] else None,
+            "message": result.get("message", result.get("error", ""))
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        app_logger.error(f"Error getting OAuth URL: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Cleanup on shutdown"""
+    try:
+        app_logger.info("Shutting down social media connections...")
+        shutdown_connections()
+        app_logger.info("Social media connections shutdown complete")
+    except Exception as e:
+        app_logger.error(f"Error during shutdown: {e}")
 
 if __name__ == "__main__":
     import uvicorn

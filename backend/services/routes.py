@@ -3,7 +3,12 @@ from pydantic import BaseModel
 from typing import Optional, Union
 from datetime import datetime, timedelta
 import hashlib
-from constants import users_db, otp_storage, channels_db, campaigns_db, leads_db, analytics_db, scheduler_db, user_settings_db, DEV_MODE
+from constants import (
+    DEV_MODE, users_db, channels_db, campaigns_db, leads_db,
+    analytics_db, scheduler_db, user_settings_db
+)
+from social_media.social_data_service import social_data_service
+from social_media.connection_manager import initialize_connections, shutdown_connections
 from services.mongo_db import mongo_db
 from services.util import (
     verify_password, hash_password, generate_otp, store_otp, 
@@ -479,12 +484,22 @@ def get_channels(token: str) -> ChannelResponse:
     if not current_user:
         raise APIError.unauthorized("Invalid or expired token")
     
-    if DEV_MODE:
-        app_logger.info("Using mock data for channels")
-        all_channels = channels_db
-    else:
-        app_logger.info("Using MongoDB for channels")
-        all_channels = mongo_db.get_channels()
+    # Try to get real social media data first, fallback to existing system
+    try:
+        app_logger.info("Attempting to get channels from social media service")
+        all_channels = social_data_service.get_channels()
+        data_source = "social_media"
+    except Exception as e:
+        app_logger.error(f"Social media service failed: {e}, falling back to existing system")
+        
+        # Fallback to existing DEV_MODE/MongoDB system
+        if DEV_MODE:
+            app_logger.info("Using mock data for channels")
+            all_channels = channels_db
+        else:
+            app_logger.info("Using MongoDB for channels")
+            all_channels = mongo_db.get_channels()
+        data_source = "mock_data" if DEV_MODE else "mongodb"
     
     # Filter channels based on user role
     if current_user["role"] == "super_admin":
@@ -499,7 +514,7 @@ def get_channels(token: str) -> ChannelResponse:
         filtered_channels = all_channels  # For now, show all - can be enhanced with permissions
     
     return ChannelResponse(
-        message=f"Channels retrieved successfully ({'mock data' if DEV_MODE else 'MongoDB'})",
+        message=f"Channels retrieved successfully ({data_source})",
         success=True,
         channels=filtered_channels
     )
@@ -510,12 +525,22 @@ def get_campaigns(token: str) -> CampaignResponse:
     if not current_user:
         raise APIError.unauthorized("Invalid or expired token")
     
-    if DEV_MODE:
-        app_logger.info("Using mock data for campaigns")
-        all_campaigns = campaigns_db
-    else:
-        app_logger.info("Using MongoDB for campaigns")
-        all_campaigns = mongo_db.get_campaigns()
+    # Try to get real social media data first, fallback to existing system
+    try:
+        app_logger.info("Attempting to get campaigns from social media service")
+        all_campaigns = social_data_service.get_campaigns()
+        data_source = "social_media"
+    except Exception as e:
+        app_logger.error(f"Social media service failed: {e}, falling back to existing system")
+        
+        # Fallback to existing DEV_MODE/MongoDB system
+        if DEV_MODE:
+            app_logger.info("Using mock data for campaigns")
+            all_campaigns = campaigns_db
+        else:
+            app_logger.info("Using MongoDB for campaigns")
+            all_campaigns = mongo_db.get_campaigns()
+        data_source = "mock_data" if DEV_MODE else "mongodb"
     
     # Filter campaigns based on user role
     if current_user["role"] == "super_admin":
@@ -530,7 +555,7 @@ def get_campaigns(token: str) -> CampaignResponse:
         filtered_campaigns = all_campaigns  # For now, show all - can be enhanced with permissions
     
     return CampaignResponse(
-        message=f"Campaigns retrieved successfully ({'mock data' if DEV_MODE else 'MongoDB'})",
+        message=f"Campaigns retrieved successfully ({data_source})",
         success=True,
         campaigns=filtered_campaigns
     )
@@ -541,12 +566,22 @@ def get_leads(token: str) -> LeadResponse:
     if not current_user:
         raise APIError.unauthorized("Invalid or expired token")
     
-    if DEV_MODE:
-        app_logger.info("Using mock data for leads")
-        all_leads = leads_db
-    else:
-        app_logger.info("Using MongoDB for leads")
-        all_leads = mongo_db.get_leads()
+    # Try to get real social media data first, fallback to existing system
+    try:
+        app_logger.info("Attempting to get leads from social media service")
+        all_leads = social_data_service.get_leads()
+        data_source = "social_media"
+    except Exception as e:
+        app_logger.error(f"Social media service failed: {e}, falling back to existing system")
+        
+        # Fallback to existing DEV_MODE/MongoDB system
+        if DEV_MODE:
+            app_logger.info("Using mock data for leads")
+            all_leads = leads_db
+        else:
+            app_logger.info("Using MongoDB for leads")
+            all_leads = mongo_db.get_leads()
+        data_source = "mock_data" if DEV_MODE else "mongodb"
     
     # Filter leads based on user role
     if current_user["role"] == "super_admin":
@@ -561,7 +596,7 @@ def get_leads(token: str) -> LeadResponse:
         filtered_leads = all_leads  # For now, show all - can be enhanced with permissions
     
     return LeadResponse(
-        message=f"Leads retrieved successfully ({'mock data' if DEV_MODE else 'MongoDB'})",
+        message=f"Leads retrieved successfully ({data_source})",
         success=True,
         leads=filtered_leads
     )

@@ -1,0 +1,14 @@
+# Social Media Integration Dependencies
+# Add these to your existing requirements.txt or install separately
+
+# Twitter API Integration
+requests>=2.28.0
+python-dotenv>=0.19.0
+
+# Future Platform Dependencies (to be added when implemented)
+# linkedin-api>=0.1.0        # For LinkedIn integration
+# facebook-business>=18.0.0  # For Facebook/Instagram integration
+
+# Development and Testing
+# pytest>=7.0.0
+# pytest-asyncio>=0.21.0

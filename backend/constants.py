@@ -628,5 +628,9 @@ COLLECTIONS = {
     "settings": "settings"
 }
 
+# MongoDB Configuration
+MONGODB_DB_NAME = "social_connect"
+MONGODB_URL = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
+
 # Development mode
 DEV_MODE = False  # Set to True for mock data, False for MongoDB
