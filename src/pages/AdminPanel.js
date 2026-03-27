@@ -43,7 +43,8 @@ import {
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
   Restore as RestoreIcon,
-  SmartToy as BotIcon
+  SmartToy as BotIcon,
+  Download as DownloadIcon
 } from '@mui/icons-material';
 import refreshService from '../services/refreshService';
 import { useAuth } from '../contexts/AuthContext';
@@ -628,6 +629,202 @@ const AdminPanel = () => {
     });
   };
 
+  // Export users to CSV
+  const handleExportUsers = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_LINKS}/api/v1/ai/export/users/csv`,
+        { 
+          headers: getAuthHeaders(),
+          responseType: 'blob'
+        }
+      );
+      
+      // Create download link
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `users_export_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      setSnackbar({ open: true, message: 'Users exported successfully', severity: 'success' });
+    } catch (error) {
+      console.error('Error exporting users:', error);
+      setSnackbar({ open: true, message: 'Failed to export users', severity: 'error' });
+    }
+  };
+
+  // Export companies to CSV
+  const handleExportCompanies = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_LINKS}/api/v1/ai/export/companies/csv`,
+        { 
+          headers: getAuthHeaders(),
+          responseType: 'blob'
+        }
+      );
+      
+      // Create download link
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `companies_export_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      setSnackbar({ open: true, message: 'Companies exported successfully', severity: 'success' });
+    } catch (error) {
+      console.error('Error exporting companies:', error);
+      setSnackbar({ open: true, message: 'Failed to export companies', severity: 'error' });
+    }
+  };
+
+  // Export campaigns to CSV
+  const handleExportCampaigns = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_LINKS}/api/v1/ai/export/campaigns/csv`,
+        { 
+          headers: getAuthHeaders(),
+          responseType: 'blob'
+        }
+      );
+      
+      // Create download link
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `campaigns_export_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      setSnackbar({ open: true, message: 'Campaigns exported successfully', severity: 'success' });
+    } catch (error) {
+      console.error('Error exporting campaigns:', error);
+      setSnackbar({ open: true, message: 'Failed to export campaigns', severity: 'error' });
+    }
+  };
+
+  // Export leads to CSV
+  const handleExportLeads = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_LINKS}/api/v1/ai/export/leads/csv`,
+        { 
+          headers: getAuthHeaders(),
+          responseType: 'blob'
+        }
+      );
+      
+      // Create download link
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `leads_export_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      setSnackbar({ open: true, message: 'Leads exported successfully', severity: 'success' });
+    } catch (error) {
+      console.error('Error exporting leads:', error);
+      setSnackbar({ open: true, message: 'Failed to export leads', severity: 'error' });
+    }
+  };
+
+  // Export analytics to CSV
+  const handleExportAnalytics = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_LINKS}/api/v1/ai/export/analytics/csv`,
+        { 
+          headers: getAuthHeaders(),
+          responseType: 'blob'
+        }
+      );
+      
+      // Create download link
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `analytics_export_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      setSnackbar({ open: true, message: 'Analytics exported successfully', severity: 'success' });
+    } catch (error) {
+      console.error('Error exporting analytics:', error);
+      setSnackbar({ open: true, message: 'Failed to export analytics', severity: 'error' });
+    }
+  };
+
+  // Export schedules to CSV
+  const handleExportSchedules = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_LINKS}/api/v1/ai/export/schedules/csv`,
+        { 
+          headers: getAuthHeaders(),
+          responseType: 'blob'
+        }
+      );
+      
+      // Create download link
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `schedules_export_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      setSnackbar({ open: true, message: 'Schedules exported successfully', severity: 'success' });
+    } catch (error) {
+      console.error('Error exporting schedules:', error);
+      setSnackbar({ open: true, message: 'Failed to export schedules', severity: 'error' });
+    }
+  };
+
+  // Export channels to CSV
+  const handleExportChannels = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_LINKS}/api/v1/ai/export/channels/csv`,
+        { 
+          headers: getAuthHeaders(),
+          responseType: 'blob'
+        }
+      );
+      
+      // Create download link
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `channels_export_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      setSnackbar({ open: true, message: 'Channels exported successfully', severity: 'success' });
+    } catch (error) {
+      console.error('Error exporting channels:', error);
+      setSnackbar({ open: true, message: 'Failed to export channels', severity: 'error' });
+    }
+  };
+
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#136aed', mb: 3 }}>
@@ -673,6 +870,13 @@ const AdminPanel = () => {
                     color="secondary"
                   >
                     AI Assistant
+                  </Button>
+                  <Button
+                    startIcon={<DownloadIcon />}
+                    onClick={handleExportUsers}
+                    color="success"
+                  >
+                    Export CSV
                   </Button>
                 </ButtonGroup>
               )}
@@ -836,6 +1040,13 @@ const AdminPanel = () => {
                   color="secondary"
                 >
                   AI Assistant
+                </Button>
+                <Button
+                  startIcon={<DownloadIcon />}
+                  onClick={handleExportCompanies}
+                  color="success"
+                >
+                  Export CSV
                 </Button>
               </ButtonGroup>
             )}

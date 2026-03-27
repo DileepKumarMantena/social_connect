@@ -33,7 +33,8 @@ import {
     Edit as EditIcon,
     Delete as DeleteIcon,
     Search as SearchIcon,
-    Person as PersonIcon
+    Person as PersonIcon,
+    Download as DownloadIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
@@ -126,6 +127,45 @@ const LeadsPage = () => {
     const handleCreateLead = () => {
         if (!checkPermission('create')) return;
         setOpenDialog(true);
+    };
+
+    const handleExportCSV = async () => {
+        if (!checkPermission('view')) return;
+        
+        try {
+            const response = await axios.get(
+                `${process.env.REACT_APP_API_LINKS}/api/v1/ai/export/leads/csv`,
+                { 
+                    headers: getAuthHeaders(),
+                    responseType: 'blob'
+                }
+            );
+            
+            // Create download link
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `leads_export_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Export Successful!',
+                text: 'Leads exported to CSV successfully',
+                confirmButtonColor: '#3085d6'
+            });
+        } catch (error) {
+            console.error('Error exporting leads:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Export Failed',
+                text: 'Failed to export leads to CSV',
+                confirmButtonColor: '#d33'
+            });
+        }
     };
 
     const handleSaveLead = async () => {
@@ -250,13 +290,23 @@ const LeadsPage = () => {
                 <Typography variant="h4" component="h1">
                     Leads
                 </Typography>
-                <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={handleCreateLead}
-                >
-                    Add Lead
-                </Button>
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        onClick={handleCreateLead}
+                    >
+                        Add Lead
+                    </Button>
+                    <Button
+                        variant="contained"
+                        startIcon={<DownloadIcon />}
+                        onClick={handleExportCSV}
+                        color="success"
+                    >
+                        Export CSV
+                    </Button>
+                </Box>
             </Box>
 
             <Grid container spacing={3}>

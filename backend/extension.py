@@ -64,7 +64,7 @@ from services.error import APIError
 from services.logger import app_logger
 from services.json_db import json_db
 from services.mongo_db import mongo_db
-from constants import API_TITLE, API_VERSION, API_HOST, API_PORT, ALLOWED_ORIGINS, campaigns_db, leads_db, channels_db, scheduler_db, user_settings_db
+from services.constants import API_TITLE, API_VERSION, API_HOST, API_PORT, ALLOWED_ORIGINS, campaigns_db, leads_db, channels_db, scheduler_db, user_settings_db
 
 # Security
 oauth2_scheme = HTTPBearer()
@@ -631,7 +631,7 @@ async def update_user_endpoint(company_id: int, user_id: str, request: CreateUse
     require_minimum_admin(current_user)
     
     # Check if user exists and belongs to the specified company
-    from constants import DEV_MODE, users_db
+    from services.constants import DEV_MODE, users_db
     from services.mongo_db import mongo_db
     target_user = mongo_db.get_user_by_username(user_id) if not DEV_MODE else users_db.get(user_id)
     
@@ -791,7 +791,7 @@ async def deactivate_user_endpoint(company_id: int, user_id: str, credentials: H
     require_minimum_admin(current_user)
     
     # Check if user exists and belongs to the specified company
-    from constants import DEV_MODE, users_db
+    from services.constants import DEV_MODE, users_db
     from services.mongo_db import mongo_db
     target_user = mongo_db.get_user_by_username(user_id) if not DEV_MODE else users_db.get(user_id)
     
@@ -814,7 +814,7 @@ async def reactivate_user_endpoint(company_id: int, user_id: str, credentials: H
     require_minimum_admin(current_user)
     
     # Check if user exists and belongs to the specified company
-    from constants import DEV_MODE, users_db
+    from services.constants import DEV_MODE, users_db
     from services.mongo_db import mongo_db
     target_user = mongo_db.get_user_by_username(user_id) if not DEV_MODE else users_db.get(user_id)
     
@@ -1556,7 +1556,7 @@ def check_expiring_users():
     """Background job to check for users with expiring access"""
     from services.util import RoleMiddleware
     from services.mongo_db import mongo_db
-    from constants import DEV_MODE
+    from services.constants import DEV_MODE
     
     try:
         if DEV_MODE:
@@ -1789,7 +1789,7 @@ async def delete_company_endpoint(company_id: int, credentials: HTTPAuthorizatio
 async def startup_event():
     """Initialize MongoDB roles and data on startup"""
     try:
-        from constants import DEV_MODE
+        from services.constants import DEV_MODE
         
         if not DEV_MODE:
             app_logger.info("Initializing MongoDB roles collection...")
@@ -1824,7 +1824,7 @@ async def startup_event():
 
 # Import AI Generation endpoints
 try:
-    from ai_generation import *
+    from services.ai_generation import *
     AI_GENERATION_AVAILABLE = True
 except ImportError as e:
     print(f"Warning: AI Generation module not available - {e}")

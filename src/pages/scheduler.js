@@ -35,7 +35,8 @@ import {
     Event as EventIcon,
     Alarm as AlarmIcon,
     CheckCircle as CheckCircleIcon,
-    RadioButtonUnchecked as RadioButtonUncheckedIcon
+    RadioButtonUnchecked as RadioButtonUncheckedIcon,
+    Download as DownloadIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
@@ -127,7 +128,44 @@ const SchedulerPage = () => {
             case 'pending':
                 return <RadioButtonUncheckedIcon />;
             default:
-                return <ScheduleIcon />;
+                return <AlarmIcon />;
+        }
+    };
+
+    const handleExportCSV = async () => {
+        try {
+            const response = await axios.get(
+                `${process.env.REACT_APP_API_LINKS}/api/v1/ai/export/schedules/csv`,
+                { 
+                    headers: getAuthHeaders(),
+                    responseType: 'blob'
+                }
+            );
+            
+            // Create download link
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `schedules_export_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Export Successful!',
+                text: 'Schedules exported to CSV successfully',
+                confirmButtonColor: '#3085d6'
+            });
+        } catch (error) {
+            console.error('Error exporting schedules:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Export Failed',
+                text: 'Failed to export schedules to CSV',
+                confirmButtonColor: '#d33'
+            });
         }
     };
 
@@ -236,13 +274,23 @@ const SchedulerPage = () => {
                         Manage campaign schedules and tasks
                     </Typography>
                 </Box>
-                <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={handleCreateSchedule}
-                >
-                    Add Schedule
-                </Button>
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        onClick={handleCreateSchedule}
+                    >
+                        Add Schedule
+                    </Button>
+                    <Button
+                        variant="contained"
+                        startIcon={<DownloadIcon />}
+                        onClick={handleExportCSV}
+                        color="success"
+                    >
+                        Export CSV
+                    </Button>
+                </Box>
             </Box>
 
             {error && (

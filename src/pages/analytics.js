@@ -14,17 +14,20 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    Chip
+    Chip,
+    Button
 } from '@mui/material';
 import {
     TrendingUp as TrendingUpIcon,
     TrendingDown as TrendingDownIcon,
     BarChart as BarChartIcon,
     PieChart as PieChartIcon,
-    Timeline as TimelineIcon
+    Timeline as TimelineIcon,
+    Download as DownloadIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const AnalyticsPage = () => {
     const { getAuthHeaders, user } = useAuth();
@@ -91,6 +94,43 @@ const AnalyticsPage = () => {
         }
     };
 
+    const handleExportCSV = async () => {
+        try {
+            const response = await axios.get(
+                `${process.env.REACT_APP_API_LINKS}/api/v1/ai/export/analytics/csv`,
+                { 
+                    headers: getAuthHeaders(),
+                    responseType: 'blob'
+                }
+            );
+            
+            // Create download link
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `analytics_export_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Export Successful!',
+                text: 'Analytics exported to CSV successfully',
+                confirmButtonColor: '#3085d6'
+            });
+        } catch (error) {
+            console.error('Error exporting analytics:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Export Failed',
+                text: 'Failed to export analytics to CSV',
+                confirmButtonColor: '#d33'
+            });
+        }
+    };
+
     const getPeriodColor = (period) => {
         switch (period) {
             case 'weekly':
@@ -133,13 +173,23 @@ const AnalyticsPage = () => {
 
     return (
         <Box>
-            <Box mb={3}>
-                <Typography variant="h4" component="h1">
-                    Analytics Dashboard
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                    Performance metrics and insights
-                </Typography>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+                <Box>
+                    <Typography variant="h4" component="h1">
+                        Analytics Dashboard
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        Performance metrics and insights
+                    </Typography>
+                </Box>
+                <Button
+                    variant="contained"
+                    startIcon={<DownloadIcon />}
+                    onClick={handleExportCSV}
+                    color="success"
+                >
+                    Export CSV
+                </Button>
             </Box>
 
             {error && (

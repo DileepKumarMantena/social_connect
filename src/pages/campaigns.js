@@ -128,10 +128,49 @@ const CampaignsPage = () => {
         const posterUrl = campaign.poster_url || '/posters/default_campaign.png';
         const link = document.createElement('a');
         link.href = posterUrl;
-        link.download = `${campaign.name.replace(/\s+/g, '_')}_poster.png`;
+        link.download = `campaign_${campaign.id}_poster.png`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    };
+
+    const handleExportCSV = async () => {
+        if (!checkPermission('view')) return;
+        
+        try {
+            const response = await axios.get(
+                `${process.env.REACT_APP_API_LINKS}/api/v1/ai/export/campaigns/csv`,
+                { 
+                    headers: getAuthHeaders(),
+                    responseType: 'blob'
+                }
+            );
+            
+            // Create download link
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `campaigns_export_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Export Successful!',
+                text: 'Campaigns exported to CSV successfully',
+                confirmButtonColor: '#3085d6'
+            });
+        } catch (error) {
+            console.error('Error exporting campaigns:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Export Failed',
+                text: 'Failed to export campaigns to CSV',
+                confirmButtonColor: '#d33'
+            });
+        }
     };
 
     const handleCampaignCreated = (newCampaign) => {
@@ -224,6 +263,7 @@ const CampaignsPage = () => {
                     <Button
                         startIcon={<AddIcon />}
                         onClick={handleCreateCampaign}
+                        sx={{ backgroundColor: '#136aed' }}
                     >
                         Create Campaign
                     </Button>
@@ -233,6 +273,13 @@ const CampaignsPage = () => {
                         color="secondary"
                     >
                         AI Assistant
+                    </Button>
+                    <Button
+                        startIcon={<DownloadIcon />}
+                        onClick={handleExportCSV}
+                        color="success"
+                    >
+                        Export CSV
                     </Button>
                 </ButtonGroup>
             </Box>
