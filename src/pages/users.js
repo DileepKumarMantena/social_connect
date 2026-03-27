@@ -24,7 +24,8 @@ import {
     Box,
     Grid,
     Avatar,
-    Tooltip
+    Tooltip,
+    ButtonGroup
 } from '@mui/material';
 import {
     Add as AddIcon,
@@ -32,11 +33,13 @@ import {
     Delete as DeleteIcon,
     Download as DownloadIcon,
     Upload as UploadIcon,
-    Business as BusinessIcon
+    Business as BusinessIcon,
+    SmartToy as BotIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import UserChatBot from '../components/ChatBot/UserChatBot';
 
 const UsersPage = () => {
     const { getAuthHeaders, user } = useAuth();
@@ -45,6 +48,7 @@ const UsersPage = () => {
     const [error, setError] = useState('');
     const [openDialog, setOpenDialog] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
+    const [chatBotOpen, setChatBotOpen] = useState(false);
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -109,6 +113,24 @@ const UsersPage = () => {
             companyid: user.companyid || ''
         });
         setOpenDialog(true);
+    };
+
+    const handleCreateWithChatBot = () => {
+        if (!checkPermission('create')) return;
+        setChatBotOpen(true);
+    };
+
+    const handleUserCreated = (newUser) => {
+        // Add the new user to the users list
+        setUsers(prev => [...prev, newUser]);
+        setChatBotOpen(false);
+        Swal.fire({
+            icon: 'success',
+            title: 'User Created!',
+            text: 'Your user has been created successfully with AI assistance.',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Great!'
+        });
     };
 
     const handleDeleteUser = async (user) => {
@@ -253,13 +275,21 @@ const UsersPage = () => {
             </Typography>
             
             <Box sx={{ mb: 3, display: 'flex', gap: 2 }}>
-                <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={handleCreateUser}
-                >
-                    Add User
-                </Button>
+                <ButtonGroup variant="contained" size="medium">
+                    <Button
+                        startIcon={<AddIcon />}
+                        onClick={handleCreateUser}
+                    >
+                        Create User
+                    </Button>
+                    <Button
+                        startIcon={<BotIcon />}
+                        onClick={handleCreateWithChatBot}
+                        color="secondary"
+                    >
+                        AI Assistant
+                    </Button>
+                </ButtonGroup>
                 <Button
                     variant="outlined"
                     startIcon={<DownloadIcon />}
@@ -437,6 +467,12 @@ const UsersPage = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
+            
+            <UserChatBot 
+                open={chatBotOpen} 
+                onClose={() => setChatBotOpen(false)}
+                onUserCreated={handleUserCreated}
+            />
         </Container>
     );
 };

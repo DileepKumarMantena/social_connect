@@ -717,6 +717,53 @@ async def get_users_endpoint(company_id: int, role_filter: Optional[str] = None,
         "total": len(safe_users)
     }
 
+@app.post("/api/v1/admin/users/extend-access")
+async def extend_user_access_endpoint(request: dict, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Extend user access (super_admin only)"""
+    current_user = get_user_from_token(credentials.credentials)
+    require_super_admin(current_user)
+    
+    app_logger.info(f"Extending user access with data: {request}")
+    
+    # Handle user_id that might be string or int
+    user_id = request.get("user_id")
+    if isinstance(user_id, str):
+        # Try to convert to int, if fails try to find user by username
+        try:
+            user_id = int(user_id)
+        except ValueError:
+            # Find user by username
+            from services.mongo_db import mongo_db
+            users = mongo_db.get_users()
+            found_user = None
+            for user in users:
+                if user.get("username") == user_id:
+                    found_user = user
+                    break
+            if found_user:
+                user_id = found_user.get("id")
+            else:
+                raise HTTPException(status_code=404, detail=f"User '{user_id}' not found")
+    
+    # Create proper request object - handle both int and string user_id
+    try:
+        extend_request = ExtendAccessRequest(user_id=user_id, hours=request.get("hours"))
+        result = extend_user_access(extend_request, credentials.credentials)
+    except Exception as e:
+        # Fallback to dict approach for string user_id
+        app_logger.error(f"Error with ExtendAccessRequest: {e}, using dict approach")
+        extend_request = {"user_id": user_id, "hours": request.get("hours")}
+        result = extend_user_access(extend_request, credentials.credentials)
+    
+    if result['success']:
+        return {
+            "message": result['message'],
+            "user": result.get('user')
+        }
+    else:
+        app_logger.error(f"Failed to extend user access: {result['message']}")
+        raise HTTPException(status_code=500, detail=result['message'])
+
 @app.post("/api/v1/admin/users/{company_id}")
 async def create_user_endpoint(company_id: int, request: CreateUserRequest, credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Create a new user for a specific company (super_admin and admin only)"""
@@ -1018,10 +1065,31 @@ async def get_companies_endpoint(credentials: HTTPAuthorizationCredentials = Dep
     }
 
 @app.put("/api/v1/users/{user_id}")
-async def update_user_endpoint(user_id: int, request: dict, credentials: HTTPAuthorizationCredentials = Depends(security)):
+async def update_user_endpoint(user_id, request: dict, credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Update an existing user (super_admin only)"""
     current_user = get_user_from_token(credentials.credentials)
     require_super_admin(current_user)
+    
+    app_logger.info(f"User update request for user_id: {user_id} (type: {type(user_id)})")
+    
+    # Handle both string and int user_id
+    if isinstance(user_id, str):
+        # Try to convert to int, if fails try to find user by username
+        try:
+            user_id = int(user_id)
+        except ValueError:
+            # Find user by username
+            from services.mongo_db import mongo_db
+            users = mongo_db.get_users()
+            found_user = None
+            for user in users:
+                if user.get("username") == user_id:
+                    found_user = user
+                    break
+            if found_user:
+                user_id = found_user.get("id")
+            else:
+                raise HTTPException(status_code=404, detail=f"User '{user_id}' not found")
     
     # Update user in MongoDB
     from services.mongo_db import mongo_db
@@ -1754,7 +1822,15 @@ async def startup_event():
     except Exception as e:
         app_logger.error(f"Error during startup initialization: {e}")
 
-# Social Media Management Endpoints
+# Import AI Generation endpoints
+try:
+    from ai_generation import *
+    AI_GENERATION_AVAILABLE = True
+except ImportError as e:
+    print(f"Warning: AI Generation module not available - {e}")
+    AI_GENERATION_AVAILABLE = False
+
+# Social Media Integration Endpoints
 
 @app.get("/api/v1/social/status")
 async def get_social_status(credentials: HTTPAuthorizationCredentials = Depends(security)):

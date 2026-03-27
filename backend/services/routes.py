@@ -866,26 +866,40 @@ def get_users(token: str, role_filter: Optional[str] = None) -> dict:
         "users": safe_users
     }
 
-def extend_user_access(request: ExtendAccessRequest, token: str) -> dict:
+def extend_user_access(request, token: str) -> dict:
     """Extend user access (super_admin only)"""
     current_user = RoleMiddleware.get_current_user(token)
     require_super_admin(current_user)
     
+    # Handle both dict and ExtendAccessRequest objects
+    if isinstance(request, dict):
+        user_id = request.get("user_id")
+        hours = request.get("hours")
+    else:
+        user_id = request.user_id
+        hours = request.hours
+    
+    app_logger.info(f"Extending access for user_id: {user_id} (type: {type(user_id)}) by {hours} hours")
+    
     # Mock implementation
     user_found = False
+    found_user = None
+    
     for user in users_db.values():
-        if user.get("id") == request.user_id or user["username"] == str(request.user_id):
+        if user.get("id") == user_id or user["username"] == str(user_id):
             user_found = True
+            found_user = user
             # In mock, we'll just set a future expiration
             from datetime import datetime, timedelta
-            user["access_expires_at"] = (datetime.utcnow() + timedelta(hours=request.hours)).isoformat()
-            app_logger.info(f"Access extended for user {user['username']} by {request.hours} hours")
+            user["access_expires_at"] = (datetime.utcnow() + timedelta(hours=hours)).isoformat()
+            app_logger.info(f"Access extended for user {user['username']} by {hours} hours")
             break
     
     if not user_found:
+        app_logger.error(f"User {user_id} not found in users_db")
         raise APIError.not_found("User not found")
     
-    return {"message": "User access extended successfully"}
+    return {"success": True, "message": "User access extended successfully", "user": found_user}
 
 def deactivate_user(user_id, token: str) -> dict:
     """Deactivate a user (super_admin and admin only)"""

@@ -25,18 +25,21 @@ import {
     Avatar,
     Tooltip,
     Card,
-    CardMedia
+    CardMedia,
+    ButtonGroup
 } from '@mui/material';
 import {
     Add as AddIcon,
     Edit as EditIcon,
     Delete as DeleteIcon,
     Upload as UploadIcon,
-    Business as BusinessIcon
+    Business as BusinessIcon,
+    SmartToy as BotIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import CompanyChatBot from '../components/ChatBot/CompanyChatBot';
 
 const CompaniesPage = () => {
     const { getAuthHeaders, user } = useAuth();
@@ -45,6 +48,7 @@ const CompaniesPage = () => {
     const [error, setError] = useState('');
     const [openDialog, setOpenDialog] = useState(false);
     const [editingCompany, setEditingCompany] = useState(null);
+    const [chatBotOpen, setChatBotOpen] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -103,6 +107,24 @@ const CompaniesPage = () => {
             logo_url: company.logo_url || ''
         });
         setOpenDialog(true);
+    };
+
+    const handleCreateWithChatBot = () => {
+        if (!checkPermission('create')) return;
+        setChatBotOpen(true);
+    };
+
+    const handleCompanyCreated = (newCompany) => {
+        // Add the new company to the companies list
+        setCompanies(prev => [...prev, newCompany]);
+        setChatBotOpen(false);
+        Swal.fire({
+            icon: 'success',
+            title: 'Company Created!',
+            text: 'Your company has been created successfully with AI assistance.',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Great!'
+        });
     };
 
     const handleDeleteCompany = async (company) => {
@@ -247,14 +269,21 @@ const CompaniesPage = () => {
             </Typography>
             
             <Box sx={{ mb: 3, display: 'flex', gap: 2 }}>
-                <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={handleCreateCompany}
-                    sx={{ mr: 2 }}
-                >
-                    Add Company
-                </Button>
+                <ButtonGroup variant="contained" size="medium">
+                    <Button
+                        startIcon={<AddIcon />}
+                        onClick={handleCreateCompany}
+                    >
+                        Create Company
+                    </Button>
+                    <Button
+                        startIcon={<BotIcon />}
+                        onClick={handleCreateWithChatBot}
+                        color="secondary"
+                    >
+                        AI Assistant
+                    </Button>
+                </ButtonGroup>
             </Box>
 
             <Paper sx={{ p: 2 }}>
@@ -414,6 +443,12 @@ const CompaniesPage = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
+            
+            <CompanyChatBot 
+                open={chatBotOpen} 
+                onClose={() => setChatBotOpen(false)}
+                onCompanyCreated={handleCompanyCreated}
+            />
         </Container>
     );
 };

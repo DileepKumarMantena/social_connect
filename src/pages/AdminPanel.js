@@ -30,7 +30,8 @@ import {
   Checkbox,
   ListItemText,
   FormControlLabel,
-  Switch
+  Switch,
+  ButtonGroup
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -41,12 +42,15 @@ import {
   Edit as EditIcon,
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
-  Restore as RestoreIcon
+  Restore as RestoreIcon,
+  SmartToy as BotIcon
 } from '@mui/icons-material';
 import refreshService from '../services/refreshService';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import UserChatBot from '../components/ChatBot/UserChatBot';
+import CompanyChatBot from '../components/ChatBot/CompanyChatBot';
 
 const AdminPanel = () => {
   const { getAuthHeaders, hasRole, user } = useAuth();
@@ -60,12 +64,14 @@ const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [showInactiveUsers, setShowInactiveUsers] = useState(false);
   const [selectedCompanyId, setSelectedCompanyId] = useState(user?.companyid || 1); // Default to user's company
+  const [userChatBotOpen, setUserChatBotOpen] = useState(false);
+  const [companyChatBotOpen, setCompanyChatBotOpen] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     password: '',
     name: '',
-    role: '', // Will be set when roles are loaded
+    role: 'user',
     companyid: user?.companyid || 1,
     access_hours: 24
   });
@@ -423,11 +429,26 @@ const AdminPanel = () => {
     });
 
     if (result.isConfirmed) {
-      // Remove company from state
-      setCompanies(companies.filter(c => c.id !== companyId));
-      // Remove users from this company
-      setUsers(users.filter(user => user.companyid !== companyId));
-      setSnackbar({ open: true, message: 'Company deleted successfully', severity: 'success' });
+      try {
+        // Call backend API to delete company - use the correct endpoint
+        await axios.delete(
+          `${process.env.REACT_APP_API_LINKS}/api/v1/admin/companies/${companyId}`,
+          { headers: getAuthHeaders() }
+        );
+        
+        // Remove company from state
+        setCompanies(companies.filter(c => c.id !== companyId));
+        // Remove users from this company
+        setUsers(users.filter(user => user.companyid !== companyId));
+        setSnackbar({ open: true, message: 'Company deleted successfully', severity: 'success' });
+        
+        // Refresh data from backend to ensure sync
+        fetchCompanies();
+        fetchUsers();
+      } catch (error) {
+        console.error('Error deleting company:', error);
+        setSnackbar({ open: true, message: 'Failed to delete company', severity: 'error' });
+      }
     }
   };
 
@@ -544,6 +565,69 @@ const AdminPanel = () => {
     );
   }
 
+  // Handle create user with AI
+  const handleCreateUserWithAI = () => {
+    setUserChatBotOpen(true);
+  };
+
+  // Handle create company with AI  
+  const handleCreateCompanyWithAI = () => {
+    setCompanyChatBotOpen(true);
+  };
+
+  // Handle user created by AI
+  const handleUserCreated = (newUser) => {
+    console.log('User created by AI:', newUser);
+    console.log('Current selectedCompanyId:', selectedCompanyId);
+    console.log('New user company ID:', newUser.companyid);
+    
+    // Only add user to state if they belong to the currently selected company
+    if (newUser.companyid === selectedCompanyId) {
+      setUsers(prev => {
+        console.log('Previous users:', prev);
+        const updated = [...prev, newUser];
+        console.log('Updated users:', updated);
+        return updated;
+      });
+    } else {
+      console.log('User belongs to different company, not adding to current list');
+      // Still refresh to make sure we have the latest data for the selected company
+      fetchUsers();
+    }
+    
+    setUserChatBotOpen(false);
+    
+    Swal.fire({
+      icon: 'success',
+      title: 'User Created!',
+      text: `User ${newUser.name} has been created successfully for Company ${newUser.companyid}.`,
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'Great!'
+    });
+  };
+
+  // Handle company created by AI
+  const handleCompanyCreated = (newCompany) => {
+    console.log('Company created by AI:', newCompany);
+    setCompanies(prev => {
+      console.log('Previous companies:', prev);
+      const updated = [...prev, newCompany];
+      console.log('Updated companies:', updated);
+      return updated;
+    });
+    setCompanyChatBotOpen(false);
+    // Refresh companies from backend to ensure we have the latest data
+    console.log('Calling fetchCompanies to refresh...');
+    fetchCompanies();
+    Swal.fire({
+      icon: 'success',
+      title: 'Company Created!',
+      text: 'Company has been created successfully with AI assistance.',
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'Great!'
+    });
+  };
+
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#136aed', mb: 3 }}>
@@ -574,15 +658,23 @@ const AdminPanel = () => {
                   Clear All Data
                 </Button>
               )}
-              {(hasRole('super_admin') || hasRole('admin')) && (
-                <Button
-                  variant="contained"
-                  startIcon={<AddIcon />}
-                  onClick={() => setOpenDialog(true)}
-                  sx={{ backgroundColor: '#136aed' }}
-                >
-                  Create User
-                </Button>
+              {hasRole('super_admin') && (
+                <ButtonGroup variant="contained" size="medium">
+                  <Button
+                    startIcon={<AddIcon />}
+                    onClick={() => setOpenDialog(true)}
+                    sx={{ backgroundColor: '#136aed' }}
+                  >
+                    Create User
+                  </Button>
+                  <Button
+                    startIcon={<BotIcon />}
+                    onClick={handleCreateUserWithAI}
+                    color="secondary"
+                  >
+                    AI Assistant
+                  </Button>
+                </ButtonGroup>
               )}
               <FormControlLabel
                 control={
@@ -729,14 +821,23 @@ const AdminPanel = () => {
               Company Management
             </Typography>
             {hasRole('super_admin') && (
-              <Button
-                variant="contained"
-                startIcon={<BusinessIcon />}
-                onClick={handleAddCompany}
-                sx={{ backgroundColor: '#136aed' }}
-              >
-                Add Company
-              </Button>
+              <ButtonGroup variant="contained" size="medium">
+                <Button
+                  variant="contained"
+                  startIcon={<BusinessIcon />}
+                  onClick={handleAddCompany}
+                  sx={{ backgroundColor: '#136aed' }}
+                >
+                  Add Company
+                </Button>
+                <Button
+                  startIcon={<BotIcon />}
+                  onClick={handleCreateCompanyWithAI}
+                  color="secondary"
+                >
+                  AI Assistant
+                </Button>
+              </ButtonGroup>
             )}
           </Box>
 
@@ -909,6 +1010,18 @@ const AdminPanel = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
+      
+      <UserChatBot 
+        open={userChatBotOpen} 
+        onClose={() => setUserChatBotOpen(false)}
+        onUserCreated={handleUserCreated}
+      />
+      
+      <CompanyChatBot 
+        open={companyChatBotOpen} 
+        onClose={() => setCompanyChatBotOpen(false)}
+        onCompanyCreated={handleCompanyCreated}
+      />
     </Box>
   );
 };
