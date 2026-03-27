@@ -880,6 +880,31 @@ const AdminPanel = () => {
                   </Button>
                 </ButtonGroup>
               )}
+              {hasRole('admin') && (
+                <ButtonGroup variant="contained" size="medium">
+                  <Button
+                    startIcon={<AddIcon />}
+                    onClick={() => setOpenDialog(true)}
+                    sx={{ backgroundColor: '#136aed' }}
+                  >
+                    Create User
+                  </Button>
+                  <Button
+                    startIcon={<BotIcon />}
+                    onClick={handleCreateUserWithAI}
+                    color="secondary"
+                  >
+                    AI Assistant
+                  </Button>
+                  <Button
+                    startIcon={<DownloadIcon />}
+                    onClick={handleExportUsers}
+                    color="success"
+                  >
+                    Export CSV
+                  </Button>
+                </ButtonGroup>
+              )}
               <FormControlLabel
                 control={
                   <Switch

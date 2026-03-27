@@ -48,24 +48,22 @@ const CampaignChatBot = ({ open, onClose, onCampaignCreated }) => {
     }, [messages]);
 
     useEffect(() => {
-        if (open) {
-            initializeChat();
+        if (open && messages.length === 0) {
+            const welcomeMessage = {
+                id: Date.now(),
+                type: 'bot',
+                content: "� Welcome to Campaign Creation Assistant! I'll help you create a professional marketing campaign step by step.\n\n**Here's our creation process:**\n1️⃣ **Campaign Name** - Give your campaign a memorable name\n2️⃣ **Campaign Type** - Choose your campaign goal\n3️⃣ **Target Audience** - Define who you're reaching\n4️⃣ **Duration** - Set campaign timeline\n5️⃣ **Budget Range** - Specify your budget\n6️⃣ **Platforms** - Select social media channels\n7️⃣ **Visual Theme** - Choose poster style\n8️⃣ **Call to Action** - Define user action\n9️⃣ **Review & Create** - Finalize your campaign\n\nLet's start! What would you like to name your campaign?",
+                timestamp: new Date().toISOString()
+            };
+            setMessages([welcomeMessage]);
+            setCurrentStep('campaign_name');
+            setCampaignData({});
+            setShowSummary(false);
+            setPosterPreview(null);
         }
     }, [open]);
 
     const initializeChat = () => {
-        const welcomeMessage = {
-            id: Date.now(),
-            type: 'bot',
-            content: "👋 Hi! I'm your AI campaign assistant. I'll help you create an amazing marketing campaign! Let's start with some basic details.",
-            timestamp: new Date().toISOString()
-        };
-        setMessages([welcomeMessage]);
-        setCurrentStep('campaign_name');
-        setCampaignData({});
-        setShowSummary(false);
-        setPosterPreview(null);
-        
         setTimeout(() => {
             askQuestion("What would you like to name your campaign?");
         }, 1000);
