@@ -10,7 +10,7 @@ from typing import Dict, Any, List, Optional
 from datetime import datetime, timedelta
 from services.logger import app_logger
 from services.mongo_db import mongo_db
-from constants import DEV_MODE
+from services.constants import DEV_MODE
 
 class UserSocialCredentials:
     """Manages user-specific social media credentials"""

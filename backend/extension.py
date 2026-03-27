@@ -43,13 +43,13 @@ except ImportError as e:
     SocialPlatform = type('SocialPlatform', (), {'TWITTER': 'twitter', 'LINKEDIN': 'linkedin'})()
     SOCIAL_INTEGRATION_ENABLED = False
     connection_manager = type('ConnectionManager', (), {
-        'initialize_connections': lambda: None, 
-        'shutdown_connections': lambda: None,
-        'get_connection_summary': lambda: {'platforms': {}, 'total_connected': 0}
+        'initialize_connections': lambda self: None, 
+        'shutdown_connections': lambda self: None,
+        'get_connection_summary': lambda self: {'platforms': {}, 'total_connected': 0}
     })()
-    social_data_service = type('SocialDataService', (), {'get_platform_data': lambda x: None})()
-    social_oauth_manager = type('SocialOAuthManager', (), {'get_oauth_url': lambda x: None})()
-    twitter_oauth = type('TwitterOAuth', (), {'get_auth_url': lambda: None})()
+    social_data_service = type('SocialDataService', (), {'get_platform_data': lambda self, x: None})()
+    social_oauth_manager = type('SocialOAuthManager', (), {'get_oauth_url': lambda self, x: None})()
+    twitter_oauth = type('TwitterOAuth', (), {'get_auth_url': lambda self: None})()
 from services.util import (
     verify_password, hash_password, generate_otp, store_otp, 
     verify_stored_otp, find_user_by_email, cleanup_otp, send_otp_email,
@@ -1789,6 +1789,11 @@ async def delete_company_endpoint(company_id: int, credentials: HTTPAuthorizatio
 async def startup_event():
     """Initialize MongoDB roles and data on startup"""
     try:
+        # Add current directory to Python path for imports
+        import sys
+        import os
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        
         from services.constants import DEV_MODE
         
         if not DEV_MODE:

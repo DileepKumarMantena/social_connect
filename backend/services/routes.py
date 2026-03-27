@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import Optional, Union
 from datetime import datetime, timedelta
 import hashlib
-from constants import (
+from services.constants import (
     DEV_MODE, users_db, channels_db, campaigns_db, leads_db,
     analytics_db, scheduler_db, user_settings_db, otp_storage
 )
@@ -85,7 +85,7 @@ def create_user_service(username, email, password, name, role, companyid, create
                 user_type = "tenant_user"
         
         # Check if we should use MongoDB or mock data
-        from constants import DEV_MODE
+        from services.constants import DEV_MODE
         from services.mongo_db import mongo_db
         
         new_user = {
@@ -129,7 +129,7 @@ def get_user_profile_service(token: str) -> dict:
         raise APIError.unauthorized("Invalid token")
     
     # Check if we should use MongoDB or mock data
-    from constants import DEV_MODE
+    from services.constants import DEV_MODE
     from services.mongo_db import mongo_db
     
     if DEV_MODE:
@@ -162,68 +162,75 @@ def get_user_profile_service(token: str) -> dict:
 
 def update_user_profile_service(request: dict, token: str) -> dict:
     """Update current user profile"""
-    current_user = RoleMiddleware.get_current_user(token)
-    if not current_user:
-        raise APIError.unauthorized("Authentication required")
-    
-    # Check if user is trying to change their role or company (not allowed)
-    if "role" in request and request["role"] != current_user["role"]:
-        raise APIError.forbidden("You cannot change your own role")
-    if "companyid" in request and request["companyid"] != current_user["companyid"]:
-        raise APIError.forbidden("You cannot change your own company")
-    
-    # Prepare update data (only allow certain fields)
-    allowed_fields = ["name", "email"]
-    update_data = {}
-    for field in allowed_fields:
-        if field in request:
-            update_data[field] = request[field]
-    
-    if not update_data:
-        raise APIError.bad_request("No valid fields to update")
-    
-    # Check if we should use MongoDB or mock data
-    from constants import DEV_MODE
-    from services.mongo_db import mongo_db
-    
-    if DEV_MODE:
-        # Mock implementation
-        user = users_db.get(current_user["username"])
-        if not user:
-            raise APIError.not_found("User not found")
+    try:
+        app_logger.info(f"Profile update request data: {request}")
+        current_user = RoleMiddleware.get_current_user(token)
+        if not current_user:
+            raise APIError.unauthorized("Authentication required")
         
-        # Update user in mock database
-        for field, value in update_data.items():
-            user[field] = value
-        users_db[current_user["username"]] = user
-        updated_user = user
-    else:
-        # MongoDB implementation
-        success = mongo_db.update_user(current_user["username"], update_data)
-        if not success:
-            raise APIError.internal_server_error("Failed to update profile")
+        app_logger.info(f"Current user: {current_user}")
         
-        updated_user = mongo_db.get_user_by_username(current_user["username"])
-    
-    # Remove sensitive data
-    profile_data = {
-        "username": updated_user["username"],
-        "email": updated_user["email"],
-        "name": updated_user["name"],
-        "role": updated_user["role"],
-        "companyid": updated_user["companyid"],
-        "activitystatus": updated_user["activitystatus"],
-        "access_expires_at": updated_user["access_expires_at"],
-        "created_by": updated_user["created_by"]
-    }
-    
-    return {
-        "message": "Profile updated successfully",
-        "success": True,
-        "user": profile_data
-    }
-    app_logger.info(f"Profile requested for user: {current_user['username']}")
-    return profile_data
+        # Check if user is trying to change their role or company (not allowed)
+        if "role" in request and request["role"] != current_user["role"]:
+            raise APIError.forbidden("You cannot change your own role")
+        if "companyid" in request and request["companyid"] != current_user["companyid"]:
+            raise APIError.forbidden("You cannot change your own company")
+        
+        # Prepare update data (only allow certain fields)
+        allowed_fields = ["name", "email"]
+        update_data = {}
+        for field in allowed_fields:
+            if field in request:
+                update_data[field] = request[field]
+        
+        app_logger.info(f"Update data: {update_data}")
+        
+        if not update_data:
+            raise APIError.bad_request("No valid fields to update")
+        
+        # Simplified implementation - use DEV_MODE from top-level import
+        if DEV_MODE:
+            # Mock implementation
+            user = users_db.get(current_user["username"])
+            if not user:
+                raise APIError.not_found("User not found")
+            
+            # Update user in mock database
+            for field, value in update_data.items():
+                user[field] = value
+            users_db[current_user["username"]] = user
+            updated_user = user
+        else:
+            # MongoDB implementation
+            app_logger.info("Updating user in MongoDB")
+            success = mongo_db.update_user(current_user["username"], update_data)
+            app_logger.info(f"MongoDB update success: {success}")
+            if not success:
+                raise APIError.internal_server_error("Failed to update profile")
+            
+            updated_user = mongo_db.get_user_by_username(current_user["username"])
+            app_logger.info(f"Updated user from MongoDB: {updated_user}")
+        
+        # Remove sensitive data
+        profile_data = {
+            "username": updated_user["username"],
+            "email": updated_user["email"],
+            "name": updated_user["name"],
+            "role": updated_user["role"],
+            "companyid": updated_user["companyid"],
+            "activitystatus": updated_user["activitystatus"],
+            "access_expires_at": updated_user["access_expires_at"],
+            "created_by": updated_user["created_by"]
+        }
+        
+        return {
+            "message": "Profile updated successfully",
+            "success": True,
+            "user": profile_data
+        }
+    except Exception as e:
+        app_logger.error(f"Error in update_user_profile_service: {e}")
+        raise e
 
 def health_check() -> dict:
     """System health check"""
@@ -410,7 +417,7 @@ def send_forgot_password_otp(request: APIRequest) -> OTPResponse:
         raise APIError.bad_request("Email is required")
     
     # Check if we should use MongoDB or mock data
-    from constants import DEV_MODE
+    from services.constants import DEV_MODE
     from services.mongo_db import mongo_db
     
     if DEV_MODE:
@@ -465,7 +472,7 @@ def reset_password(request: APIRequest) -> PasswordResetResponse:
         raise APIError.bad_request("Password must be at least 8 characters long and contain uppercase, lowercase, and numbers")
     
     # Check if we should use MongoDB or mock data
-    from constants import DEV_MODE
+    from services.constants import DEV_MODE
     from services.mongo_db import mongo_db
     
     if DEV_MODE:
@@ -821,7 +828,7 @@ def get_users(token: str, role_filter: Optional[str] = None) -> dict:
     require_minimum_admin(current_user)
     
     # Check if we should use MongoDB or mock data
-    from constants import DEV_MODE
+    from services.constants import DEV_MODE
     from services.mongo_db import mongo_db
     
     if DEV_MODE:
@@ -1034,7 +1041,7 @@ def delete_user(user_id: str, token: str) -> dict:
     require_super_admin(current_user)
     
     # Check if we should use MongoDB or mock data
-    from constants import DEV_MODE
+    from services.constants import DEV_MODE
     from services.mongo_db import mongo_db
     
     if DEV_MODE:
@@ -1063,7 +1070,7 @@ def deactivate_user(user_id: str, token: str) -> dict:
     require_minimum_admin(current_user)
     
     # Check if we should use MongoDB or mock data
-    from constants import DEV_MODE
+    from services.constants import DEV_MODE
     from services.mongo_db import mongo_db
     
     if DEV_MODE:

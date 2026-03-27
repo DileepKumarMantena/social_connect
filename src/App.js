@@ -18,6 +18,7 @@ import SettingsPage from './pages/settings';
 import TokenVerifier from './components/TokenVerifier';
 import UsersPage from './pages/users';
 import CompaniesPage from './pages/companies';
+import ProfilePage from './pages/profile';
 import AppLayout from './components/AppLayout';
 
 
@@ -55,6 +56,9 @@ function ProtectedRoutes() {
       <Route path='/forgot' element={<ForgotPasswordPage />} />
       <Route path='/admin' element={
         <AppLayout onLogout={handleLogout}> <AdminPanel /></AppLayout>
+      } />
+      <Route path='/profile' element={
+        <AppLayout onLogout={handleLogout}> <ProfilePage /></AppLayout>
       } />
       <Route path='/roles' element={
         <AppLayout onLogout={handleLogout}> <RoleManagementPage /></AppLayout>

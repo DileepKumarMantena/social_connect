@@ -4,6 +4,7 @@ import '@fontsource/poppins';
 import '@fontsource/nunito';
 import '@fontsource/cookie';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2'
 import { Link } from "react-router-dom";
 
@@ -11,6 +12,7 @@ const LoginPage = () => {
     const [payload, setPayload] = useState({ username: '', password: '', otp: '' })
     const [showOTP, setShowOTP] = useState(false)
     const { login } = useAuth();
+    const navigate = useNavigate();
 
     const handler = (e) => {
         const { name, value } = e.target;
@@ -57,9 +59,9 @@ const LoginPage = () => {
                         content: 'swal-text',
                     }
                 });
-                // Redirect to dashboard instead of reload
+                // Redirect to dashboard using React Router
                 setTimeout(() => {
-                    window.location.href = '/dashboard';
+                    navigate('/dashboard');
                 }, 1000);
             }
         } else {

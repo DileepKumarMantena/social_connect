@@ -10,7 +10,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
-from constants import (
+from services.constants import (
     users_db, channels_db, campaigns_db, leads_db, 
     analytics_db, scheduler_db, user_settings_db,
     MONGODB_URL, MONGODB_DB_NAME

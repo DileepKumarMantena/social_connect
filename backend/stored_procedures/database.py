@@ -17,7 +17,7 @@ except ImportError:
 from contextlib import contextmanager
 import hashlib
 from services.logger import app_logger
-from constants import DB_CONFIG, SQLITE_DB_PATH
+from services.constants import DB_CONFIG, SQLITE_DB_PATH
 
 class DatabaseManager:
     def __init__(self):

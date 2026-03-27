@@ -1,12 +1,14 @@
 import React from 'react';
-import { Box, AppBar, Toolbar, Typography, Button, IconButton, Menu, MenuItem } from '@mui/material';
+import { Box, AppBar, Toolbar, Typography, Button, IconButton, Menu, MenuItem, Chip, Avatar } from '@mui/material';
 import { AccountCircle, Menu as MenuIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 function AppLayout({ children, onLogout }) {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMenuAnchor, setMobileMenuAnchor] = React.useState(null);
+  const { user } = useAuth();
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -27,6 +29,11 @@ function AppLayout({ children, onLogout }) {
   const handleNavigation = (path) => {
     navigate(path);
     handleMobileMenuClose();
+  };
+
+  const handleProfile = () => {
+    navigate('/profile');
+    handleClose();
   };
 
   return (
@@ -54,9 +61,23 @@ function AppLayout({ children, onLogout }) {
               aria-haspopup="true"
               onClick={handleMenu}
               color="inherit"
+              sx={{ mr: 2 }}
             >
               <AccountCircle />
             </IconButton>
+            {user && (
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                <Typography variant="body1" sx={{ fontWeight: 'medium', whiteSpace: 'nowrap' }}>
+                  {user.name}
+                </Typography>
+                <Chip
+                  label={user.role?.replace('_', ' ').toUpperCase()}
+                  size="small"
+                  color="secondary"
+                  sx={{ mt: 0.5 }}
+                />
+              </Box>
+            )}
             <Menu
               id="menu-appbar"
               anchorEl={anchorEl}
@@ -72,7 +93,7 @@ function AppLayout({ children, onLogout }) {
               open={Boolean(anchorEl)}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleClose}>Profile</MenuItem>
+              <MenuItem onClick={handleProfile}>Profile</MenuItem>
               <MenuItem onClick={onLogout}>Logout</MenuItem>
             </Menu>
           </div>
@@ -85,6 +106,7 @@ function AppLayout({ children, onLogout }) {
         onClose={handleMobileMenuClose}
       >
         <MenuItem onClick={() => handleNavigation('/')}>Dashboard</MenuItem>
+        <MenuItem onClick={() => handleNavigation('/profile')}>Profile</MenuItem>
         <MenuItem onClick={() => handleNavigation('/campaigns')}>Campaigns</MenuItem>
         <MenuItem onClick={() => handleNavigation('/leads')}>Leads</MenuItem>
         <MenuItem onClick={() => handleNavigation('/channels')}>Channels</MenuItem>

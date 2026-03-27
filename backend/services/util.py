@@ -1,11 +1,11 @@
 import secrets
 import hashlib
 from datetime import datetime, timedelta
-from constants import OTP_EXPIRY_MINUTES, OTP_LENGTH, users_db, created_users, RESTRICTED_OTP_PATTERNS
+from services.constants import OTP_EXPIRY_MINUTES, OTP_LENGTH, users_db, created_users, RESTRICTED_OTP_PATTERNS
 import os
 from dotenv import load_dotenv
 from jose import JWTError, jwt
-from constants import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, BREVO_API_KEY, BREVO_SENDER_EMAIL, BREVO_SENDER_NAME, EMAIL_TEMPLATES
+from services.constants import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, BREVO_API_KEY, BREVO_SENDER_EMAIL, BREVO_SENDER_NAME, EMAIL_TEMPLATES
 
 # Load environment variables from .env file
 import os
@@ -195,7 +195,7 @@ def send_otp_email(recipient_email: str, otp: str, purpose: str = "login") -> bo
     user_username = "Unknown"
     user_role = "Unknown"
     
-    from constants import DEV_MODE
+    from services.constants import DEV_MODE
     from services.mongo_db import mongo_db
     
     if DEV_MODE:
@@ -442,7 +442,7 @@ def get_user_from_token(token: str) -> dict:
         return None
     
     # Check if we should use MongoDB or mock data
-    from constants import DEV_MODE
+    from services.constants import DEV_MODE
     from services.mongo_db import mongo_db
     
     if DEV_MODE:
