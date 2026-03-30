@@ -1,0 +1,1594 @@
+2026-03-28 00:01:48,413 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 00:01:48,415 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 00:01:48,415 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 00:01:48,418 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 00:01:48,418 - social_connect - INFO - Initializing social media connections...
+2026-03-28 00:01:48,418 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 00:01:48,419 - social_connect - ERROR - Error during startup initialization: <lambda>() takes 0 positional arguments but 1 was given
+2026-03-28 00:02:28,983 - social_connect - INFO - User profile requested
+2026-03-28 00:02:28,987 - social_connect - INFO - User profile result: Profile retrieved successfully
+2026-03-28 00:02:28,988 - social_connect - INFO - User profile requested
+2026-03-28 00:02:28,989 - social_connect - INFO - User profile result: Profile retrieved successfully
+2026-03-28 00:02:28,990 - social_connect - INFO - Leads data requested
+2026-03-28 00:02:28,990 - social_connect - INFO - Attempting to get leads from social media service
+2026-03-28 00:02:28,990 - social_connect - INFO - Returned 2 leads
+2026-03-28 00:02:28,991 - social_connect - INFO - Campaigns data requested
+2026-03-28 00:02:28,991 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 00:02:28,991 - social_connect - INFO - Returned 2 campaigns
+2026-03-28 00:02:28,992 - social_connect - INFO - Leads data requested
+2026-03-28 00:02:28,993 - social_connect - INFO - Attempting to get leads from social media service
+2026-03-28 00:02:28,993 - social_connect - INFO - Returned 2 leads
+2026-03-28 00:02:28,993 - social_connect - INFO - Campaigns data requested
+2026-03-28 00:02:28,994 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 00:02:28,994 - social_connect - INFO - Returned 2 campaigns
+2026-03-28 00:02:30,009 - social_connect - INFO - Leads data requested
+2026-03-28 00:02:30,010 - social_connect - INFO - Attempting to get leads from social media service
+2026-03-28 00:02:30,010 - social_connect - INFO - Returned 2 leads
+2026-03-28 00:02:30,011 - social_connect - INFO - Campaigns data requested
+2026-03-28 00:02:30,011 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 00:02:30,011 - social_connect - INFO - Returned 2 campaigns
+2026-03-28 00:02:30,013 - social_connect - INFO - User profile requested
+2026-03-28 00:02:30,014 - social_connect - INFO - User profile result: Profile retrieved successfully
+2026-03-28 00:02:30,014 - social_connect - INFO - Leads data requested
+2026-03-28 00:02:30,015 - social_connect - INFO - Attempting to get leads from social media service
+2026-03-28 00:02:30,015 - social_connect - INFO - Returned 2 leads
+2026-03-28 00:02:30,016 - social_connect - INFO - Campaigns data requested
+2026-03-28 00:02:30,017 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 00:02:30,017 - social_connect - INFO - Returned 2 campaigns
+2026-03-28 00:02:30,017 - social_connect - INFO - User profile requested
+2026-03-28 00:02:30,019 - social_connect - INFO - User profile result: Profile retrieved successfully
+2026-03-28 00:02:31,950 - social_connect - INFO - Campaigns data requested
+2026-03-28 00:02:31,951 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 00:02:31,951 - social_connect - INFO - Returned 2 campaigns
+2026-03-28 00:02:31,952 - social_connect - INFO - Campaigns data requested
+2026-03-28 00:02:31,953 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 00:02:31,953 - social_connect - INFO - Returned 2 campaigns
+2026-03-28 00:02:33,711 - social_connect - INFO - Campaigns data requested
+2026-03-28 00:02:33,711 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 00:02:33,711 - social_connect - INFO - Returned 2 campaigns
+2026-03-28 00:02:33,712 - social_connect - INFO - User profile requested
+2026-03-28 00:02:33,713 - social_connect - INFO - User profile result: Profile retrieved successfully
+2026-03-28 00:02:33,713 - social_connect - INFO - Campaigns data requested
+2026-03-28 00:02:33,714 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 00:02:33,714 - social_connect - INFO - Returned 2 campaigns
+2026-03-28 00:02:33,714 - social_connect - INFO - User profile requested
+2026-03-28 00:02:33,715 - social_connect - INFO - User profile result: Profile retrieved successfully
+2026-03-28 00:02:46,567 - social_connect - INFO - Users list requested for company 1 with filter: None, include_inactive: False
+2026-03-28 00:02:46,568 - social_connect - INFO - Total users in database: 29
+2026-03-28 00:02:46,568 - social_connect - INFO - Filtered users for company 1: 9
+2026-03-28 00:02:46,569 - social_connect - INFO - Users after filtering inactive users: 7
+2026-03-28 00:02:46,569 - social_connect - INFO - Roles data requested
+2026-03-28 00:02:46,570 - social_connect - INFO - Returned 8 roles
+2026-03-28 00:02:46,571 - social_connect - INFO - Users list requested for company 1 with filter: None, include_inactive: False
+2026-03-28 00:02:46,572 - social_connect - INFO - Total users in database: 29
+2026-03-28 00:02:46,572 - social_connect - INFO - Filtered users for company 1: 9
+2026-03-28 00:02:46,572 - social_connect - INFO - Users after filtering inactive users: 7
+2026-03-28 00:02:46,573 - social_connect - INFO - Roles data requested
+2026-03-28 00:02:46,574 - social_connect - INFO - Returned 8 roles
+2026-03-28 00:02:51,134 - social_connect - INFO - Roles data requested
+2026-03-28 00:02:51,135 - social_connect - INFO - Returned 8 roles
+2026-03-28 00:02:51,136 - social_connect - INFO - Users list requested for company 4 with filter: None, include_inactive: False
+2026-03-28 00:02:51,137 - social_connect - INFO - Total users in database: 29
+2026-03-28 00:02:51,137 - social_connect - INFO - Filtered users for company 4: 10
+2026-03-28 00:02:51,137 - social_connect - INFO - Users after filtering inactive users: 2
+2026-03-28 00:03:10,061 - social_connect - INFO - Campaigns data requested
+2026-03-28 00:03:10,062 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 00:03:10,062 - social_connect - INFO - Returned 2 campaigns
+2026-03-28 00:03:10,063 - social_connect - INFO - Campaigns data requested
+2026-03-28 00:03:10,063 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 00:03:10,063 - social_connect - INFO - Returned 2 campaigns
+2026-03-28 00:03:13,529 - social_connect - INFO - Users list requested for company 1 with filter: None, include_inactive: False
+2026-03-28 00:03:13,531 - social_connect - INFO - Total users in database: 29
+2026-03-28 00:03:13,531 - social_connect - INFO - Filtered users for company 1: 9
+2026-03-28 00:03:13,531 - social_connect - INFO - Users after filtering inactive users: 7
+2026-03-28 00:03:13,531 - social_connect - INFO - Users list requested for company 1 with filter: None, include_inactive: False
+2026-03-28 00:03:13,532 - social_connect - INFO - Total users in database: 29
+2026-03-28 00:03:13,532 - social_connect - INFO - Filtered users for company 1: 9
+2026-03-28 00:03:13,532 - social_connect - INFO - Users after filtering inactive users: 7
+2026-03-28 00:03:13,533 - social_connect - INFO - Roles data requested
+2026-03-28 00:03:13,533 - social_connect - INFO - Returned 8 roles
+2026-03-28 00:03:13,535 - social_connect - INFO - Roles data requested
+2026-03-28 00:03:13,536 - social_connect - INFO - Returned 8 roles
+2026-03-28 00:06:30,946 - social_connect - INFO - Campaigns data requested
+2026-03-28 00:06:30,948 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 00:06:30,948 - social_connect - INFO - Returned 2 campaigns
+2026-03-28 00:06:30,949 - social_connect - INFO - Campaigns data requested
+2026-03-28 00:06:30,949 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 00:06:30,949 - social_connect - INFO - Returned 2 campaigns
+2026-03-28 00:06:32,312 - social_connect - INFO - Exported 7 campaigns to CSV
+2026-03-28 00:06:37,246 - social_connect - INFO - Leads data requested
+2026-03-28 00:06:37,247 - social_connect - INFO - Attempting to get leads from social media service
+2026-03-28 00:06:37,247 - social_connect - INFO - Returned 2 leads
+2026-03-28 00:06:37,247 - social_connect - INFO - Campaigns data requested
+2026-03-28 00:06:37,248 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 00:06:37,248 - social_connect - INFO - Returned 2 campaigns
+2026-03-28 00:06:37,248 - social_connect - INFO - Leads data requested
+2026-03-28 00:06:37,249 - social_connect - INFO - Attempting to get leads from social media service
+2026-03-28 00:06:37,249 - social_connect - INFO - Returned 2 leads
+2026-03-28 00:06:37,249 - social_connect - INFO - Campaigns data requested
+2026-03-28 00:06:37,250 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 00:06:37,250 - social_connect - INFO - Returned 2 campaigns
+2026-03-28 00:06:46,499 - social_connect - INFO - Analytics data requested
+2026-03-28 00:06:46,500 - social_connect - INFO - Using MongoDB for analytics - found 3 records
+2026-03-28 00:06:46,500 - social_connect - INFO - Returned 3 analytics
+2026-03-28 00:06:46,501 - social_connect - INFO - Analytics data requested
+2026-03-28 00:06:46,501 - social_connect - INFO - Using MongoDB for analytics - found 3 records
+2026-03-28 00:06:46,501 - social_connect - INFO - Returned 3 analytics
+2026-03-28 00:06:49,478 - social_connect - INFO - Scheduler data requested
+2026-03-28 00:06:49,480 - social_connect - INFO - Using MongoDB for scheduler - found 2 records
+2026-03-28 00:06:49,480 - social_connect - INFO - Returned 2 schedules
+2026-03-28 00:06:49,481 - social_connect - INFO - Scheduler data requested
+2026-03-28 00:06:49,482 - social_connect - INFO - Using MongoDB for scheduler - found 2 records
+2026-03-28 00:06:49,482 - social_connect - INFO - Returned 2 schedules
+2026-03-28 00:06:57,021 - social_connect - INFO - Users list requested for company 1 with filter: None, include_inactive: False
+2026-03-28 00:06:57,022 - social_connect - INFO - Total users in database: 29
+2026-03-28 00:06:57,022 - social_connect - INFO - Filtered users for company 1: 9
+2026-03-28 00:06:57,022 - social_connect - INFO - Users after filtering inactive users: 7
+2026-03-28 00:06:57,023 - social_connect - INFO - Users list requested for company 1 with filter: None, include_inactive: False
+2026-03-28 00:06:57,024 - social_connect - INFO - Total users in database: 29
+2026-03-28 00:06:57,024 - social_connect - INFO - Filtered users for company 1: 9
+2026-03-28 00:06:57,024 - social_connect - INFO - Users after filtering inactive users: 7
+2026-03-28 00:06:57,024 - social_connect - INFO - Roles data requested
+2026-03-28 00:06:57,025 - social_connect - INFO - Returned 8 roles
+2026-03-28 00:06:57,027 - social_connect - INFO - Roles data requested
+2026-03-28 00:06:57,028 - social_connect - INFO - Returned 8 roles
+2026-03-28 00:08:39,524 - social_connect - INFO - Users list requested for company 1 with filter: None, include_inactive: False
+2026-03-28 00:08:39,714 - social_connect - INFO - Total users in database: 29
+2026-03-28 00:08:39,715 - social_connect - INFO - Filtered users for company 1: 9
+2026-03-28 00:08:39,715 - social_connect - INFO - Users after filtering inactive users: 7
+2026-03-28 00:08:39,717 - social_connect - INFO - Roles data requested
+2026-03-28 00:08:39,722 - social_connect - INFO - Returned 8 roles
+2026-03-28 00:08:52,001 - social_connect - INFO - Users list requested for company 1 with filter: None, include_inactive: False
+2026-03-28 00:08:52,017 - social_connect - INFO - Total users in database: 29
+2026-03-28 00:08:52,018 - social_connect - INFO - Filtered users for company 1: 9
+2026-03-28 00:08:52,018 - social_connect - INFO - Users after filtering inactive users: 7
+2026-03-28 00:08:52,027 - social_connect - INFO - Roles data requested
+2026-03-28 00:08:52,041 - social_connect - INFO - Returned 8 roles
+2026-03-28 00:09:07,191 - social_connect - INFO - Campaigns data requested
+2026-03-28 00:09:07,193 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 00:09:07,193 - social_connect - INFO - Returned 2 campaigns
+2026-03-28 00:09:07,194 - social_connect - INFO - Campaigns data requested
+2026-03-28 00:09:07,195 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 00:09:07,195 - social_connect - INFO - Returned 2 campaigns
+2026-03-28 00:09:09,664 - social_connect - INFO - Scheduler data requested
+2026-03-28 00:09:09,666 - social_connect - INFO - Using MongoDB for scheduler - found 2 records
+2026-03-28 00:09:09,667 - social_connect - INFO - Returned 2 schedules
+2026-03-28 00:09:09,668 - social_connect - INFO - Scheduler data requested
+2026-03-28 00:09:09,669 - social_connect - INFO - Using MongoDB for scheduler - found 2 records
+2026-03-28 00:09:09,669 - social_connect - INFO - Returned 2 schedules
+2026-03-28 00:12:01,799 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 00:12:01,800 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 00:12:01,800 - social_connect - INFO - Connection manager shutdown
+2026-03-28 00:12:01,800 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 00:12:01,800 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 00:12:01,800 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 00:12:01,800 - social_connect - INFO - Connection manager shutdown
+2026-03-28 00:12:01,800 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 00:59:27,955 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-28 00:59:28,321 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 00:59:28,326 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 00:59:28,326 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 00:59:28,333 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 00:59:28,333 - social_connect - INFO - Initializing social media connections...
+2026-03-28 00:59:28,333 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 00:59:28,333 - social_connect - ERROR - Error during startup initialization: <lambda>() takes 0 positional arguments but 1 was given
+2026-03-28 01:07:27,147 - social_connect - INFO - Health check requested
+2026-03-28 01:07:36,329 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 01:07:36,330 - social_connect - INFO - Using MongoDB for login
+2026-03-28 01:07:36,334 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 2693 (development mode)
+2026-03-28 01:07:36,334 - social_connect - ERROR - Failed to send login OTP email: No module named 'constants'
+2026-03-28 01:07:36,335 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 01:08:09,846 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 01:08:09,847 - social_connect - INFO - Using MongoDB for login
+2026-03-28 01:08:09,854 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 4831 (development mode)
+2026-03-28 01:08:09,855 - social_connect - ERROR - Failed to send login OTP email: No module named 'constants'
+2026-03-28 01:08:09,856 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 01:09:43,309 - social_connect - INFO - Password reset request for email: test@example.com
+2026-03-28 01:09:50,319 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 01:09:50,319 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 01:09:50,319 - social_connect - INFO - Connection manager shutdown
+2026-03-28 01:09:50,319 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 01:09:50,320 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 01:09:50,320 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 01:09:50,320 - social_connect - INFO - Connection manager shutdown
+2026-03-28 01:09:50,320 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 01:09:51,376 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 01:09:51,378 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 01:09:51,378 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 01:09:51,381 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 01:09:51,382 - social_connect - INFO - Initializing social media connections...
+2026-03-28 01:09:51,382 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 01:09:51,382 - social_connect - ERROR - Error during startup initialization: <lambda>() takes 0 positional arguments but 1 was given
+2026-03-28 01:10:02,860 - social_connect - INFO - Password reset request for email: test@example.com
+2026-03-28 01:10:02,860 - social_connect - INFO - Using MongoDB for forgot password
+2026-03-28 01:10:08,890 - social_connect - INFO - Password reset request for email: admin@example.com
+2026-03-28 01:10:08,891 - social_connect - INFO - Using MongoDB for forgot password
+2026-03-28 01:10:14,484 - social_connect - INFO - Health check requested
+2026-03-28 01:10:38,997 - social_connect - INFO - Password reset request for email: deelipkumar261997@gmail.com
+2026-03-28 01:10:38,998 - social_connect - INFO - Using MongoDB for forgot password
+2026-03-28 01:10:38,999 - social_connect - INFO - OTP for deelipkumar261997@gmail.com: 6723 (development mode)
+2026-03-28 01:10:38,999 - social_connect - ERROR - Failed to send OTP email: No module named 'constants'
+2026-03-28 01:10:39,000 - social_connect - INFO - Password reset result: OTP sent successfully
+2026-03-28 01:14:43,044 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 01:14:43,045 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 01:14:43,045 - social_connect - INFO - Connection manager shutdown
+2026-03-28 01:14:43,045 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 01:14:43,045 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 01:14:43,045 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 01:14:43,045 - social_connect - INFO - Connection manager shutdown
+2026-03-28 01:14:43,045 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 01:14:54,030 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-28 01:14:54,457 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 01:14:54,459 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 01:14:54,459 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 01:14:54,464 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 01:14:54,464 - social_connect - INFO - Initializing social media connections...
+2026-03-28 01:14:54,464 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 01:14:54,464 - social_connect - ERROR - Error during startup initialization: <lambda>() takes 0 positional arguments but 1 was given
+2026-03-28 01:15:02,965 - social_connect - INFO - Password reset request for email: deelipkumar261997@gmail.com
+2026-03-28 01:15:02,965 - social_connect - INFO - Using MongoDB for forgot password
+2026-03-28 01:15:02,967 - social_connect - INFO - OTP for deelipkumar261997@gmail.com: 9230 (development mode)
+2026-03-28 01:15:02,968 - social_connect - ERROR - Failed to send OTP email: No module named 'constants'
+2026-03-28 01:15:02,968 - social_connect - INFO - Password reset result: OTP sent successfully
+2026-03-28 01:15:55,081 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 01:15:55,082 - social_connect - INFO - Using MongoDB for login
+2026-03-28 01:15:55,083 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 9554 (development mode)
+2026-03-28 01:15:55,084 - social_connect - ERROR - Failed to send login OTP email: No module named 'constants'
+2026-03-28 01:15:55,084 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 01:19:52,361 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 01:19:52,362 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 01:19:52,362 - social_connect - INFO - Connection manager shutdown
+2026-03-28 01:19:52,362 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 01:19:52,362 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 01:19:52,362 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 01:19:52,362 - social_connect - INFO - Connection manager shutdown
+2026-03-28 01:19:52,362 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 01:19:53,397 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 01:19:53,401 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 01:19:53,401 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 01:19:53,408 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 01:19:53,408 - social_connect - INFO - Initializing social media connections...
+2026-03-28 01:19:53,408 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 01:19:53,408 - social_connect - ERROR - Error during startup initialization: <lambda>() takes 0 positional arguments but 1 was given
+2026-03-28 01:20:58,846 - social_connect - INFO - Password reset request for email: deelipkumar261997@gmail.com
+2026-03-28 01:20:58,847 - social_connect - INFO - Using MongoDB for forgot password
+2026-03-28 01:20:58,848 - social_connect - INFO - OTP for deelipkumar261997@gmail.com: 3550 (development mode)
+2026-03-28 01:20:58,848 - social_connect - ERROR - Failed to send OTP email: No module named 'constants'
+2026-03-28 01:20:58,848 - social_connect - INFO - Password reset result: OTP sent successfully
+2026-03-28 01:26:33,177 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 01:26:33,178 - social_connect - INFO - Using MongoDB for login
+2026-03-28 01:26:33,180 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 0913 (development mode)
+2026-03-28 01:26:33,180 - social_connect - ERROR - Failed to send login OTP email: No module named 'constants'
+2026-03-28 01:26:33,180 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 01:28:24,600 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 01:28:24,602 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 01:28:24,603 - social_connect - INFO - Connection manager shutdown
+2026-03-28 01:28:24,603 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 01:28:24,603 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 01:28:24,604 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 01:28:24,604 - social_connect - INFO - Connection manager shutdown
+2026-03-28 01:28:24,604 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 01:28:31,612 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-28 01:28:31,949 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 01:28:31,952 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 01:28:31,952 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 01:28:31,955 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 01:28:31,956 - social_connect - INFO - Initializing social media connections...
+2026-03-28 01:28:31,956 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 01:28:31,956 - social_connect - ERROR - Error during startup initialization: <lambda>() takes 0 positional arguments but 1 was given
+2026-03-28 01:28:39,383 - social_connect - INFO - Password reset request for email: deelipkumar261997@gmail.com
+2026-03-28 01:28:39,384 - social_connect - INFO - Using MongoDB for forgot password
+2026-03-28 01:28:39,385 - social_connect - INFO - OTP for deelipkumar261997@gmail.com: 4273 (development mode)
+2026-03-28 01:28:39,386 - social_connect - ERROR - Failed to send OTP email: No module named 'constants'
+2026-03-28 01:28:39,386 - social_connect - INFO - Password reset result: OTP sent successfully
+2026-03-28 01:31:45,711 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 01:31:45,713 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 01:31:45,713 - social_connect - INFO - Connection manager shutdown
+2026-03-28 01:31:45,713 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 01:31:45,713 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 01:31:45,713 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 01:31:45,713 - social_connect - INFO - Connection manager shutdown
+2026-03-28 01:31:45,713 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 01:31:51,698 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-28 01:31:52,048 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 01:31:52,050 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 01:31:52,050 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 01:31:52,054 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 01:31:52,054 - social_connect - INFO - Initializing social media connections...
+2026-03-28 01:31:52,054 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 01:31:52,054 - social_connect - ERROR - Error during startup initialization: <lambda>() takes 0 positional arguments but 1 was given
+2026-03-28 01:31:59,206 - social_connect - INFO - Password reset request for email: deelipkumar261997@gmail.com
+2026-03-28 01:31:59,206 - social_connect - INFO - Using MongoDB for forgot password
+2026-03-28 01:31:59,208 - social_connect - INFO - OTP for deelipkumar261997@gmail.com: 3630 (development mode)
+2026-03-28 01:31:59,208 - social_connect - ERROR - Failed to send OTP email: No module named 'constants'
+2026-03-28 01:31:59,208 - social_connect - INFO - Password reset result: OTP sent successfully
+2026-03-28 01:33:11,521 - social_connect - INFO - Login attempt for user: test_admin from IP: 127.0.0.1
+2026-03-28 01:33:11,523 - social_connect - INFO - Using MongoDB for login
+2026-03-28 01:33:11,525 - social_connect - INFO - Login OTP for dileepkumarr261997@gmail.com: 3306 (development mode)
+2026-03-28 01:33:11,525 - social_connect - ERROR - Failed to send login OTP email: No module named 'constants'
+2026-03-28 01:33:11,525 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 01:37:56,023 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-28 01:39:21,033 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 01:39:21,034 - social_connect - INFO - Using MongoDB for login
+2026-03-28 01:39:21,035 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 4893 (development mode)
+2026-03-28 01:39:21,036 - social_connect - ERROR - Failed to send login OTP email: No module named 'constants'
+2026-03-28 01:39:21,036 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 01:40:26,919 - social_connect - INFO - Login attempt for user: test_admin from IP: 127.0.0.1
+2026-03-28 01:40:26,922 - social_connect - INFO - Using MongoDB for login
+2026-03-28 01:40:26,929 - social_connect - INFO - Login OTP for dileepkumarr261997@gmail.com: 3820 (development mode)
+2026-03-28 01:40:26,931 - social_connect - ERROR - Failed to send login OTP email: No module named 'constants'
+2026-03-28 01:40:26,931 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 01:41:28,701 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 01:41:28,702 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 01:41:28,702 - social_connect - INFO - Connection manager shutdown
+2026-03-28 01:41:28,702 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 01:41:28,702 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 01:41:28,702 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 01:41:28,702 - social_connect - INFO - Connection manager shutdown
+2026-03-28 01:41:28,703 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 01:42:33,538 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-28 01:42:33,861 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 01:42:33,864 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 01:42:33,864 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 01:42:33,868 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 01:42:33,868 - social_connect - INFO - Initializing social media connections...
+2026-03-28 01:42:33,868 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 01:42:33,868 - social_connect - ERROR - Error during startup initialization: <lambda>() takes 0 positional arguments but 1 was given
+2026-03-28 01:43:19,983 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 01:43:19,983 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 01:43:19,983 - social_connect - INFO - Connection manager shutdown
+2026-03-28 01:43:19,984 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 01:43:19,984 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 01:43:19,984 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 01:43:19,984 - social_connect - INFO - Connection manager shutdown
+2026-03-28 01:43:19,984 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 01:43:23,322 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-28 01:43:23,660 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 01:43:23,663 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 01:43:23,663 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 01:43:23,667 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 01:43:23,667 - social_connect - INFO - Initializing social media connections...
+2026-03-28 01:43:23,667 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 01:43:23,667 - social_connect - ERROR - Error during startup initialization: <lambda>() takes 0 positional arguments but 1 was given
+2026-03-28 01:44:40,957 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 01:44:40,958 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 01:44:40,958 - social_connect - INFO - Connection manager shutdown
+2026-03-28 01:44:40,958 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 01:44:40,958 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 01:44:40,958 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 01:44:40,958 - social_connect - INFO - Connection manager shutdown
+2026-03-28 01:44:40,958 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 01:45:02,019 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-28 01:45:02,351 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 01:45:02,354 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 01:45:02,354 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 01:45:02,358 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 01:45:02,358 - social_connect - INFO - Initializing social media connections...
+2026-03-28 01:45:02,358 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 01:45:02,358 - social_connect - ERROR - Error during startup initialization: <lambda>() takes 0 positional arguments but 1 was given
+2026-03-28 01:45:31,824 - social_connect - INFO - Login attempt for user: test_admin from IP: 127.0.0.1
+2026-03-28 01:45:31,825 - social_connect - INFO - Using MongoDB for login
+2026-03-28 01:45:31,828 - social_connect - INFO - Login OTP for dileepkumarr261997@gmail.com: 7870 (development mode)
+2026-03-28 01:45:31,828 - social_connect - ERROR - Failed to send login OTP email: No module named 'constants'
+2026-03-28 01:45:31,828 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 01:46:10,904 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 01:46:10,906 - social_connect - INFO - Using MongoDB for login
+2026-03-28 01:46:10,908 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 7806 (development mode)
+2026-03-28 01:46:10,908 - social_connect - ERROR - Failed to send login OTP email: No module named 'constants'
+2026-03-28 01:46:10,908 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 01:46:26,234 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 01:46:26,234 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 01:46:26,234 - social_connect - INFO - Connection manager shutdown
+2026-03-28 01:46:26,234 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 01:46:26,234 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 01:46:26,234 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 01:46:26,234 - social_connect - INFO - Connection manager shutdown
+2026-03-28 01:46:26,234 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 01:47:06,990 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-28 01:47:24,585 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-28 01:47:24,910 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 01:47:24,912 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 01:47:24,912 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 01:47:24,916 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 01:47:24,916 - social_connect - INFO - Initializing social media connections...
+2026-03-28 01:47:24,916 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 01:47:24,916 - social_connect - ERROR - Error during startup initialization: <lambda>() takes 0 positional arguments but 1 was given
+2026-03-28 01:47:56,910 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 01:47:56,911 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 01:47:56,912 - social_connect - INFO - Connection manager shutdown
+2026-03-28 01:47:56,912 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 01:47:56,912 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 01:47:56,913 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 01:47:56,913 - social_connect - INFO - Connection manager shutdown
+2026-03-28 01:47:56,913 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 01:47:57,738 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 01:47:57,740 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 01:47:57,740 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 01:47:57,743 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 01:47:57,743 - social_connect - INFO - Initializing social media connections...
+2026-03-28 01:47:57,743 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 01:47:57,743 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 01:47:57,743 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 01:47:57,744 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 01:47:57,744 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 01:47:57,744 - social_connect - INFO - Completed expiring users check
+2026-03-28 01:48:05,208 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 01:48:05,208 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 01:48:05,208 - social_connect - INFO - Connection manager shutdown
+2026-03-28 01:48:05,208 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 01:48:05,208 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 01:48:05,208 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 01:48:05,208 - social_connect - INFO - Connection manager shutdown
+2026-03-28 01:48:05,208 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 01:48:09,851 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-28 01:48:10,173 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 01:48:10,176 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 01:48:10,176 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 01:48:10,179 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 01:48:10,179 - social_connect - INFO - Initializing social media connections...
+2026-03-28 01:48:10,179 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 01:48:10,179 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 01:48:10,180 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 01:48:10,180 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 01:48:10,180 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 01:48:10,180 - social_connect - INFO - Completed expiring users check
+2026-03-28 01:49:00,936 - social_connect - INFO - Health check requested
+2026-03-28 01:49:06,012 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 01:49:06,012 - social_connect - INFO - Using MongoDB for login
+2026-03-28 01:49:06,014 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 4311 (development mode)
+2026-03-28 01:49:06,014 - social_connect - ERROR - Failed to send login OTP email: No module named 'constants'
+2026-03-28 01:49:06,014 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 01:49:33,923 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 01:49:33,923 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 01:49:33,923 - social_connect - INFO - Connection manager shutdown
+2026-03-28 01:49:33,923 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 01:49:33,923 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 01:49:33,923 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 01:49:33,923 - social_connect - INFO - Connection manager shutdown
+2026-03-28 01:49:33,923 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 01:49:34,692 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 01:49:34,695 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 01:49:34,695 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 01:49:34,700 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 01:49:34,700 - social_connect - INFO - Initializing social media connections...
+2026-03-28 01:49:34,700 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 01:49:34,700 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 01:49:34,700 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 01:49:34,701 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 01:49:34,701 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 01:49:34,701 - social_connect - INFO - Completed expiring users check
+2026-03-28 01:49:41,664 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 01:49:41,664 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 01:49:41,664 - social_connect - INFO - Connection manager shutdown
+2026-03-28 01:49:41,664 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 01:49:41,664 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 01:49:41,664 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 01:49:41,664 - social_connect - INFO - Connection manager shutdown
+2026-03-28 01:49:41,665 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 01:49:50,085 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-28 01:49:50,404 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 01:49:50,406 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 01:49:50,406 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 01:49:50,410 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 01:49:50,410 - social_connect - INFO - Initializing social media connections...
+2026-03-28 01:49:50,410 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 01:49:50,410 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 01:49:50,410 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 01:49:50,411 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 01:49:50,411 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 01:49:50,411 - social_connect - INFO - Completed expiring users check
+2026-03-28 01:50:18,049 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 01:50:18,050 - social_connect - INFO - Using MongoDB for login
+2026-03-28 01:50:18,052 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 7286 (development mode)
+2026-03-28 01:50:19,310 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-28 01:50:19,312 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 01:50:36,264 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 01:50:36,264 - social_connect - INFO - Using MongoDB for login
+2026-03-28 01:50:36,266 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 4160 (development mode)
+2026-03-28 01:50:37,548 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-28 01:50:37,549 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 01:51:21,049 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 01:51:21,050 - social_connect - INFO - Using MongoDB for login
+2026-03-28 01:51:21,051 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 9075 (development mode)
+2026-03-28 01:51:22,272 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-28 01:51:22,274 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 01:51:40,049 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 01:51:40,050 - social_connect - INFO - Using MongoDB for login
+2026-03-28 01:51:40,058 - social_connect - INFO - Login successful for user: superadmin
+2026-03-28 01:51:40,058 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-28 01:51:41,150 - social_connect - INFO - User profile requested
+2026-03-28 01:51:41,159 - social_connect - INFO - User profile requested
+2026-03-28 01:52:10,851 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 01:52:10,851 - social_connect - INFO - Using MongoDB for login
+2026-03-28 01:52:10,853 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 6360 (development mode)
+2026-03-28 01:52:12,220 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-28 01:52:12,221 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 01:52:21,645 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 01:52:21,657 - social_connect - INFO - Using MongoDB for login
+2026-03-28 01:52:21,657 - social_connect - INFO - Login successful for user: superadmin
+2026-03-28 01:52:21,660 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-28 01:52:22,748 - social_connect - INFO - User profile requested
+2026-03-28 01:52:22,751 - social_connect - INFO - User profile requested
+2026-03-28 01:56:46,259 - social_connect - INFO - Login attempt for user: test_admin from IP: 127.0.0.1
+2026-03-28 01:56:46,260 - social_connect - INFO - Using MongoDB for login
+2026-03-28 01:56:46,261 - social_connect - INFO - Login OTP for dileepkumarr261997@gmail.com: 9916 (development mode)
+2026-03-28 01:56:47,866 - social_connect - INFO - Email 'login_otp' sent successfully to dileepkumarr261997@gmail.com via Brevo
+2026-03-28 01:56:47,868 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 01:57:06,607 - social_connect - INFO - Login attempt for user: test_admin from IP: 127.0.0.1
+2026-03-28 01:57:06,607 - social_connect - INFO - Using MongoDB for login
+2026-03-28 01:57:06,608 - social_connect - INFO - Login successful for user: test_admin
+2026-03-28 01:57:06,608 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-28 01:57:07,703 - social_connect - INFO - User profile requested
+2026-03-28 01:57:07,709 - social_connect - INFO - User profile requested
+2026-03-28 01:59:01,026 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 01:59:01,027 - social_connect - INFO - Using MongoDB for login
+2026-03-28 01:59:01,030 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 7794 (development mode)
+2026-03-28 01:59:02,391 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-28 01:59:02,392 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 01:59:12,942 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 01:59:12,942 - social_connect - INFO - Using MongoDB for login
+2026-03-28 01:59:12,943 - social_connect - INFO - Login successful for user: superadmin
+2026-03-28 01:59:12,943 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-28 01:59:50,778 - social_connect - INFO - User profile update requested
+2026-03-28 02:07:33,403 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:07:33,403 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:07:33,405 - social_connect - ERROR - Login error: 
+2026-03-28 02:07:33,405 - social_connect - ERROR - Login error: 
+2026-03-28 02:07:41,933 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:07:41,933 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:07:41,933 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:07:41,933 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:07:41,933 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:07:41,933 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:07:41,933 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:07:41,934 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:07:42,992 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 02:07:42,994 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 02:07:42,994 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 02:07:42,998 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 02:07:42,998 - social_connect - INFO - Initializing social media connections...
+2026-03-28 02:07:42,998 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 02:07:42,998 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 02:07:42,998 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 02:07:42,999 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 02:07:42,999 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 02:07:42,999 - social_connect - INFO - Completed expiring users check
+2026-03-28 02:07:47,542 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:07:47,542 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:07:47,542 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:07:47,542 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:07:47,542 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:07:47,542 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:07:47,542 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:07:47,542 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:07:52,557 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-28 02:07:52,874 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 02:07:52,876 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 02:07:52,876 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 02:07:52,879 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 02:07:52,879 - social_connect - INFO - Initializing social media connections...
+2026-03-28 02:07:52,879 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 02:07:52,879 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 02:07:52,879 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 02:07:52,880 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 02:07:52,880 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 02:07:52,880 - social_connect - INFO - Completed expiring users check
+2026-03-28 02:08:01,342 - social_connect - INFO - Health check requested
+2026-03-28 02:08:05,655 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:08:05,655 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:08:05,656 - social_connect - ERROR - Login error: 
+2026-03-28 02:08:05,656 - social_connect - ERROR - Login error: 
+2026-03-28 02:08:10,452 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:08:10,452 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:08:10,453 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 7962 (development mode)
+2026-03-28 02:08:11,987 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-28 02:08:11,988 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 02:08:21,705 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:08:21,706 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:08:21,711 - social_connect - INFO - Login successful for user: superadmin
+2026-03-28 02:08:21,711 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-28 02:08:21,801 - social_connect - INFO - User profile update requested
+2026-03-28 02:09:10,728 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:09:10,730 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:09:10,730 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:09:10,730 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:09:10,730 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:09:10,730 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:09:10,730 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:09:10,730 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:09:11,718 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 02:09:11,720 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 02:09:11,720 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 02:09:11,725 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 02:09:11,725 - social_connect - INFO - Initializing social media connections...
+2026-03-28 02:09:11,725 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 02:09:11,725 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 02:09:11,725 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 02:09:11,725 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 02:09:11,725 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 02:09:11,725 - social_connect - INFO - Completed expiring users check
+2026-03-28 02:09:29,597 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:09:29,599 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:09:29,599 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:09:29,599 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:09:29,600 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:09:29,600 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:09:29,600 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:09:29,600 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:09:34,180 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-28 02:09:34,510 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 02:09:34,513 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 02:09:34,513 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 02:09:34,516 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 02:09:34,516 - social_connect - INFO - Initializing social media connections...
+2026-03-28 02:09:34,516 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 02:09:34,516 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 02:09:34,516 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 02:09:34,517 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 02:09:34,517 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 02:09:34,517 - social_connect - INFO - Completed expiring users check
+2026-03-28 02:09:44,452 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:09:44,452 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:09:44,453 - social_connect - ERROR - Login error: 
+2026-03-28 02:09:44,453 - social_connect - ERROR - Login error: 
+2026-03-28 02:10:02,219 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:10:02,219 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:10:02,220 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 0924 (development mode)
+2026-03-28 02:10:03,685 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-28 02:10:03,686 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 02:10:07,784 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:10:07,784 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:10:07,786 - social_connect - INFO - Login successful for user: superadmin
+2026-03-28 02:10:07,786 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-28 02:10:07,793 - social_connect - INFO - User profile update requested
+2026-03-28 02:10:07,793 - social_connect - INFO - Profile update request data: {'name': 'Test User', 'email': 'test@example.com'}
+2026-03-28 02:10:07,794 - social_connect - ERROR - Error in update_user_profile_service: No module named 'constants'
+2026-03-28 02:10:29,218 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:10:29,218 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:10:29,218 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:10:29,218 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:10:29,218 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:10:29,218 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:10:29,218 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:10:29,218 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:10:30,203 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 02:10:30,206 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 02:10:30,206 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 02:10:30,208 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 02:10:30,208 - social_connect - INFO - Initializing social media connections...
+2026-03-28 02:10:30,208 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 02:10:30,208 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 02:10:30,208 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 02:10:30,209 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 02:10:30,209 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 02:10:30,209 - social_connect - INFO - Completed expiring users check
+2026-03-28 02:10:37,382 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:10:37,382 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:10:37,382 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:10:37,382 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:10:37,382 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:10:37,382 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:10:37,382 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:10:37,382 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:10:42,373 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-28 02:10:42,713 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 02:10:42,719 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 02:10:42,719 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 02:10:42,721 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 02:10:42,721 - social_connect - INFO - Initializing social media connections...
+2026-03-28 02:10:42,721 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 02:10:42,721 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 02:10:42,722 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 02:10:42,722 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 02:10:42,722 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 02:10:42,722 - social_connect - INFO - Completed expiring users check
+2026-03-28 02:10:53,981 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:10:53,982 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:10:53,983 - social_connect - ERROR - Login error: 
+2026-03-28 02:10:53,983 - social_connect - ERROR - Login error: 
+2026-03-28 02:11:00,445 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:11:00,446 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:11:00,447 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 9707 (development mode)
+2026-03-28 02:11:01,707 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-28 02:11:01,708 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 02:11:09,209 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:11:09,210 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:11:09,216 - social_connect - INFO - Login successful for user: superadmin
+2026-03-28 02:11:09,216 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-28 02:11:09,224 - social_connect - INFO - User profile update requested
+2026-03-28 02:11:09,225 - social_connect - INFO - Profile update request data: {'name': 'Test User', 'email': 'test@example.com'}
+2026-03-28 02:11:09,225 - social_connect - ERROR - Error in update_user_profile_service: No module named 'constants'
+2026-03-28 02:11:26,138 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:11:26,138 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:11:26,138 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:11:26,138 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:11:26,138 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:11:26,138 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:11:26,138 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:11:26,138 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:11:27,029 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 02:11:27,032 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 02:11:27,032 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 02:11:27,035 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 02:11:27,035 - social_connect - INFO - Initializing social media connections...
+2026-03-28 02:11:27,035 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 02:11:27,035 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 02:11:27,035 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 02:11:27,036 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 02:11:27,036 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 02:11:27,036 - social_connect - INFO - Completed expiring users check
+2026-03-28 02:11:38,736 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:11:38,736 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:11:38,736 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:11:38,736 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:11:38,736 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:11:38,736 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:11:38,736 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:11:38,736 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:11:46,174 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-28 02:11:46,512 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 02:11:46,514 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 02:11:46,514 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 02:11:46,517 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 02:11:46,517 - social_connect - INFO - Initializing social media connections...
+2026-03-28 02:11:46,518 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 02:11:46,518 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 02:11:46,518 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 02:11:46,518 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 02:11:46,518 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 02:11:46,518 - social_connect - INFO - Completed expiring users check
+2026-03-28 02:12:04,618 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:12:04,619 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:12:04,623 - social_connect - ERROR - Login error: 
+2026-03-28 02:12:04,623 - social_connect - ERROR - Login error: 
+2026-03-28 02:12:25,165 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:12:25,165 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:12:25,172 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 4813 (development mode)
+2026-03-28 02:12:26,445 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-28 02:12:26,446 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 02:12:34,876 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:12:34,876 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:12:34,878 - social_connect - INFO - Login successful for user: superadmin
+2026-03-28 02:12:34,878 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-28 02:12:34,886 - social_connect - INFO - User profile update requested
+2026-03-28 02:12:34,886 - social_connect - INFO - Profile update request data: {'name': 'Test User', 'email': 'test@example.com'}
+2026-03-28 02:12:34,886 - social_connect - ERROR - Error in update_user_profile_service: No module named 'constants'
+2026-03-28 02:13:18,096 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:13:18,097 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:13:18,097 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:13:18,097 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:13:18,097 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:13:18,097 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:13:18,097 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:13:18,097 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:13:19,111 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 02:13:19,114 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 02:13:19,114 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 02:13:19,117 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 02:13:19,117 - social_connect - INFO - Initializing social media connections...
+2026-03-28 02:13:19,117 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 02:13:19,117 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 02:13:19,117 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 02:13:19,118 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 02:13:19,118 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 02:13:19,118 - social_connect - INFO - Completed expiring users check
+2026-03-28 02:13:25,788 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:13:25,788 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:13:25,788 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:13:25,788 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:13:25,788 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:13:25,788 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:13:25,788 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:13:25,788 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:13:32,868 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-28 02:13:33,202 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 02:13:33,204 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 02:13:33,204 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 02:13:33,208 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 02:13:33,208 - social_connect - INFO - Initializing social media connections...
+2026-03-28 02:13:33,208 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 02:13:33,208 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 02:13:33,208 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 02:13:33,209 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 02:13:33,209 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 02:13:33,209 - social_connect - INFO - Completed expiring users check
+2026-03-28 02:13:46,215 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:13:46,215 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:13:46,216 - social_connect - ERROR - Login error: 
+2026-03-28 02:13:46,216 - social_connect - ERROR - Login error: 
+2026-03-28 02:14:01,511 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:14:01,511 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:14:01,512 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 1439 (development mode)
+2026-03-28 02:14:02,790 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-28 02:14:02,791 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 02:14:22,741 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:14:22,741 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:14:22,746 - social_connect - INFO - Login successful for user: superadmin
+2026-03-28 02:14:22,746 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-28 02:14:22,754 - social_connect - INFO - User profile update requested
+2026-03-28 02:14:22,754 - social_connect - INFO - Profile update request data: {'name': 'Test User', 'email': 'test@example.com'}
+2026-03-28 02:14:22,755 - social_connect - ERROR - Error in update_user_profile_service: No module named 'constants'
+2026-03-28 02:14:41,650 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:14:41,650 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:14:41,650 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:14:41,650 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:14:41,650 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:14:41,650 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:14:41,650 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:14:41,650 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:14:42,595 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 02:14:42,597 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 02:14:42,597 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 02:14:42,601 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 02:14:42,601 - social_connect - INFO - Initializing social media connections...
+2026-03-28 02:14:42,601 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 02:14:42,601 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 02:14:42,601 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 02:14:42,601 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 02:14:42,602 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 02:14:42,602 - social_connect - INFO - Completed expiring users check
+2026-03-28 02:14:48,864 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:14:48,864 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:14:48,864 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:14:48,864 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:14:48,864 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:14:48,864 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:14:48,865 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:14:48,865 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:14:53,821 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-28 02:14:54,143 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 02:14:54,146 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 02:14:54,146 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 02:14:54,149 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 02:14:54,149 - social_connect - INFO - Initializing social media connections...
+2026-03-28 02:14:54,149 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 02:14:54,149 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 02:14:54,150 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 02:14:54,150 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 02:14:54,150 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 02:14:54,150 - social_connect - INFO - Completed expiring users check
+2026-03-28 02:15:04,334 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:15:04,334 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:15:04,335 - social_connect - ERROR - Login error: 
+2026-03-28 02:15:04,335 - social_connect - ERROR - Login error: 
+2026-03-28 02:15:08,653 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:15:08,654 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:15:08,657 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 1069 (development mode)
+2026-03-28 02:15:10,202 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-28 02:15:10,202 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 02:15:15,368 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:15:15,368 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:15:15,372 - social_connect - INFO - Login successful for user: superadmin
+2026-03-28 02:15:15,372 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-28 02:15:15,379 - social_connect - INFO - User profile update requested
+2026-03-28 02:15:15,379 - social_connect - INFO - Profile update request data: {'name': 'Test User', 'email': 'test@example.com'}
+2026-03-28 02:15:15,380 - social_connect - ERROR - Error in update_user_profile_service: No module named 'constants'
+2026-03-28 02:15:26,297 - social_connect - INFO - User profile requested
+2026-03-28 02:15:26,303 - social_connect - INFO - User profile requested
+2026-03-28 02:16:41,952 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:16:41,953 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:16:41,955 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 0804 (development mode)
+2026-03-28 02:16:43,227 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-28 02:16:43,229 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 02:16:59,951 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:16:59,951 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:16:59,953 - social_connect - INFO - Login successful for user: superadmin
+2026-03-28 02:16:59,953 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-28 02:17:28,634 - social_connect - INFO - User profile update requested
+2026-03-28 02:17:28,635 - social_connect - INFO - Profile update request data: {'name': 'Dileep', 'email': 'deelipkumar261997@gmail.com'}
+2026-03-28 02:17:28,636 - social_connect - ERROR - Error in update_user_profile_service: No module named 'constants'
+2026-03-28 02:28:04,354 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:28:04,354 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:28:04,354 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:28:04,354 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:28:04,354 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:28:04,354 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:28:04,354 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:28:04,354 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:28:05,334 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 02:28:05,337 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 02:28:05,337 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 02:28:05,341 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 02:28:05,341 - social_connect - INFO - Initializing social media connections...
+2026-03-28 02:28:05,341 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 02:28:05,341 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 02:28:05,341 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 02:28:05,342 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 02:28:05,342 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 02:28:05,342 - social_connect - INFO - Completed expiring users check
+2026-03-28 02:28:35,717 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:28:35,718 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:28:35,718 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:28:35,718 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:28:35,718 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:28:35,719 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:28:35,719 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:28:35,719 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:29:26,311 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-28 02:29:26,635 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 02:29:26,637 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 02:29:26,637 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 02:29:26,642 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 02:29:26,642 - social_connect - INFO - Initializing social media connections...
+2026-03-28 02:29:26,642 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 02:29:26,642 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 02:29:26,643 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 02:29:26,643 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 02:29:26,643 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 02:29:26,643 - social_connect - INFO - Completed expiring users check
+2026-03-28 02:30:33,354 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:30:33,354 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:30:33,356 - social_connect - ERROR - Login error: 
+2026-03-28 02:30:33,356 - social_connect - ERROR - Login error: 
+2026-03-28 02:31:31,568 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:31:31,571 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:31:31,572 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 1311 (development mode)
+2026-03-28 02:31:33,080 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-28 02:31:33,081 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 02:32:15,332 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:32:15,333 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:32:15,340 - social_connect - INFO - Login successful for user: superadmin
+2026-03-28 02:32:15,340 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-28 02:32:15,348 - social_connect - INFO - User profile update requested
+2026-03-28 02:32:15,348 - social_connect - INFO - Profile update request data: {'name': 'Test User', 'email': 'test@example.com'}
+2026-03-28 02:32:15,348 - social_connect - ERROR - Import error in update_user_profile_service: No module named 'constants'
+2026-03-28 02:36:34,100 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:36:34,102 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:36:34,102 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:36:34,102 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:36:34,102 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:36:34,102 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:36:34,102 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:36:34,102 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:36:49,446 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-28 02:36:49,781 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 02:36:49,787 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 02:36:49,787 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 02:36:49,791 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 02:36:49,791 - social_connect - INFO - Initializing social media connections...
+2026-03-28 02:36:49,791 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 02:36:49,791 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 02:36:49,792 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 02:36:49,792 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 02:36:49,792 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 02:36:49,792 - social_connect - INFO - Completed expiring users check
+2026-03-28 02:37:05,440 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:37:05,440 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:37:05,442 - social_connect - ERROR - Login error: 
+2026-03-28 02:37:05,442 - social_connect - ERROR - Login error: 
+2026-03-28 02:37:09,605 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:37:09,605 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:37:09,606 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 5781 (development mode)
+2026-03-28 02:37:10,842 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-28 02:37:10,842 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 02:37:15,326 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:37:15,326 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:37:15,329 - social_connect - INFO - Login successful for user: superadmin
+2026-03-28 02:37:15,329 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-28 02:37:15,337 - social_connect - INFO - User profile update requested
+2026-03-28 02:37:15,337 - social_connect - INFO - Profile update request data: {'name': 'Test User', 'email': 'test@example.com'}
+2026-03-28 02:37:15,337 - social_connect - ERROR - Import error in update_user_profile_service: No module named 'constants'
+2026-03-28 02:37:19,723 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:37:19,724 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:37:19,724 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:37:19,724 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:37:19,724 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:37:19,724 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:37:19,724 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:37:19,724 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:37:20,470 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 02:37:20,472 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 02:37:20,472 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 02:37:20,476 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 02:37:20,476 - social_connect - INFO - Initializing social media connections...
+2026-03-28 02:37:20,476 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 02:37:20,476 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 02:37:20,477 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 02:37:20,477 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 02:37:20,477 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 02:37:20,477 - social_connect - INFO - Completed expiring users check
+2026-03-28 02:37:28,956 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:37:28,956 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:37:28,956 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:37:28,956 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:37:28,956 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:37:28,956 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:37:28,956 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:37:28,956 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:37:37,863 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-28 02:37:38,200 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 02:37:38,203 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 02:37:38,203 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 02:37:38,207 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 02:37:38,207 - social_connect - INFO - Initializing social media connections...
+2026-03-28 02:37:38,207 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 02:37:38,207 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 02:37:38,207 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 02:37:38,208 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 02:37:38,208 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 02:37:38,208 - social_connect - INFO - Completed expiring users check
+2026-03-28 02:37:48,081 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:37:48,081 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:37:48,082 - social_connect - ERROR - Login error: 
+2026-03-28 02:37:48,082 - social_connect - ERROR - Login error: 
+2026-03-28 02:37:53,906 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:37:53,906 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:37:53,907 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 4891 (development mode)
+2026-03-28 02:37:55,467 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-28 02:37:55,468 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 02:37:59,895 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:37:59,896 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:37:59,902 - social_connect - INFO - Login successful for user: superadmin
+2026-03-28 02:37:59,902 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-28 02:37:59,910 - social_connect - INFO - User profile update requested
+2026-03-28 02:37:59,910 - social_connect - INFO - Profile update request data: {'name': 'Test User', 'email': 'test@example.com'}
+2026-03-28 02:37:59,910 - social_connect - ERROR - Import error in update_user_profile_service: No module named 'constants'
+2026-03-28 02:38:11,311 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:38:11,312 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:38:11,312 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:38:11,312 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:38:11,312 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:38:11,312 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:38:11,312 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:38:11,312 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:38:12,052 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 02:38:12,054 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 02:38:12,054 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 02:38:12,056 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 02:38:12,056 - social_connect - INFO - Initializing social media connections...
+2026-03-28 02:38:12,056 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 02:38:12,056 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 02:38:12,056 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 02:38:12,056 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 02:38:12,056 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 02:38:12,056 - social_connect - INFO - Completed expiring users check
+2026-03-28 02:38:19,115 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:38:19,116 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:38:19,116 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:38:19,116 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:38:19,116 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:38:19,116 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:38:19,116 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:38:19,116 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:38:26,307 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-28 02:38:26,624 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 02:38:26,625 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 02:38:26,625 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 02:38:26,628 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 02:38:26,628 - social_connect - INFO - Initializing social media connections...
+2026-03-28 02:38:26,628 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 02:38:26,628 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 02:38:26,628 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 02:38:26,629 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 02:38:26,629 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 02:38:26,629 - social_connect - INFO - Completed expiring users check
+2026-03-28 02:38:36,522 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:38:36,522 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:38:36,524 - social_connect - ERROR - Login error: 
+2026-03-28 02:38:36,524 - social_connect - ERROR - Login error: 
+2026-03-28 02:38:41,873 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:38:41,874 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:38:41,877 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 2260 (development mode)
+2026-03-28 02:38:43,204 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-28 02:38:43,205 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 02:38:47,846 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:38:47,846 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:38:47,848 - social_connect - INFO - Login successful for user: superadmin
+2026-03-28 02:38:47,848 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-28 02:38:47,855 - social_connect - INFO - User profile update requested
+2026-03-28 02:38:47,855 - social_connect - INFO - Profile update request data: {'name': 'Test User', 'email': 'test@example.com'}
+2026-03-28 02:38:47,855 - social_connect - ERROR - Import error in update_user_profile_service: No module named 'constants'
+2026-03-28 02:39:03,462 - social_connect - INFO - User profile requested
+2026-03-28 02:39:03,473 - social_connect - INFO - User profile requested
+2026-03-28 02:39:36,350 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:39:36,351 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:39:36,353 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 7390 (development mode)
+2026-03-28 02:39:37,627 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-28 02:39:37,628 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 02:39:50,226 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:39:50,226 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:39:50,227 - social_connect - ERROR - Login error: 
+2026-03-28 02:39:50,227 - social_connect - ERROR - Login error: 
+2026-03-28 02:40:08,099 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:40:08,100 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:40:08,103 - social_connect - INFO - Login successful for user: superadmin
+2026-03-28 02:40:08,103 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-28 02:41:41,096 - social_connect - INFO - User profile update requested
+2026-03-28 02:41:41,097 - social_connect - INFO - Profile update request data: {'name': 'Dileep', 'email': 'deelipkumar261997@gmail.com'}
+2026-03-28 02:41:41,098 - social_connect - ERROR - Import error in update_user_profile_service: No module named 'constants'
+2026-03-28 02:42:16,122 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-28 02:42:27,208 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:42:27,210 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:42:27,210 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:42:27,210 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:42:27,210 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:42:27,210 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:42:27,211 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:42:27,211 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:42:28,225 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 02:42:28,227 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 02:42:28,227 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 02:42:28,231 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 02:42:28,231 - social_connect - INFO - Initializing social media connections...
+2026-03-28 02:42:28,231 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 02:42:28,231 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 02:42:28,231 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 02:42:28,231 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 02:42:28,231 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 02:42:28,231 - social_connect - INFO - Completed expiring users check
+2026-03-28 02:42:42,636 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-28 02:42:52,281 - social_connect - INFO - Health check requested
+2026-03-28 02:42:57,258 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:42:57,258 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:42:57,260 - social_connect - ERROR - Login error: 
+2026-03-28 02:42:57,260 - social_connect - ERROR - Login error: 
+2026-03-28 02:43:09,587 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:43:09,587 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:43:09,588 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 6774 (development mode)
+2026-03-28 02:43:10,950 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-28 02:43:10,951 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 02:43:21,558 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:43:21,558 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:43:21,562 - social_connect - INFO - Login successful for user: superadmin
+2026-03-28 02:43:21,562 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-28 02:43:21,570 - social_connect - INFO - User profile update requested
+2026-03-28 02:43:21,570 - social_connect - INFO - Profile update request data: {'name': 'Test User', 'email': 'test@example.com'}
+2026-03-28 02:43:21,570 - social_connect - ERROR - Import error in update_user_profile_service: No module named 'constants'
+2026-03-28 02:43:29,708 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:43:29,709 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:43:29,710 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:43:29,710 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:43:29,710 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:43:29,710 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:43:29,710 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:43:29,710 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:43:30,631 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 02:43:30,634 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 02:43:30,634 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 02:43:30,637 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 02:43:30,637 - social_connect - INFO - Initializing social media connections...
+2026-03-28 02:43:30,637 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 02:43:30,637 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 02:43:30,638 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 02:43:30,638 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 02:43:30,638 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 02:43:30,638 - social_connect - INFO - Completed expiring users check
+2026-03-28 02:43:48,072 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-28 02:43:59,411 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:43:59,411 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:43:59,417 - social_connect - ERROR - Login error: 
+2026-03-28 02:43:59,417 - social_connect - ERROR - Login error: 
+2026-03-28 02:44:03,288 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:44:03,288 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:44:03,290 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 7661 (development mode)
+2026-03-28 02:44:04,609 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-28 02:44:04,611 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 02:44:11,296 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:44:11,296 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:44:11,299 - social_connect - INFO - Login successful for user: superadmin
+2026-03-28 02:44:11,299 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-28 02:44:11,306 - social_connect - INFO - User profile update requested
+2026-03-28 02:44:11,306 - social_connect - INFO - Profile update request data: {'name': 'Test User', 'email': 'test@example.com'}
+2026-03-28 02:44:11,307 - social_connect - ERROR - Import error in update_user_profile_service: No module named 'constants'
+2026-03-28 02:44:23,692 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:44:23,692 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:44:23,692 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:44:23,692 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:44:23,692 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:44:23,692 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:44:23,692 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:44:23,692 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:44:24,537 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 02:44:24,540 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 02:44:24,540 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 02:44:24,544 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 02:44:24,544 - social_connect - INFO - Initializing social media connections...
+2026-03-28 02:44:24,544 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 02:44:24,544 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 02:44:24,544 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 02:44:24,544 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 02:44:24,544 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 02:44:24,545 - social_connect - INFO - Completed expiring users check
+2026-03-28 02:44:47,634 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-28 02:44:59,206 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:44:59,206 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:44:59,208 - social_connect - ERROR - Login error: 
+2026-03-28 02:44:59,208 - social_connect - ERROR - Login error: 
+2026-03-28 02:45:04,686 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:45:04,686 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:45:04,687 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 7490 (development mode)
+2026-03-28 02:45:05,969 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-28 02:45:05,971 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 02:45:12,671 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 02:45:12,671 - social_connect - INFO - Using MongoDB for login
+2026-03-28 02:45:12,675 - social_connect - INFO - Login successful for user: superadmin
+2026-03-28 02:45:12,676 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-28 02:45:12,684 - social_connect - INFO - User profile update requested
+2026-03-28 02:45:12,684 - social_connect - INFO - Profile update request data: {'name': 'Test User', 'email': 'test@example.com'}
+2026-03-28 02:45:12,684 - social_connect - ERROR - Error in update_user_profile_service: No module named 'constants'
+2026-03-28 02:45:37,554 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:45:37,555 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:45:37,555 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:45:37,555 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:45:37,556 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:45:37,556 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:45:37,556 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:45:37,556 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:45:38,455 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 02:45:38,458 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 02:45:38,458 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 02:45:38,463 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 02:45:38,463 - social_connect - INFO - Initializing social media connections...
+2026-03-28 02:45:38,463 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 02:45:38,463 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 02:45:38,463 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 02:45:38,464 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 02:45:38,464 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 02:45:38,464 - social_connect - INFO - Completed expiring users check
+2026-03-28 02:46:33,948 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:46:33,957 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:46:33,957 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:46:33,957 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:46:33,959 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:46:33,960 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:46:33,963 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:46:33,963 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:46:34,780 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 02:46:34,782 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 02:46:34,782 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 02:46:34,785 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 02:46:34,785 - social_connect - INFO - Initializing social media connections...
+2026-03-28 02:46:34,785 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 02:46:34,785 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 02:46:34,785 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 02:46:34,786 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 02:46:34,786 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 02:46:34,786 - social_connect - INFO - Completed expiring users check
+2026-03-28 02:46:39,832 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:46:39,832 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:46:39,832 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:46:39,832 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:46:39,832 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:46:39,832 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:46:39,832 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:46:39,832 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:46:41,028 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 02:46:41,030 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 02:46:41,031 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 02:46:41,035 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 02:46:41,035 - social_connect - INFO - Initializing social media connections...
+2026-03-28 02:46:41,035 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 02:46:41,035 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 02:46:41,035 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 02:46:41,036 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 02:46:41,036 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 02:46:41,036 - social_connect - INFO - Completed expiring users check
+2026-03-28 02:46:48,614 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:46:48,623 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:46:48,623 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:46:48,623 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:46:48,624 - social_connect - INFO - Shutting down social media connections...
+2026-03-28 02:46:48,624 - social_connect - INFO - Stopped social platform health checks
+2026-03-28 02:46:48,624 - social_connect - INFO - Connection manager shutdown
+2026-03-28 02:46:48,624 - social_connect - INFO - Social media connections shutdown complete
+2026-03-28 02:46:49,541 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-03-28 02:46:49,544 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-03-28 02:46:49,544 - social_connect - INFO - Initializing MongoDB default data...
+2026-03-28 02:46:49,549 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-03-28 02:46:49,549 - social_connect - INFO - Initializing social media connections...
+2026-03-28 02:46:49,549 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-03-28 02:46:49,549 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-03-28 02:46:49,549 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-03-28 02:46:49,550 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 02:46:49,550 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 02:46:49,550 - social_connect - INFO - Completed expiring users check
+2026-03-28 02:46:59,890 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-03-28 02:47:02,060 - social_connect - INFO - User profile update requested
+2026-03-28 02:47:02,060 - social_connect - INFO - Profile update request data: {'name': 'Dileep', 'email': 'deelipkumar261997@gmail.com'}
+2026-03-28 02:47:02,065 - social_connect - INFO - Current user: {'_id': '69a7077846b2c39cd7f6dede', 'username': 'superadmin', 'email': 'deelipkumar261997@gmail.com', 'password_hash': 'd357150517d3e65ae84985f7b705ad99fdc38372a22ecea0cecaf8aaf820a249', 'name': 'Super Admin', 'role': 'super_admin', 'companyid': 0, 'activitystatus': True, 'access_expires_at': None, 'created_by': None}
+2026-03-28 02:47:02,065 - social_connect - INFO - Update data: {'name': 'Dileep', 'email': 'deelipkumar261997@gmail.com'}
+2026-03-28 02:47:02,065 - social_connect - INFO - Updating user in MongoDB
+2026-03-28 02:47:02,070 - social_connect - INFO - MongoDB update success: True
+2026-03-28 02:47:02,071 - social_connect - INFO - Updated user from MongoDB: {'_id': '69a7077846b2c39cd7f6dede', 'username': 'superadmin', 'email': 'deelipkumar261997@gmail.com', 'password_hash': 'd357150517d3e65ae84985f7b705ad99fdc38372a22ecea0cecaf8aaf820a249', 'name': 'Dileep', 'role': 'super_admin', 'companyid': 0, 'activitystatus': True, 'access_expires_at': None, 'created_by': None}
+2026-03-28 02:47:02,071 - social_connect - INFO - User profile update result: Profile updated successfully
+2026-03-28 02:49:36,069 - social_connect - INFO - User profile requested
+2026-03-28 02:49:36,073 - social_connect - INFO - User profile result: Profile retrieved successfully
+2026-03-28 02:49:36,074 - social_connect - INFO - User profile requested
+2026-03-28 02:49:36,075 - social_connect - INFO - User profile result: Profile retrieved successfully
+2026-03-28 02:50:40,697 - social_connect - INFO - User profile requested
+2026-03-28 02:50:40,701 - social_connect - INFO - User profile result: Profile retrieved successfully
+2026-03-28 02:50:40,702 - social_connect - INFO - User profile requested
+2026-03-28 02:50:40,705 - social_connect - INFO - User profile result: Profile retrieved successfully
+2026-03-28 02:50:42,465 - social_connect - INFO - User profile requested
+2026-03-28 02:50:42,466 - social_connect - INFO - User profile result: Profile retrieved successfully
+2026-03-28 02:50:42,466 - social_connect - INFO - User profile requested
+2026-03-28 02:50:42,467 - social_connect - INFO - User profile result: Profile retrieved successfully
+2026-03-28 02:56:20,890 - social_connect - INFO - User profile update requested
+2026-03-28 02:56:20,891 - social_connect - INFO - Profile update request data: {'name': 'Dileep Kumar', 'email': 'deelipkumar261997@gmail.com'}
+2026-03-28 02:56:20,892 - social_connect - INFO - Current user: {'_id': '69a7077846b2c39cd7f6dede', 'username': 'superadmin', 'email': 'deelipkumar261997@gmail.com', 'password_hash': 'd357150517d3e65ae84985f7b705ad99fdc38372a22ecea0cecaf8aaf820a249', 'name': 'Dileep', 'role': 'super_admin', 'companyid': 0, 'activitystatus': True, 'access_expires_at': None, 'created_by': None}
+2026-03-28 02:56:20,892 - social_connect - INFO - Update data: {'name': 'Dileep Kumar', 'email': 'deelipkumar261997@gmail.com'}
+2026-03-28 02:56:20,892 - social_connect - INFO - Updating user in MongoDB
+2026-03-28 02:56:20,893 - social_connect - INFO - MongoDB update success: True
+2026-03-28 02:56:20,893 - social_connect - INFO - Updated user from MongoDB: {'_id': '69a7077846b2c39cd7f6dede', 'username': 'superadmin', 'email': 'deelipkumar261997@gmail.com', 'password_hash': 'd357150517d3e65ae84985f7b705ad99fdc38372a22ecea0cecaf8aaf820a249', 'name': 'Dileep Kumar', 'role': 'super_admin', 'companyid': 0, 'activitystatus': True, 'access_expires_at': None, 'created_by': None}
+2026-03-28 02:56:20,893 - social_connect - INFO - User profile update result: Profile updated successfully
+2026-03-28 02:58:23,471 - social_connect - INFO - User profile update requested
+2026-03-28 02:58:23,472 - social_connect - INFO - Profile update request data: {'name': 'Dileep', 'email': 'deelipkumar261997@gmail.com'}
+2026-03-28 02:58:23,475 - social_connect - INFO - Current user: {'_id': '69a7077846b2c39cd7f6dede', 'username': 'superadmin', 'email': 'deelipkumar261997@gmail.com', 'password_hash': 'd357150517d3e65ae84985f7b705ad99fdc38372a22ecea0cecaf8aaf820a249', 'name': 'Dileep Kumar', 'role': 'super_admin', 'companyid': 0, 'activitystatus': True, 'access_expires_at': None, 'created_by': None}
+2026-03-28 02:58:23,475 - social_connect - INFO - Update data: {'name': 'Dileep', 'email': 'deelipkumar261997@gmail.com'}
+2026-03-28 02:58:23,475 - social_connect - INFO - Updating user in MongoDB
+2026-03-28 02:58:23,476 - social_connect - INFO - MongoDB update success: True
+2026-03-28 02:58:23,477 - social_connect - INFO - Updated user from MongoDB: {'_id': '69a7077846b2c39cd7f6dede', 'username': 'superadmin', 'email': 'deelipkumar261997@gmail.com', 'password_hash': 'd357150517d3e65ae84985f7b705ad99fdc38372a22ecea0cecaf8aaf820a249', 'name': 'Dileep', 'role': 'super_admin', 'companyid': 0, 'activitystatus': True, 'access_expires_at': None, 'created_by': None}
+2026-03-28 02:58:23,477 - social_connect - INFO - User profile update result: Profile updated successfully
+2026-03-28 03:25:51,389 - social_connect - INFO - User logged out
+2026-03-28 03:26:29,790 - social_connect - INFO - Login attempt for user: test_admin from IP: 127.0.0.1
+2026-03-28 03:26:29,792 - social_connect - INFO - Using MongoDB for login
+2026-03-28 03:26:29,795 - social_connect - INFO - Login OTP for dileepkumarr261997@gmail.com: 4436 (development mode)
+2026-03-28 03:26:31,694 - social_connect - INFO - Email 'login_otp' sent successfully to dileepkumarr261997@gmail.com via Brevo
+2026-03-28 03:26:31,695 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 03:26:44,955 - social_connect - INFO - Login attempt for user: test_admin from IP: 127.0.0.1
+2026-03-28 03:26:44,956 - social_connect - INFO - Using MongoDB for login
+2026-03-28 03:26:44,958 - social_connect - INFO - Login successful for user: test_admin
+2026-03-28 03:26:44,959 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-28 03:27:05,558 - social_connect - INFO - User profile update requested
+2026-03-28 03:27:05,559 - social_connect - INFO - Profile update request data: {'name': 'Dileep Admin', 'email': 'dileepkumarr261997@gmail.com'}
+2026-03-28 03:27:05,562 - social_connect - INFO - Current user: {'_id': '69c5aa7fe0f6b2b5267fb100', 'username': 'test_admin', 'email': 'dileepkumarr261997@gmail.com', 'password_hash': '3eb3fe66b31e3b4d10fa70b5cad49c7112294af6ae4e476a1c405155d45aa121', 'name': 'Test Admin User', 'role': 'admin', 'companyid': 4, 'user_type': 'tenant_user', 'activitystatus': False, 'access_expires_at': None, 'created_by': 'superadmin', 'created_at': datetime.datetime(2026, 3, 26, 21, 51, 59, 365000)}
+2026-03-28 03:27:05,563 - social_connect - INFO - Update data: {'name': 'Dileep Admin', 'email': 'dileepkumarr261997@gmail.com'}
+2026-03-28 03:27:05,563 - social_connect - INFO - Updating user in MongoDB
+2026-03-28 03:27:05,565 - social_connect - INFO - MongoDB update success: True
+2026-03-28 03:27:05,568 - social_connect - INFO - Updated user from MongoDB: {'_id': '69c5aa7fe0f6b2b5267fb100', 'username': 'test_admin', 'email': 'dileepkumarr261997@gmail.com', 'password_hash': '3eb3fe66b31e3b4d10fa70b5cad49c7112294af6ae4e476a1c405155d45aa121', 'name': 'Dileep Admin', 'role': 'admin', 'companyid': 4, 'user_type': 'tenant_user', 'activitystatus': False, 'access_expires_at': None, 'created_by': 'superadmin', 'created_at': datetime.datetime(2026, 3, 26, 21, 51, 59, 365000)}
+2026-03-28 03:27:05,568 - social_connect - INFO - User profile update result: Profile updated successfully
+2026-03-28 03:27:13,417 - social_connect - INFO - User profile requested
+2026-03-28 03:27:13,418 - social_connect - INFO - User profile result: Profile retrieved successfully
+2026-03-28 03:27:13,419 - social_connect - INFO - User profile requested
+2026-03-28 03:27:13,420 - social_connect - INFO - User profile result: Profile retrieved successfully
+2026-03-28 03:27:59,377 - social_connect - INFO - Users list requested for company 4 with filter: None, include_inactive: False
+2026-03-28 03:27:59,381 - social_connect - INFO - Total users in database: 29
+2026-03-28 03:27:59,381 - social_connect - INFO - Filtered users for company 4: 0
+2026-03-28 03:27:59,381 - social_connect - INFO - Users after filtering inactive users: 0
+2026-03-28 03:27:59,382 - social_connect - INFO - Roles data requested
+2026-03-28 03:27:59,384 - social_connect - WARNING - Access denied: admin attempted to access super_admin endpoint
+2026-03-28 03:27:59,391 - social_connect - INFO - Users list requested for company 4 with filter: None, include_inactive: False
+2026-03-28 03:27:59,392 - social_connect - INFO - Total users in database: 29
+2026-03-28 03:27:59,392 - social_connect - INFO - Filtered users for company 4: 0
+2026-03-28 03:27:59,392 - social_connect - INFO - Users after filtering inactive users: 0
+2026-03-28 03:27:59,393 - social_connect - INFO - Roles data requested
+2026-03-28 03:27:59,394 - social_connect - WARNING - Access denied: admin attempted to access super_admin endpoint
+2026-03-28 03:28:04,079 - social_connect - INFO - Roles data requested
+2026-03-28 03:28:04,080 - social_connect - WARNING - Access denied: admin attempted to access super_admin endpoint
+2026-03-28 03:28:04,081 - social_connect - INFO - Users list requested for company 5 with filter: None, include_inactive: False
+2026-03-28 03:28:04,082 - social_connect - INFO - Total users in database: 29
+2026-03-28 03:28:04,082 - social_connect - INFO - Filtered users for company 5: 0
+2026-03-28 03:28:04,082 - social_connect - INFO - Users after filtering inactive users: 0
+2026-03-28 03:28:09,585 - social_connect - INFO - Roles data requested
+2026-03-28 03:28:09,587 - social_connect - WARNING - Access denied: admin attempted to access super_admin endpoint
+2026-03-28 03:28:09,588 - social_connect - INFO - Users list requested for company 5 with filter: None, include_inactive: True
+2026-03-28 03:28:09,589 - social_connect - INFO - Total users in database: 29
+2026-03-28 03:28:09,589 - social_connect - INFO - Filtered users for company 5: 0
+2026-03-28 03:28:09,589 - social_connect - INFO - Including inactive users in results: 0
+2026-03-28 03:28:10,476 - social_connect - INFO - Users list requested for company 5 with filter: None, include_inactive: False
+2026-03-28 03:28:10,477 - social_connect - INFO - Total users in database: 29
+2026-03-28 03:28:10,477 - social_connect - INFO - Filtered users for company 5: 0
+2026-03-28 03:28:10,477 - social_connect - INFO - Users after filtering inactive users: 0
+2026-03-28 03:28:10,478 - social_connect - INFO - Roles data requested
+2026-03-28 03:28:10,479 - social_connect - WARNING - Access denied: admin attempted to access super_admin endpoint
+2026-03-28 03:28:10,986 - social_connect - INFO - Users list requested for company 5 with filter: None, include_inactive: True
+2026-03-28 03:28:10,987 - social_connect - INFO - Total users in database: 29
+2026-03-28 03:28:10,987 - social_connect - INFO - Filtered users for company 5: 0
+2026-03-28 03:28:10,987 - social_connect - INFO - Including inactive users in results: 0
+2026-03-28 03:28:10,987 - social_connect - INFO - Roles data requested
+2026-03-28 03:28:10,988 - social_connect - WARNING - Access denied: admin attempted to access super_admin endpoint
+2026-03-28 03:28:18,474 - social_connect - INFO - Campaigns data requested
+2026-03-28 03:28:18,476 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 03:28:18,476 - social_connect - INFO - No visible campaigns from social media service, falling back to database
+2026-03-28 03:28:18,476 - social_connect - ERROR - Social media service failed: No visible campaigns from social media service, falling back to existing system
+2026-03-28 03:28:18,476 - social_connect - INFO - Using MongoDB for campaigns
+2026-03-28 03:28:18,477 - social_connect - INFO - Returned 3 campaigns
+2026-03-28 03:28:18,479 - social_connect - INFO - Campaigns data requested
+2026-03-28 03:28:18,479 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 03:28:18,479 - social_connect - INFO - No visible campaigns from social media service, falling back to database
+2026-03-28 03:28:18,479 - social_connect - ERROR - Social media service failed: No visible campaigns from social media service, falling back to existing system
+2026-03-28 03:28:18,479 - social_connect - INFO - Using MongoDB for campaigns
+2026-03-28 03:28:18,480 - social_connect - INFO - Returned 3 campaigns
+2026-03-28 03:28:23,524 - social_connect - INFO - Users list requested for company 4 with filter: None, include_inactive: False
+2026-03-28 03:28:23,525 - social_connect - INFO - Total users in database: 29
+2026-03-28 03:28:23,525 - social_connect - INFO - Filtered users for company 4: 0
+2026-03-28 03:28:23,525 - social_connect - INFO - Users after filtering inactive users: 0
+2026-03-28 03:28:23,526 - social_connect - INFO - Users list requested for company 4 with filter: None, include_inactive: False
+2026-03-28 03:28:23,526 - social_connect - INFO - Total users in database: 29
+2026-03-28 03:28:23,527 - social_connect - INFO - Filtered users for company 4: 0
+2026-03-28 03:28:23,527 - social_connect - INFO - Users after filtering inactive users: 0
+2026-03-28 03:28:23,527 - social_connect - INFO - Roles data requested
+2026-03-28 03:28:23,528 - social_connect - WARNING - Access denied: admin attempted to access super_admin endpoint
+2026-03-28 03:28:23,529 - social_connect - INFO - Roles data requested
+2026-03-28 03:28:23,529 - social_connect - WARNING - Access denied: admin attempted to access super_admin endpoint
+2026-03-28 03:29:47,730 - social_connect - INFO - Users list requested for company 4 with filter: None, include_inactive: False
+2026-03-28 03:29:47,734 - social_connect - INFO - Total users in database: 29
+2026-03-28 03:29:47,734 - social_connect - INFO - Filtered users for company 4: 0
+2026-03-28 03:29:47,734 - social_connect - INFO - Users after filtering inactive users: 0
+2026-03-28 03:29:47,734 - social_connect - INFO - Roles data requested
+2026-03-28 03:29:47,735 - social_connect - WARNING - Access denied: admin attempted to access super_admin endpoint
+2026-03-28 03:30:25,763 - social_connect - INFO - Users list requested for company 4 with filter: None, include_inactive: False
+2026-03-28 03:30:25,820 - social_connect - INFO - Total users in database: 29
+2026-03-28 03:30:25,820 - social_connect - INFO - Filtered users for company 4: 0
+2026-03-28 03:30:25,820 - social_connect - INFO - Users after filtering inactive users: 0
+2026-03-28 03:30:25,821 - social_connect - INFO - Roles data requested
+2026-03-28 03:30:25,822 - social_connect - WARNING - Access denied: admin attempted to access super_admin endpoint
+2026-03-28 03:30:58,539 - social_connect - INFO - Settings data requested
+2026-03-28 03:30:58,541 - social_connect - INFO - Using mock data for settings
+2026-03-28 03:30:58,541 - social_connect - INFO - Settings retrieved successfully
+2026-03-28 03:30:58,542 - social_connect - INFO - Settings data requested
+2026-03-28 03:30:58,543 - social_connect - INFO - Using mock data for settings
+2026-03-28 03:30:58,543 - social_connect - INFO - Settings retrieved successfully
+2026-03-28 03:31:03,410 - social_connect - INFO - Campaigns data requested
+2026-03-28 03:31:03,413 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 03:31:03,413 - social_connect - INFO - No visible campaigns from social media service, falling back to database
+2026-03-28 03:31:03,413 - social_connect - ERROR - Social media service failed: No visible campaigns from social media service, falling back to existing system
+2026-03-28 03:31:03,413 - social_connect - INFO - Using MongoDB for campaigns
+2026-03-28 03:31:03,414 - social_connect - INFO - Returned 3 campaigns
+2026-03-28 03:31:03,417 - social_connect - INFO - Campaigns data requested
+2026-03-28 03:31:03,418 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 03:31:03,418 - social_connect - INFO - No visible campaigns from social media service, falling back to database
+2026-03-28 03:31:03,418 - social_connect - ERROR - Social media service failed: No visible campaigns from social media service, falling back to existing system
+2026-03-28 03:31:03,418 - social_connect - INFO - Using MongoDB for campaigns
+2026-03-28 03:31:03,418 - social_connect - INFO - Returned 3 campaigns
+2026-03-28 03:31:08,040 - social_connect - INFO - Leads data requested
+2026-03-28 03:31:08,043 - social_connect - INFO - Attempting to get leads from social media service
+2026-03-28 03:31:08,043 - social_connect - INFO - Returned 0 leads
+2026-03-28 03:31:08,044 - social_connect - INFO - Campaigns data requested
+2026-03-28 03:31:08,045 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 03:31:08,045 - social_connect - INFO - No visible campaigns from social media service, falling back to database
+2026-03-28 03:31:08,045 - social_connect - ERROR - Social media service failed: No visible campaigns from social media service, falling back to existing system
+2026-03-28 03:31:08,045 - social_connect - INFO - Using MongoDB for campaigns
+2026-03-28 03:31:08,046 - social_connect - INFO - Returned 3 campaigns
+2026-03-28 03:31:08,047 - social_connect - INFO - Leads data requested
+2026-03-28 03:31:08,048 - social_connect - INFO - Attempting to get leads from social media service
+2026-03-28 03:31:08,048 - social_connect - INFO - Returned 0 leads
+2026-03-28 03:31:08,048 - social_connect - INFO - Campaigns data requested
+2026-03-28 03:31:08,049 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 03:31:08,049 - social_connect - INFO - No visible campaigns from social media service, falling back to database
+2026-03-28 03:31:08,049 - social_connect - ERROR - Social media service failed: No visible campaigns from social media service, falling back to existing system
+2026-03-28 03:31:08,049 - social_connect - INFO - Using MongoDB for campaigns
+2026-03-28 03:31:08,049 - social_connect - INFO - Returned 3 campaigns
+2026-03-28 03:31:17,612 - social_connect - INFO - Campaigns data requested
+2026-03-28 03:31:17,615 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 03:31:17,615 - social_connect - INFO - No visible campaigns from social media service, falling back to database
+2026-03-28 03:31:17,615 - social_connect - ERROR - Social media service failed: No visible campaigns from social media service, falling back to existing system
+2026-03-28 03:31:17,615 - social_connect - INFO - Using MongoDB for campaigns
+2026-03-28 03:31:17,616 - social_connect - INFO - Returned 3 campaigns
+2026-03-28 03:31:17,618 - social_connect - INFO - Campaigns data requested
+2026-03-28 03:31:17,619 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 03:31:17,619 - social_connect - INFO - No visible campaigns from social media service, falling back to database
+2026-03-28 03:31:17,619 - social_connect - ERROR - Social media service failed: No visible campaigns from social media service, falling back to existing system
+2026-03-28 03:31:17,619 - social_connect - INFO - Using MongoDB for campaigns
+2026-03-28 03:31:17,620 - social_connect - INFO - Returned 3 campaigns
+2026-03-28 03:39:01,732 - social_connect - INFO - Creating campaign via chatbot with data: {'name': 'BankCoaching', 'type': 'sale', 'target_audience': 'all_customers', 'duration_days': 14, 'budget_range': '20000', 'platforms': ['facebook', 'instagram'], 'goal': 'sales', 'visual_theme': 'blue_ocean', 'call_to_action': 'Shop Now', 'special_offers': "Limited Time - Don't Miss Out!", 'suggested_hashtags': ['#Sale', '#SpecialOffer', '#Discount'], 'optimal_posting_times': ['9:00 AM', '6:00 PM'], 'ad_copy_variations': ['🔥 BankCoaching is here! undefined. Shop Now →', "✨ Exciting news about BankCoaching! Don't miss out. Shop Now!", '🎯 Amazing opportunity: BankCoaching. undefined. Shop Now now!']}
+2026-03-28 03:39:01,754 - social_connect - INFO - Poster generated successfully: bankcoaching_2024.png
+2026-03-28 03:39:01,754 - social_connect - INFO - Poster generated: /posters/bankcoaching_2024.png
+2026-03-28 03:39:01,754 - social_connect - INFO - Campaign created via chatbot: BankCoaching
+2026-03-28 03:39:02,050 - social_connect - INFO - Campaigns data requested
+2026-03-28 03:39:02,051 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 03:39:02,051 - social_connect - INFO - No visible campaigns from social media service, falling back to database
+2026-03-28 03:39:02,051 - social_connect - ERROR - Social media service failed: No visible campaigns from social media service, falling back to existing system
+2026-03-28 03:39:02,051 - social_connect - INFO - Using MongoDB for campaigns
+2026-03-28 03:39:02,052 - social_connect - INFO - Returned 4 campaigns
+2026-03-28 03:39:02,052 - social_connect - INFO - User profile requested
+2026-03-28 03:39:02,053 - social_connect - INFO - User profile result: Profile retrieved successfully
+2026-03-28 03:39:02,053 - social_connect - INFO - Campaigns data requested
+2026-03-28 03:39:02,053 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 03:39:02,053 - social_connect - INFO - No visible campaigns from social media service, falling back to database
+2026-03-28 03:39:02,053 - social_connect - ERROR - Social media service failed: No visible campaigns from social media service, falling back to existing system
+2026-03-28 03:39:02,053 - social_connect - INFO - Using MongoDB for campaigns
+2026-03-28 03:39:02,054 - social_connect - INFO - Returned 4 campaigns
+2026-03-28 03:39:02,054 - social_connect - INFO - User profile requested
+2026-03-28 03:39:02,055 - social_connect - INFO - User profile result: Profile retrieved successfully
+2026-03-28 03:40:50,472 - social_connect - INFO - User profile requested
+2026-03-28 03:40:50,475 - social_connect - INFO - User profile result: Profile retrieved successfully
+2026-03-28 03:40:50,477 - social_connect - INFO - User profile requested
+2026-03-28 03:40:50,477 - social_connect - INFO - User profile result: Profile retrieved successfully
+2026-03-28 03:46:49,532 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-28 03:46:49,533 - social_connect - ERROR - Error in expiring users check: 
+2026-03-28 03:46:49,533 - social_connect - INFO - Completed expiring users check
+2026-03-28 03:52:16,437 - social_connect - INFO - User profile requested
+2026-03-28 03:52:16,440 - social_connect - INFO - User profile result: Profile retrieved successfully
+2026-03-28 03:52:16,441 - social_connect - INFO - User profile requested
+2026-03-28 03:52:16,442 - social_connect - INFO - User profile result: Profile retrieved successfully
+2026-03-28 21:22:05,760 - social_connect - ERROR - Error in verify_token: 
+2026-03-28 21:22:13,079 - social_connect - INFO - Users list requested for company 4 with filter: None, include_inactive: False
+2026-03-28 21:22:13,080 - social_connect - WARNING - Access denied: No user provided
+2026-03-28 21:22:13,082 - social_connect - INFO - Roles data requested
+2026-03-28 21:22:13,083 - social_connect - WARNING - Access denied: No user provided
+2026-03-28 21:22:13,083 - social_connect - WARNING - Access denied: No user provided
+2026-03-28 21:22:13,084 - social_connect - INFO - Users list requested for company 4 with filter: None, include_inactive: False
+2026-03-28 21:22:13,084 - social_connect - WARNING - Access denied: No user provided
+2026-03-28 21:22:13,084 - social_connect - WARNING - Access denied: No user provided
+2026-03-28 21:22:13,084 - social_connect - INFO - Roles data requested
+2026-03-28 21:22:13,085 - social_connect - WARNING - Access denied: No user provided
+2026-03-28 21:22:27,973 - social_connect - INFO - Leads data requested
+2026-03-28 21:22:27,974 - social_connect - INFO - Campaigns data requested
+2026-03-28 21:22:27,975 - social_connect - INFO - Leads data requested
+2026-03-28 21:22:27,976 - social_connect - INFO - Campaigns data requested
+2026-03-28 21:22:43,323 - social_connect - INFO - Campaigns data requested
+2026-03-28 21:22:43,326 - social_connect - INFO - Campaigns data requested
+2026-03-28 21:22:58,117 - social_connect - ERROR - Error in verify_token: 
+2026-03-28 21:23:12,771 - social_connect - INFO - Campaigns data requested
+2026-03-28 21:23:12,772 - social_connect - INFO - Campaigns data requested
+2026-03-28 21:23:49,772 - social_connect - ERROR - Error in verify_token: 
+2026-03-28 21:24:06,219 - social_connect - INFO - Leads data requested
+2026-03-28 21:24:06,228 - social_connect - INFO - Campaigns data requested
+2026-03-28 21:24:06,229 - social_connect - INFO - Analytics data requested
+2026-03-28 21:24:06,230 - social_connect - INFO - Channels data requested
+2026-03-28 21:24:06,231 - social_connect - INFO - Dashboard stats requested
+2026-03-28 21:24:06,231 - social_connect - INFO - Using mock data for dashboard stats
+2026-03-28 21:24:06,231 - social_connect - INFO - Dashboard stats: {'connected_channels': 0, 'active_campaigns': 0, 'total_leads': 0}
+2026-03-28 21:24:10,006 - social_connect - INFO - Leads data requested
+2026-03-28 21:24:10,007 - social_connect - INFO - Campaigns data requested
+2026-03-28 21:24:10,008 - social_connect - INFO - Channels data requested
+2026-03-28 21:24:10,008 - social_connect - INFO - Analytics data requested
+2026-03-28 21:24:10,008 - social_connect - INFO - Dashboard stats requested
+2026-03-28 21:24:10,009 - social_connect - INFO - Using mock data for dashboard stats
+2026-03-28 21:24:10,009 - social_connect - INFO - Dashboard stats: {'connected_channels': 0, 'active_campaigns': 0, 'total_leads': 0}
+2026-03-28 21:24:13,060 - social_connect - INFO - Leads data requested
+2026-03-28 21:24:13,060 - social_connect - INFO - Campaigns data requested
+2026-03-28 21:24:13,061 - social_connect - INFO - Channels data requested
+2026-03-28 21:24:13,061 - social_connect - INFO - Analytics data requested
+2026-03-28 21:24:13,061 - social_connect - INFO - Dashboard stats requested
+2026-03-28 21:24:13,061 - social_connect - INFO - Using mock data for dashboard stats
+2026-03-28 21:24:13,061 - social_connect - INFO - Dashboard stats: {'connected_channels': 0, 'active_campaigns': 0, 'total_leads': 0}
+2026-03-28 21:24:26,428 - social_connect - INFO - User logged out
+2026-03-28 21:24:37,748 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 21:24:37,748 - social_connect - INFO - Using MongoDB for login
+2026-03-28 21:24:37,757 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 0810 (development mode)
+2026-03-28 21:24:40,478 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-28 21:24:40,479 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-28 21:25:09,777 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-28 21:25:09,779 - social_connect - INFO - Using MongoDB for login
+2026-03-28 21:25:09,781 - social_connect - INFO - Login successful for user: superadmin
+2026-03-28 21:25:09,781 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-28 21:25:16,927 - social_connect - INFO - Leads data requested
+2026-03-28 21:25:16,929 - social_connect - INFO - Attempting to get leads from social media service
+2026-03-28 21:25:16,929 - social_connect - INFO - Returned 2 leads
+2026-03-28 21:25:16,930 - social_connect - INFO - Campaigns data requested
+2026-03-28 21:25:16,931 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 21:25:16,931 - social_connect - INFO - Returned 2 campaigns
+2026-03-28 21:25:16,931 - social_connect - INFO - Channels data requested
+2026-03-28 21:25:16,932 - social_connect - INFO - Attempting to get channels from social media service
+2026-03-28 21:25:16,932 - social_connect - INFO - Returned 3 channels
+2026-03-28 21:25:16,932 - social_connect - INFO - Analytics data requested
+2026-03-28 21:25:16,935 - social_connect - INFO - Using MongoDB for analytics - found 3 records
+2026-03-28 21:25:16,935 - social_connect - INFO - Returned 3 analytics
+2026-03-28 21:25:16,936 - social_connect - INFO - Dashboard stats requested
+2026-03-28 21:25:16,936 - social_connect - INFO - Using mock data for dashboard stats
+2026-03-28 21:25:16,936 - social_connect - INFO - Dashboard stats: {'connected_channels': 0, 'active_campaigns': 0, 'total_leads': 0}
+2026-03-28 21:25:22,746 - social_connect - INFO - Leads data requested
+2026-03-28 21:25:22,748 - social_connect - INFO - Attempting to get leads from social media service
+2026-03-28 21:25:22,748 - social_connect - INFO - Returned 2 leads
+2026-03-28 21:25:22,750 - social_connect - INFO - Campaigns data requested
+2026-03-28 21:25:22,751 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 21:25:22,751 - social_connect - INFO - Returned 2 campaigns
+2026-03-28 21:25:22,752 - social_connect - INFO - Channels data requested
+2026-03-28 21:25:22,753 - social_connect - INFO - Attempting to get channels from social media service
+2026-03-28 21:25:22,754 - social_connect - INFO - Returned 3 channels
+2026-03-28 21:25:22,754 - social_connect - INFO - Analytics data requested
+2026-03-28 21:25:22,756 - social_connect - INFO - Using MongoDB for analytics - found 3 records
+2026-03-28 21:25:22,756 - social_connect - INFO - Returned 3 analytics
+2026-03-28 21:25:22,756 - social_connect - INFO - Dashboard stats requested
+2026-03-28 21:25:22,756 - social_connect - INFO - Using mock data for dashboard stats
+2026-03-28 21:25:22,756 - social_connect - INFO - Dashboard stats: {'connected_channels': 0, 'active_campaigns': 0, 'total_leads': 0}
+2026-03-28 21:25:24,926 - social_connect - INFO - Leads data requested
+2026-03-28 21:25:24,927 - social_connect - INFO - Attempting to get leads from social media service
+2026-03-28 21:25:24,927 - social_connect - INFO - Returned 2 leads
+2026-03-28 21:25:24,927 - social_connect - INFO - Campaigns data requested
+2026-03-28 21:25:24,928 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 21:25:24,928 - social_connect - INFO - Returned 2 campaigns
+2026-03-28 21:25:24,929 - social_connect - INFO - Leads data requested
+2026-03-28 21:25:24,929 - social_connect - INFO - Attempting to get leads from social media service
+2026-03-28 21:25:24,929 - social_connect - INFO - Returned 2 leads
+2026-03-28 21:25:24,930 - social_connect - INFO - Campaigns data requested
+2026-03-28 21:25:24,930 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 21:25:24,930 - social_connect - INFO - Returned 2 campaigns
+2026-03-28 21:25:34,461 - social_connect - INFO - Campaigns data requested
+2026-03-28 21:25:34,462 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 21:25:34,463 - social_connect - INFO - Returned 2 campaigns
+2026-03-28 21:25:34,464 - social_connect - INFO - Campaigns data requested
+2026-03-28 21:25:34,464 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-28 21:25:34,464 - social_connect - INFO - Returned 2 campaigns

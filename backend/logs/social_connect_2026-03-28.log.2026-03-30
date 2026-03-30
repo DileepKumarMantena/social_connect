@@ -1,0 +1,29 @@
+2026-03-30 20:51:40,002 - social_connect - INFO - Campaigns data requested
+2026-03-30 20:51:40,009 - social_connect - INFO - Campaigns data requested
+2026-03-30 20:51:40,010 - social_connect - INFO - User profile requested
+2026-03-30 20:51:40,012 - social_connect - INFO - User profile requested
+2026-03-30 20:51:42,437 - social_connect - INFO - User logged out
+2026-03-30 21:00:06,247 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-30 21:00:06,248 - social_connect - ERROR - Error in expiring users check: 
+2026-03-30 21:00:06,248 - social_connect - INFO - Completed expiring users check
+2026-03-30 22:19:55,856 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-30 22:19:55,859 - social_connect - ERROR - Error in expiring users check: 
+2026-03-30 22:19:55,859 - social_connect - INFO - Completed expiring users check
+2026-03-30 23:19:55,650 - social_connect - WARNING - Access expired for user: Dileep
+2026-03-30 23:19:55,651 - social_connect - ERROR - Error in expiring users check: 
+2026-03-30 23:19:55,651 - social_connect - INFO - Completed expiring users check
+2026-03-30 23:42:26,588 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-30 23:42:26,589 - social_connect - INFO - Using MongoDB for login
+2026-03-30 23:42:26,597 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 4063 (development mode)
+2026-03-30 23:42:28,393 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-03-30 23:42:28,395 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-03-30 23:42:52,678 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-03-30 23:42:52,679 - social_connect - INFO - Using MongoDB for login
+2026-03-30 23:42:52,684 - social_connect - INFO - Login successful for user: superadmin
+2026-03-30 23:42:52,685 - social_connect - INFO - Login result: Login successful with OTP
+2026-03-30 23:43:03,562 - social_connect - INFO - Campaigns data requested
+2026-03-30 23:43:03,571 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-30 23:43:03,573 - social_connect - INFO - Returned 2 campaigns
+2026-03-30 23:43:03,582 - social_connect - INFO - Campaigns data requested
+2026-03-30 23:43:03,584 - social_connect - INFO - Attempting to get campaigns from social media service
+2026-03-30 23:43:03,586 - social_connect - INFO - Returned 2 campaigns
