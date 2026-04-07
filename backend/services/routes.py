@@ -549,39 +549,14 @@ def get_campaigns(token: str) -> CampaignResponse:
     if not current_user:
         raise APIError.unauthorized("Invalid or expired token")
     
-    # Try to get real social media data first, fallback to existing system
-    try:
-        app_logger.info("Attempting to get campaigns from social media service")
-        all_campaigns = social_data_service.get_campaigns()
-        
-        # Check if user can see any of these campaigns
-        visible_campaigns = []
-        if current_user["role"] == "super_admin":
-            visible_campaigns = all_campaigns
-        elif current_user["role"] == "admin":
-            visible_campaigns = [campaign for campaign in all_campaigns 
-                               if campaign.get("created_by") == current_user["username"]]
-        else:
-            visible_campaigns = all_campaigns
-        
-        # If no visible campaigns from social media, fallback to database
-        if not visible_campaigns:
-            app_logger.info("No visible campaigns from social media service, falling back to database")
-            raise Exception("No visible campaigns from social media service")
-            
-        data_source = "social_media"
-        all_campaigns = visible_campaigns
-    except Exception as e:
-        app_logger.error(f"Social media service failed: {e}, falling back to existing system")
-        
-        # Fallback to existing DEV_MODE/MongoDB system
-        if DEV_MODE:
-            app_logger.info("Using mock data for campaigns")
-            all_campaigns = campaigns_db
-        else:
-            app_logger.info("Using MongoDB for campaigns")
-            all_campaigns = mongo_db.get_campaigns()
-        data_source = "mock_data" if DEV_MODE else "mongodb"
+    # Use database directly to avoid mock data conflicts
+    if DEV_MODE:
+        app_logger.info("Using mock data for campaigns")
+        all_campaigns = campaigns_db
+    else:
+        app_logger.info("Using MongoDB for campaigns")
+        all_campaigns = mongo_db.get_campaigns()
+    data_source = "mock_data" if DEV_MODE else "mongodb"
     
     # Normalize campaign data to ensure all required fields exist
     normalized_campaigns = []

@@ -1,0 +1,29 @@
+2026-04-06 22:33:48,553 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-04-06 22:33:48,904 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-04-06 22:33:48,905 - social_connect - INFO - Initializing MongoDB default data...
+2026-04-06 22:33:49,163 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-04-06 22:33:49,163 - social_connect - INFO - Initializing social media connections...
+2026-04-06 22:33:49,164 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-04-06 22:33:49,164 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-04-06 22:33:49,178 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-04-06 22:33:49,186 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-06 22:33:49,202 - social_connect - ERROR - Error in expiring users check: 
+2026-04-06 22:33:49,203 - social_connect - INFO - Completed expiring users check
+2026-04-06 22:40:21,724 - social_connect - INFO - Shutting down social media connections...
+2026-04-06 22:40:22,712 - social_connect - INFO - Stopped social platform health checks
+2026-04-06 22:40:22,716 - social_connect - INFO - Connection manager shutdown
+2026-04-06 22:40:22,720 - social_connect - INFO - Social media connections shutdown complete
+2026-04-06 22:40:32,870 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-04-06 22:40:33,064 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-04-06 22:40:33,065 - social_connect - INFO - Initializing MongoDB default data...
+2026-04-06 22:40:34,456 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-04-06 22:40:34,456 - social_connect - INFO - Initializing social media connections...
+2026-04-06 22:40:34,456 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-04-06 22:40:34,456 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-04-06 22:40:34,457 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-04-06 22:40:34,469 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-06 22:40:34,478 - social_connect - ERROR - Error in expiring users check: 
+2026-04-06 22:40:34,478 - social_connect - INFO - Completed expiring users check
+2026-04-06 23:40:34,561 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-06 23:40:34,570 - social_connect - ERROR - Error in expiring users check: 
+2026-04-06 23:40:34,571 - social_connect - INFO - Completed expiring users check

@@ -149,9 +149,15 @@ const AdminPanel = () => {
   // Fetch users
   const fetchUsers = useCallback(async () => {
     try {
-      const includeInactive = showInactiveUsers ? '&include_inactive=true' : '';
+      // Build URL correctly - only add query params when needed
+      let url = `${process.env.REACT_APP_API_LINKS}/api/v1/admin/users/${selectedCompanyId}`;
+      if (showInactiveUsers) {
+        url += '?include_inactive=true';
+      }
+      console.log('Fetching users for company ID:', selectedCompanyId);
+      console.log('API URL:', url);
       const response = await axios.get(
-        `${process.env.REACT_APP_API_LINKS}/api/v1/admin/users/${selectedCompanyId}?${includeInactive}`,
+        url,
         { headers: getAuthHeaders() }
       );
       console.log('Users response:', response.data);
@@ -365,14 +371,13 @@ const AdminPanel = () => {
 
     if (result.isConfirmed) {
       try {
-        const headers = getAuthHeaders();
-        console.log('Reactivate user - Headers:', headers);
-        console.log('Reactivate user - URL:', `${process.env.REACT_APP_API_LINKS}/api/v1/admin/users/${selectedCompanyId}/${userId}/reactivate`);
-        
+        let url = `${process.env.REACT_APP_API_LINKS}/api/v1/admin/users/${selectedCompanyId}/${userId}/reactivate`;
+        console.log('Reactivate user - Headers:', getAuthHeaders());
+        console.log('Reactivate user - URL:', url);
         const response = await axios.post(
-          `${process.env.REACT_APP_API_LINKS}/api/v1/admin/users/${selectedCompanyId}/${userId}/reactivate`,
+          url,
           {},
-          { headers }
+          { headers: getAuthHeaders() }
         );
         setSnackbar({ open: true, message: 'User reactivated successfully', severity: 'success' });
         fetchUsers();

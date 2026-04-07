@@ -306,12 +306,11 @@ const ChannelsPage = () => {
                                                 <TableCell>
                                                     <FormControl size="small" sx={{ minWidth: 120 }}>
                                                         <Select
-                                                            value={channel.connected && channel.active ? 'connected' : channel.connected ? 'inactive' : 'disconnected'}
-                                                            onChange={(e) => handleConnectionStatusChange(channel, e.target.value === 'connected' || e.target.value === 'inactive')}
+                                                            value={channel.connected && channel.active ? 'connected' : 'disconnected'}
+                                                            onChange={(e) => handleConnectionStatusChange(channel, e.target.value === 'connected')}
                                                             size="small"
                                                         >
                                                             <MenuItem value="disconnected">Disconnected</MenuItem>
-                                                            <MenuItem value="inactive">Inactive</MenuItem>
                                                             <MenuItem value="connected">Connected</MenuItem>
                                                         </Select>
                                                     </FormControl>

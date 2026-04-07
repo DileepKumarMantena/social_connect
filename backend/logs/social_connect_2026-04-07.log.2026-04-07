@@ -1,0 +1,256 @@
+2026-04-07 00:11:21,849 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-04-07 00:11:23,723 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-04-07 00:11:23,770 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-04-07 00:11:23,770 - social_connect - INFO - Initializing MongoDB default data...
+2026-04-07 00:11:24,097 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-04-07 00:11:24,097 - social_connect - INFO - Initializing social media connections...
+2026-04-07 00:11:24,097 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-04-07 00:11:24,097 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-04-07 00:11:24,099 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-04-07 00:11:24,103 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-07 00:11:24,104 - social_connect - ERROR - Error in expiring users check: 401: Access expired. Please contact administrator.
+2026-04-07 00:11:24,104 - social_connect - INFO - Completed expiring users check
+2026-04-07 16:52:23,355 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-07 16:52:23,375 - social_connect - ERROR - Error in expiring users check: 401: Access expired. Please contact administrator.
+2026-04-07 16:52:23,376 - social_connect - INFO - Completed expiring users check
+2026-04-07 19:07:37,882 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-07 19:07:37,898 - social_connect - ERROR - Error in expiring users check: 401: Access expired. Please contact administrator.
+2026-04-07 19:07:37,899 - social_connect - INFO - Completed expiring users check
+2026-04-07 20:21:00,085 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-04-07 20:21:33,825 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-04-07 20:21:34,704 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-04-07 20:21:34,714 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-04-07 20:21:34,715 - social_connect - INFO - Initializing MongoDB default data...
+2026-04-07 20:21:34,761 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-04-07 20:21:34,761 - social_connect - INFO - Initializing social media connections...
+2026-04-07 20:21:34,761 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-04-07 20:21:34,761 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-04-07 20:21:34,761 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-04-07 20:21:34,763 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-07 20:21:34,763 - social_connect - ERROR - Error in expiring users check: 401: Access expired. Please contact administrator.
+2026-04-07 20:21:34,763 - social_connect - INFO - Completed expiring users check
+2026-04-07 20:47:23,847 - social_connect - INFO - Shutting down social media connections...
+2026-04-07 20:47:24,857 - social_connect - INFO - Stopped social platform health checks
+2026-04-07 20:47:25,077 - social_connect - INFO - Connection manager shutdown
+2026-04-07 20:47:25,081 - social_connect - INFO - Social media connections shutdown complete
+2026-04-07 20:47:25,133 - social_connect - INFO - Shutting down social media connections...
+2026-04-07 20:47:25,167 - social_connect - INFO - Stopped social platform health checks
+2026-04-07 20:47:25,167 - social_connect - INFO - Connection manager shutdown
+2026-04-07 20:47:25,182 - social_connect - INFO - Social media connections shutdown complete
+2026-04-07 20:47:38,475 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-04-07 20:47:38,717 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-04-07 20:47:38,724 - social_connect - INFO - Initializing MongoDB default data...
+2026-04-07 20:47:38,944 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-04-07 20:47:38,944 - social_connect - INFO - Initializing social media connections...
+2026-04-07 20:47:38,944 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-04-07 20:47:38,944 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-04-07 20:47:38,951 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-04-07 20:47:38,965 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-07 20:47:38,995 - social_connect - ERROR - Error in expiring users check: 401: Access expired. Please contact administrator.
+2026-04-07 20:47:38,996 - social_connect - INFO - Completed expiring users check
+2026-04-07 20:47:41,044 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-04-07 20:47:41,049 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-04-07 20:47:41,050 - social_connect - INFO - Initializing MongoDB default data...
+2026-04-07 20:47:41,121 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-04-07 20:47:41,121 - social_connect - INFO - Initializing social media connections...
+2026-04-07 20:47:41,122 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-04-07 20:47:41,122 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-04-07 20:47:41,122 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-04-07 20:47:41,124 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-07 20:47:41,124 - social_connect - ERROR - Error in expiring users check: 
+2026-04-07 20:47:41,125 - social_connect - INFO - Completed expiring users check
+2026-04-07 20:48:01,667 - social_connect - INFO - Shutting down social media connections...
+2026-04-07 20:48:01,692 - social_connect - INFO - Stopped social platform health checks
+2026-04-07 20:48:01,693 - social_connect - INFO - Connection manager shutdown
+2026-04-07 20:48:01,693 - social_connect - INFO - Social media connections shutdown complete
+2026-04-07 20:48:01,778 - social_connect - INFO - Shutting down social media connections...
+2026-04-07 20:48:01,797 - social_connect - INFO - Stopped social platform health checks
+2026-04-07 20:48:01,800 - social_connect - INFO - Connection manager shutdown
+2026-04-07 20:48:01,805 - social_connect - INFO - Social media connections shutdown complete
+2026-04-07 20:48:01,808 - social_connect - INFO - Shutting down social media connections...
+2026-04-07 20:48:01,811 - social_connect - INFO - Stopped social platform health checks
+2026-04-07 20:48:01,814 - social_connect - INFO - Connection manager shutdown
+2026-04-07 20:48:01,814 - social_connect - INFO - Social media connections shutdown complete
+2026-04-07 20:48:07,084 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-04-07 20:48:07,181 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-04-07 20:48:07,184 - social_connect - INFO - Initializing MongoDB default data...
+2026-04-07 20:48:07,327 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-04-07 20:48:07,328 - social_connect - INFO - Initializing social media connections...
+2026-04-07 20:48:07,328 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-04-07 20:48:07,328 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-04-07 20:48:07,332 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-04-07 20:48:07,343 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-07 20:48:07,343 - social_connect - ERROR - Error in expiring users check: 401: Access expired. Please contact administrator.
+2026-04-07 20:48:07,343 - social_connect - INFO - Completed expiring users check
+2026-04-07 20:48:08,608 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-04-07 20:48:08,610 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-04-07 20:48:08,610 - social_connect - INFO - Initializing MongoDB default data...
+2026-04-07 20:48:08,614 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-04-07 20:48:08,614 - social_connect - INFO - Initializing social media connections...
+2026-04-07 20:48:08,614 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-04-07 20:48:08,614 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-04-07 20:48:08,614 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-04-07 20:48:08,615 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-07 20:48:08,615 - social_connect - ERROR - Error in expiring users check: 
+2026-04-07 20:48:08,615 - social_connect - INFO - Completed expiring users check
+2026-04-07 21:30:53,699 - social_connect - INFO - User logged out
+2026-04-07 21:31:24,046 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-04-07 21:31:24,054 - social_connect - INFO - Using MongoDB for login
+2026-04-07 21:31:24,197 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 8951 (development mode)
+2026-04-07 21:31:25,487 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-04-07 21:31:25,490 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-04-07 21:31:46,421 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-04-07 21:31:46,426 - social_connect - INFO - Using MongoDB for login
+2026-04-07 21:31:46,536 - social_connect - INFO - Login successful for user: superadmin
+2026-04-07 21:31:46,545 - social_connect - INFO - Login result: Login successful with OTP
+2026-04-07 21:32:05,097 - social_connect - INFO - Channels data requested
+2026-04-07 21:32:05,124 - social_connect - INFO - Attempting to get channels from social media service
+2026-04-07 21:32:05,125 - social_connect - INFO - Returned 3 channels
+2026-04-07 21:32:05,269 - social_connect - INFO - Channels data requested
+2026-04-07 21:32:05,272 - social_connect - INFO - Attempting to get channels from social media service
+2026-04-07 21:32:05,273 - social_connect - INFO - Returned 3 channels
+2026-04-07 21:38:06,492 - social_connect - INFO - Campaigns data requested
+2026-04-07 21:38:06,597 - social_connect - INFO - Using MongoDB for campaigns
+2026-04-07 21:38:06,628 - social_connect - INFO - Returned 5 campaigns
+2026-04-07 21:38:06,642 - social_connect - INFO - User profile requested
+2026-04-07 21:38:06,661 - social_connect - INFO - User profile result: Profile retrieved successfully
+2026-04-07 21:38:06,665 - social_connect - INFO - Campaigns data requested
+2026-04-07 21:38:06,674 - social_connect - INFO - Using MongoDB for campaigns
+2026-04-07 21:38:06,680 - social_connect - INFO - Returned 5 campaigns
+2026-04-07 21:38:06,687 - social_connect - INFO - User profile requested
+2026-04-07 21:38:06,735 - social_connect - INFO - User profile result: Profile retrieved successfully
+2026-04-07 21:38:43,229 - social_connect - INFO - Channels data requested
+2026-04-07 21:38:43,235 - social_connect - INFO - Attempting to get channels from social media service
+2026-04-07 21:38:43,237 - social_connect - INFO - Returned 3 channels
+2026-04-07 21:38:43,241 - social_connect - INFO - Channels data requested
+2026-04-07 21:38:43,242 - social_connect - INFO - Attempting to get channels from social media service
+2026-04-07 21:38:43,243 - social_connect - INFO - Returned 3 channels
+2026-04-07 21:41:01,117 - social_connect - INFO - Channels data requested
+2026-04-07 21:41:01,208 - social_connect - INFO - Attempting to get channels from social media service
+2026-04-07 21:41:01,220 - social_connect - INFO - Returned 3 channels
+2026-04-07 21:41:01,280 - social_connect - INFO - Channels data requested
+2026-04-07 21:41:01,293 - social_connect - INFO - Attempting to get channels from social media service
+2026-04-07 21:41:01,299 - social_connect - INFO - Returned 3 channels
+2026-04-07 21:41:01,329 - social_connect - INFO - User profile requested
+2026-04-07 21:41:01,348 - social_connect - INFO - User profile result: Profile retrieved successfully
+2026-04-07 21:41:01,368 - social_connect - INFO - User profile requested
+2026-04-07 21:41:01,377 - social_connect - INFO - User profile result: Profile retrieved successfully
+2026-04-07 21:43:26,854 - social_connect - INFO - Campaigns data requested
+2026-04-07 21:43:26,893 - social_connect - INFO - Using MongoDB for campaigns
+2026-04-07 21:43:26,900 - social_connect - INFO - Returned 5 campaigns
+2026-04-07 21:43:26,963 - social_connect - INFO - Campaigns data requested
+2026-04-07 21:43:26,970 - social_connect - INFO - Using MongoDB for campaigns
+2026-04-07 21:43:26,984 - social_connect - INFO - Returned 5 campaigns
+2026-04-07 21:44:12,657 - social_connect - INFO - Creating campaign with data: {'name': 'Dummy', 'status': 'active', 'created_by': 'superadmin', 'type': 'sale', 'target_audience': 'all_customers', 'duration_days': 14, 'budget_range': '$500-1000', 'platforms': ['facebook', 'instagram'], 'goal': 'sales', 'special_offers': '', 'visual_theme': 'blue_ocean', 'call_to_action': 'Learn More', 'poster_url': '/posters/default_campaign.png', 'suggested_hashtags': [], 'optimal_posting_times': ['9:00 AM', '6:00 PM'], 'ad_copy_variations': [], 'platform_strategies': {}, 'content_focus': 'general promotion'}
+2026-04-07 21:44:12,888 - social_connect - INFO - Campaign created successfully: {'name': 'Dummy', 'status': 'active', 'created_by': 'superadmin', 'type': 'sale', 'target_audience': 'all_customers', 'duration_days': 14, 'budget_range': '$500-1000', 'platforms': ['facebook', 'instagram'], 'goal': 'sales', 'special_offers': '', 'visual_theme': 'blue_ocean', 'call_to_action': 'Learn More', 'poster_url': '/posters/default_campaign.png', 'suggested_hashtags': [], 'optimal_posting_times': ['9:00 AM', '6:00 PM'], 'ad_copy_variations': [], 'platform_strategies': {}, 'content_focus': 'general promotion', 'id': 1, 'leads': 0, 'conversion_rate': 0, '_id': ObjectId('69d52d54e7835bd05c39273a')}
+2026-04-07 21:48:07,703 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-07 21:48:07,848 - social_connect - ERROR - Error in expiring users check: 401: Access expired. Please contact administrator.
+2026-04-07 21:48:07,850 - social_connect - INFO - Completed expiring users check
+2026-04-07 21:48:08,593 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-07 21:48:08,617 - social_connect - ERROR - Error in expiring users check: 
+2026-04-07 21:48:08,619 - social_connect - INFO - Completed expiring users check
+2026-04-07 22:27:35,349 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-04-07 22:27:36,370 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-04-07 22:27:36,383 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-04-07 22:27:36,384 - social_connect - INFO - Initializing MongoDB default data...
+2026-04-07 22:27:36,497 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-04-07 22:27:36,497 - social_connect - INFO - Initializing social media connections...
+2026-04-07 22:27:36,497 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-04-07 22:27:36,497 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-04-07 22:27:36,498 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-04-07 22:27:36,499 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-07 22:27:36,499 - social_connect - ERROR - Error in expiring users check: 401: Access expired. Please contact administrator.
+2026-04-07 22:27:36,499 - social_connect - INFO - Completed expiring users check
+2026-04-07 22:27:41,486 - social_connect - INFO - Login attempt for user: admin from IP: 127.0.0.1
+2026-04-07 22:27:41,488 - social_connect - INFO - Using MongoDB for login
+2026-04-07 22:27:41,531 - social_connect - ERROR - Login error: 401: Invalid username or password
+2026-04-07 22:27:41,531 - social_connect - ERROR - Login error: 401: Invalid credentials
+2026-04-07 22:28:06,678 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-04-07 22:28:06,680 - social_connect - INFO - Using MongoDB for login
+2026-04-07 22:28:06,685 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 4564 (development mode)
+2026-04-07 22:28:06,697 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-04-07 22:28:15,429 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-04-07 22:28:15,441 - social_connect - INFO - Using MongoDB for login
+2026-04-07 22:28:15,527 - social_connect - INFO - Login successful for user: superadmin
+2026-04-07 22:28:15,530 - social_connect - INFO - Login result: Login successful with OTP
+2026-04-07 22:28:32,020 - social_connect - INFO - Creating campaign via chatbot with data: {'name': 'Testing', 'type': 'sale', 'target_audience': 'all_customers', 'duration_days': 30, 'budget_range': '2000', 'call_to_action': 'Shop Now', 'platforms': ['facebook', 'instagram'], 'special_offers': 'Custom Offer', 'goal': 'sales', 'visual_theme': 'blue_ocean', 'suggested_hashtags': ['#Sale', '#SpecialOffer', '#Discount'], 'optimal_posting_times': ['9:00 AM', '6:00 PM'], 'ad_copy_variations': ['🔥 Testing is here! undefined. Shop Now →']}
+2026-04-07 22:28:32,071 - social_connect - INFO - Poster generated successfully: testing_2024.png
+2026-04-07 22:28:32,071 - social_connect - INFO - Poster generated: /posters/testing_2024.png
+2026-04-07 22:28:32,071 - social_connect - INFO - Campaign created via chatbot: Testing
+2026-04-07 22:28:34,609 - social_connect - INFO - Campaigns data requested
+2026-04-07 22:28:34,832 - social_connect - INFO - User profile requested
+2026-04-07 22:28:34,872 - social_connect - INFO - Campaigns data requested
+2026-04-07 22:28:34,969 - social_connect - INFO - User profile requested
+2026-04-07 22:29:19,065 - social_connect - INFO - Shutting down social media connections...
+2026-04-07 22:29:19,091 - social_connect - INFO - Shutting down social media connections...
+2026-04-07 22:29:20,685 - social_connect - INFO - Stopped social platform health checks
+2026-04-07 22:29:20,751 - social_connect - INFO - Connection manager shutdown
+2026-04-07 22:29:20,756 - social_connect - INFO - Stopped social platform health checks
+2026-04-07 22:29:21,835 - social_connect - INFO - Connection manager shutdown
+2026-04-07 22:29:21,839 - social_connect - INFO - Social media connections shutdown complete
+2026-04-07 22:29:21,838 - social_connect - INFO - Social media connections shutdown complete
+2026-04-07 22:29:21,841 - social_connect - INFO - Shutting down social media connections...
+2026-04-07 22:29:21,844 - social_connect - INFO - Stopped social platform health checks
+2026-04-07 22:29:21,847 - social_connect - INFO - Connection manager shutdown
+2026-04-07 22:29:21,848 - social_connect - INFO - Social media connections shutdown complete
+2026-04-07 22:29:26,288 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-04-07 22:29:26,548 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-04-07 22:29:26,548 - social_connect - INFO - Initializing MongoDB default data...
+2026-04-07 22:29:26,684 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-04-07 22:29:26,685 - social_connect - INFO - Initializing social media connections...
+2026-04-07 22:29:26,685 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-04-07 22:29:26,685 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-04-07 22:29:26,686 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-04-07 22:29:26,692 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-07 22:29:26,693 - social_connect - ERROR - Error in expiring users check: 401: Access expired. Please contact administrator.
+2026-04-07 22:29:26,693 - social_connect - INFO - Completed expiring users check
+2026-04-07 22:29:30,467 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-04-07 22:29:30,487 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-04-07 22:29:30,487 - social_connect - INFO - Initializing MongoDB default data...
+2026-04-07 22:29:30,513 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-04-07 22:29:30,513 - social_connect - INFO - Initializing social media connections...
+2026-04-07 22:29:30,514 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-04-07 22:29:30,514 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-04-07 22:29:30,522 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-04-07 22:29:30,531 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-07 22:29:30,531 - social_connect - ERROR - Error in expiring users check: 
+2026-04-07 22:29:30,531 - social_connect - INFO - Completed expiring users check
+2026-04-07 22:29:55,333 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-04-07 22:29:57,599 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-04-07 22:29:57,622 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-04-07 22:29:57,623 - social_connect - INFO - Initializing MongoDB default data...
+2026-04-07 22:29:57,651 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-04-07 22:29:57,651 - social_connect - INFO - Initializing social media connections...
+2026-04-07 22:29:57,651 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-04-07 22:29:57,651 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-04-07 22:29:57,652 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-04-07 22:29:57,657 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-07 22:29:57,657 - social_connect - ERROR - Error in expiring users check: 401: Access expired. Please contact administrator.
+2026-04-07 22:29:57,658 - social_connect - INFO - Completed expiring users check
+2026-04-07 22:30:22,512 - social_connect - INFO - Creating campaign via chatbot with data: {'name': 'Testing', 'type': 'sale', 'target_audience': 'all_customers', 'duration_days': 30, 'budget_range': '2000', 'call_to_action': 'Shop Now', 'platforms': ['facebook', 'instagram'], 'special_offers': 'Custom Offer', 'goal': 'sales', 'visual_theme': 'blue_ocean', 'suggested_hashtags': ['#Sale', '#SpecialOffer', '#Discount'], 'optimal_posting_times': ['9:00 AM', '6:00 PM'], 'ad_copy_variations': ['🔥 Testing is here! Shop Now →']}
+2026-04-07 22:30:22,643 - social_connect - INFO - Poster generated successfully: testing_2024.png
+2026-04-07 22:30:22,646 - social_connect - INFO - Poster generated: /posters/testing_2024.png
+2026-04-07 22:30:22,648 - social_connect - INFO - Campaign created via chatbot: Testing
+2026-04-07 22:30:36,676 - social_connect - INFO - Creating campaign with data: {'name': 'Regular Campaign', 'status': 'draft', 'created_by': 'superadmin', 'type': 'sale', 'target_audience': 'all_customers', 'duration_days': 14, 'budget_range': '$500-1000', 'platforms': ['facebook', 'instagram'], 'goal': 'sales', 'special_offers': '', 'visual_theme': 'blue_ocean', 'call_to_action': 'Learn More', 'poster_url': '/posters/default_campaign.png', 'suggested_hashtags': [], 'optimal_posting_times': ['9:00 AM', '6:00 PM'], 'ad_copy_variations': [], 'platform_strategies': {}, 'content_focus': 'general promotion'}
+2026-04-07 22:30:36,708 - social_connect - INFO - Campaign created successfully: {'name': 'Regular Campaign', 'status': 'draft', 'created_by': 'superadmin', 'type': 'sale', 'target_audience': 'all_customers', 'duration_days': 14, 'budget_range': '$500-1000', 'platforms': ['facebook', 'instagram'], 'goal': 'sales', 'special_offers': '', 'visual_theme': 'blue_ocean', 'call_to_action': 'Learn More', 'poster_url': '/posters/default_campaign.png', 'suggested_hashtags': [], 'optimal_posting_times': ['9:00 AM', '6:00 PM'], 'ad_copy_variations': [], 'platform_strategies': {}, 'content_focus': 'general promotion', 'id': 4, 'leads': 0, 'conversion_rate': 0, '_id': ObjectId('69d538347a62078da0e6445a')}
+2026-04-07 22:30:58,683 - social_connect - INFO - User profile requested
+2026-04-07 22:30:58,877 - social_connect - INFO - User profile requested
+2026-04-07 22:32:39,126 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-04-07 22:32:39,131 - social_connect - INFO - Using MongoDB for login
+2026-04-07 22:32:39,177 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 2661 (development mode)
+2026-04-07 22:32:40,293 - social_connect - INFO - Email 'login_otp' sent successfully to deelipkumar261997@gmail.com via Brevo
+2026-04-07 22:32:40,296 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-04-07 22:32:51,949 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-04-07 22:32:51,949 - social_connect - INFO - Using MongoDB for login
+2026-04-07 22:32:51,977 - social_connect - INFO - Login successful for user: superadmin
+2026-04-07 22:32:51,978 - social_connect - INFO - Login result: Login successful with OTP
+2026-04-07 22:39:48,879 - social_connect - INFO - Campaigns data requested
+2026-04-07 22:39:48,912 - social_connect - INFO - Using MongoDB for campaigns
+2026-04-07 22:39:48,917 - social_connect - INFO - Returned 4 campaigns
+2026-04-07 22:39:48,925 - social_connect - INFO - Campaigns data requested
+2026-04-07 22:39:48,927 - social_connect - INFO - Using MongoDB for campaigns
+2026-04-07 22:39:48,928 - social_connect - INFO - Returned 4 campaigns
+2026-04-07 22:59:21,231 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-04-07 23:29:57,814 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-07 23:29:57,838 - social_connect - ERROR - Error in expiring users check: 401: Access expired. Please contact administrator.
+2026-04-07 23:29:57,840 - social_connect - INFO - Completed expiring users check

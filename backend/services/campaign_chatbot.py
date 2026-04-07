@@ -279,16 +279,13 @@ class CampaignChatbot:
             # Generate smart suggestions
             enhanced_data = self.generate_smart_suggestions(campaign_data)
             
-            # Add required fields
+            # Add required fields (don't set ID - let MongoDB handle it)
             enhanced_data['created_by'] = current_user['username']
             enhanced_data['created_at'] = datetime.utcnow().isoformat()
             enhanced_data['companyid'] = current_user.get('companyid', 0)
             enhanced_data['status'] = 'draft'
             enhanced_data['leads'] = 0
             enhanced_data['conversion_rate'] = 0.0
-            
-            # Generate unique ID
-            enhanced_data['id'] = self._generate_campaign_id()
             
             # Save to database
             if mongo_db.create_campaign(enhanced_data):
@@ -303,9 +300,14 @@ class CampaignChatbot:
                     enhanced_data['poster_url'] = "/posters/default_campaign.png"
                 
                 app_logger.info(f"Campaign created via chatbot: {enhanced_data['name']}")
+                
+                # Remove MongoDB _id field before returning to avoid serialization issues
+                campaign_response = enhanced_data.copy()
+                campaign_response.pop('_id', None)
+                
                 return {
                     'success': True,
-                    'campaign': enhanced_data,
+                    'campaign': campaign_response,
                     'message': 'Campaign created successfully with AI assistance!'
                 }
             else:
