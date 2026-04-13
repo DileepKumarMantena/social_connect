@@ -1,0 +1,23 @@
+user login:Username: nueve_user
+
+Password: NueveUser123!
+
+👤 Username: test_admin
+
+📧 Email: dileepkumarr261997@gmail.com
+
+🔑 Password: Admin123!
+
+🏢 Role: admin
+
+🏢 Company: 4
+
+👑 Username: superadmin
+
+📧 Email: deelipkumar261997@gmail.com
+
+🔑 Password: SuperAdmin123!
+
+🏢 Role: super_admin
+
+🏢 Company: 0
