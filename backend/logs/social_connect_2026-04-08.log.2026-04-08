@@ -1,0 +1,65 @@
+2026-04-08 00:37:05,700 - social_connect - INFO - Starting Social Connect API server on port 8003
+2026-04-08 00:37:08,298 - social_connect - INFO - Initializing MongoDB roles collection...
+2026-04-08 00:37:08,321 - social_connect - INFO - MongoDB roles initialization completed successfully
+2026-04-08 00:37:08,321 - social_connect - INFO - Initializing MongoDB default data...
+2026-04-08 00:37:08,454 - social_connect - INFO - MongoDB default data initialization completed successfully
+2026-04-08 00:37:08,454 - social_connect - INFO - Initializing social media connections...
+2026-04-08 00:37:08,455 - social_connect - INFO - Social integration disabled, connection manager not started
+2026-04-08 00:37:08,455 - social_connect - INFO - Social media connection summary: {'platforms': {}, 'total_connected': 0}
+2026-04-08 00:37:08,455 - social_connect - INFO - Expiring users scheduler started (checks every hour)
+2026-04-08 00:37:08,457 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-08 00:37:08,457 - social_connect - ERROR - Error in expiring users check: 401: Access expired. Please contact administrator.
+2026-04-08 00:37:08,458 - social_connect - INFO - Completed expiring users check
+2026-04-08 01:02:56,468 - social_connect - INFO - Campaigns data requested
+2026-04-08 01:03:03,415 - social_connect - INFO - User profile requested
+2026-04-08 01:03:03,429 - social_connect - INFO - Campaigns data requested
+2026-04-08 01:03:03,435 - social_connect - INFO - User profile requested
+2026-04-08 01:09:25,936 - social_connect - INFO - User logged out
+2026-04-08 01:09:51,126 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-04-08 01:09:51,141 - social_connect - INFO - Using MongoDB for login
+2026-04-08 01:09:51,212 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 9547 (development mode)
+2026-04-08 01:09:51,219 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-04-08 01:10:45,584 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-04-08 01:10:45,588 - social_connect - INFO - Using MongoDB for login
+2026-04-08 01:10:45,605 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 8068 (development mode)
+2026-04-08 01:10:45,609 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-04-08 01:13:04,289 - social_connect - INFO - Login attempt for user: superadmin from IP: 127.0.0.1
+2026-04-08 01:13:04,294 - social_connect - INFO - Using MongoDB for login
+2026-04-08 01:13:04,330 - social_connect - INFO - Login OTP for deelipkumar261997@gmail.com: 7045 (development mode)
+2026-04-08 01:13:04,333 - social_connect - INFO - Login result: Password verified. OTP sent for login verification
+2026-04-08 01:37:08,686 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-08 01:37:08,703 - social_connect - ERROR - Error in expiring users check: 401: Access expired. Please contact administrator.
+2026-04-08 01:37:08,704 - social_connect - INFO - Completed expiring users check
+2026-04-08 02:37:08,675 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-08 02:37:08,685 - social_connect - ERROR - Error in expiring users check: 401: Access expired. Please contact administrator.
+2026-04-08 02:37:08,685 - social_connect - INFO - Completed expiring users check
+2026-04-08 03:37:08,759 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-08 03:37:08,772 - social_connect - ERROR - Error in expiring users check: 401: Access expired. Please contact administrator.
+2026-04-08 03:37:08,772 - social_connect - INFO - Completed expiring users check
+2026-04-08 04:37:08,733 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-08 04:37:08,751 - social_connect - ERROR - Error in expiring users check: 401: Access expired. Please contact administrator.
+2026-04-08 04:37:08,754 - social_connect - INFO - Completed expiring users check
+2026-04-08 05:46:06,201 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-08 05:46:06,211 - social_connect - ERROR - Error in expiring users check: 401: Access expired. Please contact administrator.
+2026-04-08 05:46:06,211 - social_connect - INFO - Completed expiring users check
+2026-04-08 06:46:33,247 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-08 06:46:33,256 - social_connect - ERROR - Error in expiring users check: 401: Access expired. Please contact administrator.
+2026-04-08 06:46:33,256 - social_connect - INFO - Completed expiring users check
+2026-04-08 18:14:49,316 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-08 18:14:49,322 - social_connect - ERROR - Error in expiring users check: 401: Access expired. Please contact administrator.
+2026-04-08 18:14:49,323 - social_connect - INFO - Completed expiring users check
+2026-04-08 19:14:49,249 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-08 19:14:49,251 - social_connect - ERROR - Error in expiring users check: 401: Access expired. Please contact administrator.
+2026-04-08 19:14:49,251 - social_connect - INFO - Completed expiring users check
+2026-04-08 20:39:20,913 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-08 20:39:20,924 - social_connect - ERROR - Error in expiring users check: 401: Access expired. Please contact administrator.
+2026-04-08 20:39:20,924 - social_connect - INFO - Completed expiring users check
+2026-04-08 21:39:21,025 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-08 21:39:21,034 - social_connect - ERROR - Error in expiring users check: 401: Access expired. Please contact administrator.
+2026-04-08 21:39:21,035 - social_connect - INFO - Completed expiring users check
+2026-04-08 22:39:42,205 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-08 22:39:42,214 - social_connect - ERROR - Error in expiring users check: 401: Access expired. Please contact administrator.
+2026-04-08 22:39:42,214 - social_connect - INFO - Completed expiring users check
+2026-04-08 23:39:42,222 - social_connect - WARNING - Access expired for user: Dileep
+2026-04-08 23:39:42,231 - social_connect - ERROR - Error in expiring users check: 401: Access expired. Please contact administrator.
+2026-04-08 23:39:42,232 - social_connect - INFO - Completed expiring users check
